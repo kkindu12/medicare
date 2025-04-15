@@ -98,10 +98,17 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
+]
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "2569d1a8-36d2-45d7-ab97-7f081598c440"
   }
 }
