@@ -1,0 +1,19 @@
+<div class="sidebar bg-body-primary">
+    <h3>Navigation</h3>
+    <ul>
+      <li>
+        <a
+          routerLink="/patients"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="icon">👤</span> Patients
+        </a>
+      </li>
+      <li>
+        <a routerLink="/medical-records" routerLinkActive="active">
+          <span class="icon">📄</span> Records
+        </a>
+      </li>
+    </ul>
+  </div>
