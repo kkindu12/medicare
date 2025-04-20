@@ -1,0 +1,28 @@
+.navbar {
+    background-color: #007bff; 
+}
+  
+.navbar-nav {
+    display: flex;
+    justify-content: center; 
+    width: 100%; 
+}
+  
+.nav-link {
+    color: #fff !important; 
+    &:hover {
+      color: #f8f9fa !important; 
+    }
+}
+
+.navbar-brand{
+    color: #fff;
+}
+    
+.navbar-text {
+    color: #fff; 
+}
+
+.user-info{
+    color: #fff;
+}
