@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import { AppComponent } from './app.component'; // Ensure './app.component.ts' exists in the same directory
 
 describe('AppComponent', () => {
   beforeEach(async () => {

@@ -1,0 +1,49 @@
+.appointment-booking {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  font-size: 2em;
+  color: #2c3e50;
+}
+
+.search-section,
+.doctor-list,
+.appointment-details {
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+select, input {
+  padding: 10px;
+  margin: 5px 0 15px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.doctor-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.doctor-card:hover {
+  background-color: #f7f7f7;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
