@@ -1,0 +1,394 @@
+.appointment-booking {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.view-controls {
+  display: flex;
+  gap: 1rem;
+}
+
+.view-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-button.active {
+  background-color: #3498db;
+  color: white;
+}
+
+.view-button:hover {
+  background-color: #2980b9;
+  color: white;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  color: #34495e;
+  margin: 1.5rem 0 1rem;
+}
+
+.search-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.search-bar {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.filters {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+select, input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+select:focus, input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.clear-button {
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-end;
+}
+
+.clear-button:hover {
+  background-color: #c0392b;
+}
+
+.doctor-list {
+  margin-bottom: 2rem;
+}
+
+.doctor-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.doctor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.doctor-info {
+  flex: 2;
+}
+
+.doctor-info h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.doctor-info p {
+  color: #7f8c8d;
+  margin: 0.25rem 0;
+}
+
+.specialty {
+  color: #3498db !important;
+  font-weight: 500;
+}
+
+.rating {
+  color: #f39c12 !important;
+}
+
+.available-slots {
+  flex: 1;
+  border-left: 1px solid #eee;
+  padding-left: 1.5rem;
+}
+
+.available-slots h4 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.slot-tag {
+  background-color: #e8f4f8;
+  color: #3498db;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.appointment-form, .reschedule-form {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.selected-doctor {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.selected-doctor h3 {
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.selected-doctor p {
+  color: #7f8c8d;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.book-button, .cancel-button, .action-button {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex: 1;
+}
+
+.book-button {
+  background-color: #3498db;
+  color: white;
+}
+
+.book-button:hover {
+  background-color: #2980b9;
+}
+
+.cancel-button {
+  background-color: #f8f9fa;
+  color: #2c3e50;
+}
+
+.cancel-button:hover {
+  background-color: #e9ecef;
+}
+
+.action-button {
+  background-color: #3498db;
+  color: white;
+  padding: 0.75rem 1.5rem;
+}
+
+.action-button.cancel {
+  background-color: #e74c3c;
+}
+
+.action-button:hover {
+  opacity: 0.9;
+}
+
+.appointments-list {
+  margin-top: 2rem;
+}
+
+.appointment-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appointment-card.cancelled {
+  opacity: 0.7;
+  background-color: #f8f9fa;
+}
+
+.appointment-info {
+  flex: 2;
+}
+
+.appointment-info h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.appointment-info p {
+  color: #7f8c8d;
+  margin: 0.25rem 0;
+}
+
+.appointment-info .status {
+  font-weight: 500;
+}
+
+.appointment-info .status.cancelled {
+  color: #e74c3c;
+}
+
+.appointment-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.no-appointments, .no-doctors {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+/* Custom styles that complement Bootstrap */
+.card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.8em;
+}
+
+/* Custom spacing for appointment cards */
+.appointment-card {
+  margin-bottom: 1rem;
+}
+
+/* Custom cursor for clickable cards */
+.card[style*="cursor: pointer"]:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Custom alert styles */
+.alert {
+  border-radius: 0.5rem;
+}
+
+/* Custom form control focus styles */
+.form-control:focus,
+.form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Custom button hover effects */
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Custom text colors */
+.text-primary {
+  color: #0d6efd !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Custom badge colors */
+.bg-success {
+  background-color: #198754 !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+/* Custom card background for cancelled appointments */
+.card.bg-light {
+  background-color: #f8f9fa !important;
+  opacity: 0.8;
+}

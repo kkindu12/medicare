@@ -1,7 +1,200 @@
-<div class="appointment-booking">
-    <h1>Book Appointment</h1>
-    <p>Find a doctor and book your appointment today.</p>
-    <!-- Your booking form or interface goes here -->
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary">Appointment Management</h1>
+    <div class="btn-group">
+      <button (click)="viewMode = 'search'" [class.active]="viewMode === 'search'" class="btn btn-outline-primary">Find Doctor</button>
+      <button (click)="viewAppointments()" [class.active]="viewMode === 'manage'" class="btn btn-outline-primary">My Appointments</button>
+    </div>
   </div>
+
+  <!-- Search and Book View -->
+  <div *ngIf="viewMode === 'search'" class="card mb-4">
+    <div class="card-body">
+      <p class="lead">Find a doctor and book your appointment today.</p>
+
+      <!-- Search Section -->
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            (input)="filterDoctors()"
+            placeholder="Search by doctor name, specialty, or location..."
+            class="form-control form-control-lg"
+          >
+        </div>
+
+        <div class="col-md-4">
+          <label for="specialty" class="form-label">Specialty:</label>
+          <select id="specialty" [(ngModel)]="selectedSpecialty" (change)="filterDoctors()" class="form-select">
+            <option value="">All Specialties</option>
+            <option *ngFor="let specialty of specialties" [value]="specialty">{{ specialty }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="location" class="form-label">Location:</label>
+          <select id="location" [(ngModel)]="selectedLocation" (change)="filterDoctors()" class="form-select">
+            <option value="">All Locations</option>
+            <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label for="timeSlot" class="form-label">Time Slot:</label>
+          <select id="timeSlot" [(ngModel)]="selectedTimeSlot" (change)="filterDoctors()" class="form-select">
+            <option value="">All Time Slots</option>
+            <option *ngFor="let slot of timeSlots" [value]="slot">{{ slot }}</option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <button (click)="clearFilters()" class="btn btn-outline-secondary">Clear Filters</button>
+        </div>
+      </div>
+
+      <!-- Doctors List Section -->
+      <div *ngIf="filteredDoctors.length > 0" class="row g-4">
+        <h2 class="h4">Available Doctors ({{ filteredDoctors.length }})</h2>
+        <div class="col-md-6 col-lg-4" *ngFor="let doctor of filteredDoctors">
+          <div class="card h-100" (click)="onDoctorSelect(doctor)" style="cursor: pointer;">
+            <div class="card-body">
+              <h3 class="card-title h5">{{ doctor.name }}</h3>
+              <p class="text-primary mb-1">{{ doctor.specialty }}</p>
+              <p class="text-muted mb-1">{{ doctor.location }}</p>
+              <p class="text-warning mb-1">Rating: {{ doctor.rating }} ★</p>
+              <p class="text-muted mb-1">Experience: {{ doctor.experience }}</p>
+              <p class="text-muted mb-3">{{ doctor.education }}</p>
+              
+              <div class="mt-3">
+                <h4 class="h6">Available Time Slots:</h4>
+                <div class="d-flex flex-wrap gap-2">
+                  <span *ngFor="let slot of doctor.availableSlots" class="badge bg-primary">{{ slot }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Form -->
+  <div class="card mb-4" *ngIf="viewMode === 'book'">
+    <div class="card-body">
+      <h2 class="card-title">Book Appointment</h2>
+      <div class="alert alert-info">
+        <h3 class="h5 mb-1">{{ selectedDoctor.name }}</h3>
+        <p class="mb-0">{{ selectedDoctor.specialty }} | {{ selectedDoctor.location }}</p>
+      </div>
+
+      <form class="row g-3">
+        <div class="col-md-6">
+          <label for="patientName" class="form-label">Your Name:</label>
+          <input type="text" id="patientName" [(ngModel)]="patientName" class="form-control" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="patientEmail" class="form-label">Email:</label>
+          <input type="email" id="patientEmail" [(ngModel)]="patientEmail" class="form-control" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="patientPhone" class="form-label">Phone:</label>
+          <input type="tel" id="patientPhone" [(ngModel)]="patientPhone" class="form-control" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="appointmentDate" class="form-label">Appointment Date:</label>
+          <input type="date" id="appointmentDate" [(ngModel)]="selectedDate" class="form-control" required>
+        </div>
+
+        <div class="col-12">
+          <label for="timeSlot" class="form-label">Select Time Slot:</label>
+          <select id="timeSlot" [(ngModel)]="selectedTimeSlot" class="form-select" required>
+            <option value="">Select a time slot</option>
+            <option *ngFor="let slot of selectedDoctor.availableSlots" [value]="slot">{{ slot }}</option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <div class="d-flex gap-2">
+            <button (click)="viewMode = 'search'" class="btn btn-outline-secondary">Cancel</button>
+            <button (click)="bookAppointment()" class="btn btn-primary">Book Appointment</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Manage Appointments View -->
+  <div *ngIf="viewMode === 'manage'" class="card">
+    <div class="card-body">
+      <h2 class="card-title">My Appointments</h2>
+      
+      <div *ngIf="appointments.length > 0" class="row g-4">
+        <div class="col-12" *ngFor="let appointment of appointments">
+          <div class="card" [class.bg-light]="appointment.status === 'cancelled'">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h3 class="h5 mb-2">Appointment with {{ appointment.doctor.name }}</h3>
+                  <p class="text-primary mb-1">{{ appointment.doctor.specialty }}</p>
+                  <p class="text-muted mb-1">Date: {{ appointment.date }}</p>
+                  <p class="text-muted mb-1">Time: {{ appointment.timeSlot }}</p>
+                  <span class="badge" [ngClass]="{
+                    'bg-success': appointment.status === 'booked',
+                    'bg-danger': appointment.status === 'cancelled',
+                    'bg-warning': appointment.status === 'rescheduled'
+                  }">
+                    Status: {{ appointment.status }}
+                  </span>
+                </div>
+                <div *ngIf="appointment.status !== 'cancelled'" class="btn-group">
+                  <button (click)="rescheduleAppointment(appointment)" class="btn btn-outline-primary btn-sm">Reschedule</button>
+                  <button (click)="cancelAppointment(appointment)" class="btn btn-outline-danger btn-sm">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reschedule Form -->
+      <div *ngIf="selectedAppointment" class="card mt-4">
+        <div class="card-body">
+          <h3 class="h5">Reschedule Appointment</h3>
+          <form class="row g-3">
+            <div class="col-md-6">
+              <label for="newDate" class="form-label">New Date:</label>
+              <input type="date" id="newDate" [(ngModel)]="newDate" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label for="newTimeSlot" class="form-label">New Time Slot:</label>
+              <select id="newTimeSlot" [(ngModel)]="newTimeSlot" class="form-select" required>
+                <option value="">Select a time slot</option>
+                <option *ngFor="let slot of selectedAppointment.doctor.availableSlots" [value]="slot">{{ slot }}</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <div class="d-flex gap-2">
+                <button (click)="selectedAppointment = null" class="btn btn-outline-secondary">Cancel</button>
+                <button (click)="confirmReschedule()" class="btn btn-primary">Confirm Reschedule</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div *ngIf="appointments.length === 0" class="alert alert-info">
+        <p class="mb-0">You have no appointments scheduled.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="viewMode === 'search' && filteredDoctors.length === 0" class="alert alert-warning">
+    <p class="mb-0">No doctors available matching your criteria. Please try different filters.</p>
+  </div>
+</div>
   
   
