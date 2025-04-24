@@ -3,4 +3,8 @@ dist/
 .angular/
 .vscode/
 *.log
-
+*.ts
+.html
+.tmp
+*.bak
+*.swp
