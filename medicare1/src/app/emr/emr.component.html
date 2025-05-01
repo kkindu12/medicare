@@ -1,4 +1,69 @@
-<div class="container">
-  <h1 class="text-primary">Hello, Bootstrap!</h1>
-  <button class="btn btn-success">Click Me</button>
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary">Medical Records</h1>
+   <!-- <div>
+      <button class="btn btn-primary me-2">Add New Record</button>
+      <button class="btn btn-outline-primary">My Records</button>
+    </div> -->
+  </div> 
+
+  <!-- Search and Filter Section -->
+  <div class="card mb-4 p-4">
+    <p class="text-muted">Search and manage patient records easily.</p>
+    <div class="row g-3">
+      <!-- Search Input -->
+      <div class="col-md-12">
+        <input type="text" class="form-control" placeholder="Search by patient name, ID, or condition..." [(ngModel)]="searchQuery">
+      </div>
+      <!-- Filters -->
+      <div class="col-md-4">
+        <select class="form-select" [(ngModel)]="filterCondition">
+          <option value="">All Conditions</option>
+          <option value="Diabetes">Diabetes</option>
+          <option value="Hypertension">Hypertension</option>
+          <option value="Asthma">Asthma</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select" [(ngModel)]="filterDoctor">
+          <option value="">All Doctors</option>
+          <option value="Dr. Samantha Kumara">Dr. Samantha Kumara</option>
+          <option value="Dr. Piyal Kodikara">Dr. Piyal Kodikara</option>
+          <option value="Dr. Sunil Jayathilake">Dr. Sunil Jayathilake</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select" [(ngModel)]="filterDate">
+          <option value="">All Dates</option>
+          <option value="2025-04">April 2025</option>
+          <option value="2025-03">March 2025</option>
+          <option value="2025-02">February 2025</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-outline-secondary mt-3" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Patient Records List -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-3">Patient Records ({{ filteredRecords.length }})</h3>
+    <div>
+      <button class="btn btn-primary me-2">Add New Record</button>     
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-3" *ngFor="let record of filteredRecords">
+      <div class="card p-3">
+        <h5 class="card-title">{{ record.patientName }}</h5>
+        <p class="card-text text-muted">
+          Condition: {{ record.condition }}<br>
+          Doctor: {{ record.doctor }}<br>
+          Last Visit: {{ record.lastVisit }}<br>
+          Status: <span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
