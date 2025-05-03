@@ -2,10 +2,6 @@
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="text-primary">Medical Records</h1>
-   <!-- <div>
-      <button class="btn btn-primary me-2">Add New Record</button>
-      <button class="btn btn-outline-primary">My Records</button>
-    </div> -->
   </div> 
 
   <!-- Search and Filter Section -->
@@ -42,14 +38,14 @@
         </select>
       </div>
     </div>
-    <button class="btn btn-outline-secondary mt-3" (click)="clearFilters()">Clear Filters</button>
+    <button class="btn btn-outline-primary mt-3" (click)="clearFilters()">Clear Filters</button>
   </div>
 
   <!-- Patient Records List -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 ">
     <h3 class="mb-3">Patient Records ({{ filteredRecords.length }})</h3>
     <div>
-      <button class="btn btn-primary me-2">Add New Record</button>     
+      <button class="btn btn-primary me-2" (click)="openAddRecordModal()">Add New Record</button> 
     </div>
   </div>
 
@@ -63,6 +59,58 @@
           Last Visit: {{ record.lastVisit }}<br>
           Status: <span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span>
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add New Record Modal -->
+  <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addRecordModalLabel">Add New Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="recordForm" (ngSubmit)="addRecord()">
+            <div class="mb-3">
+              <label for="patientName" class="form-label">Patient Name</label>
+              <input type="text" class="form-control" id="patientName" formControlName="patientName" required>
+            </div>
+            <div class="mb-3">
+              <label for="condition" class="form-label">Condition</label>
+              <select class="form-select" id="condition" formControlName="condition" required>
+                <option value="Diabetes">Diabetes</option>
+                <option value="Hypertension">Hypertension</option>
+                <option value="Asthma">Asthma</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="doctor" class="form-label">Doctor</label>
+              <select class="form-select" id="doctor" formControlName="doctor" required>
+                <option value="Dr. Samantha Kumara">Dr. Samantha Kumara</option>
+                <option value="Dr. Piyal Kodikara">Dr. Piyal Kodikara</option>
+                <option value="Dr. Sunil Jayathilake">Dr. Sunil Jayathilake</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="lastVisit" class="form-label">Last Visit</label>
+              <input type="date" class="form-control" id="lastVisit" formControlName="lastVisit" required>
+            </div>
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" formControlName="status" required>
+                <option value="Stable">Stable</option>
+                <option value="Critical">Critical</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary me-2" [disabled]="recordForm.invalid">Submit</button>
+            <button type="button" class="btn btn-secondary " (click)="close()"> Close </button>
+          </form>
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+        </div> -->
       </div>
     </div>
   </div>
