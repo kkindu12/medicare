@@ -64,18 +64,45 @@ export class AppointmentBookingComponent implements OnInit {
     },
     {
       id: 2,
-      name: 'Dr. Sarah Johnson',
+      name: 'Dr. Priya Fernando',
+      specialty: 'Neurologist',
+      location: 'Matara',
+      rating: 4.6,
+      experience: 8,
+      availableSlots: ['10:30 AM', '12:30 PM', '3:00 PM']
+    },
+    {
+      id: 3,
+      name: 'Dr. Anil Kumar',
+      specialty: 'Orthopedic Surgeon',
+      location: 'Gampaha',
+      rating: 4.5,
+      experience: 20,
+      availableSlots: ['9:00 AM', '11:00 AM', '1:00 PM']
+    },
+    {
+      id: 1,
+      name: 'Dr. John Doe',
+      specialty: 'Cardiologist',
+      location: 'Galle',
+      rating: 4.8,
+      experience: 15,
+      availableSlots: ['9 AM', '10 AM', '2 PM']
+    },
+    {
+      id: 2,
+      name: 'Dr. Nimal Pathirana',
       specialty: 'Dermatologist',
-      location: 'Los Angeles, CA',
+      location: 'Colombo',
       rating: 4.9,
       experience: 12,
       availableSlots: ['11:00 AM', '1:00 PM', '3:00 PM']
     },
     {
       id: 3,
-      name: 'Dr. Michael Brown',
+      name: 'Dr. Mohommed Safi',
       specialty: 'Family Medicine',
-      location: 'Chicago, IL',
+      location: 'Kandy',
       rating: 4.7,
       experience: 10,
       availableSlots: ['9:30 AM', '11:30 AM', '4:00 PM']
