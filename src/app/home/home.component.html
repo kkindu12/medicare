@@ -1,8 +1,51 @@
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
-  <div class="text-center">
-    <h1 class="display-1 fw-bold text-primary mb-4">{{ welcomeMessage }}</h1>
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container text-center">
+    <h1 class="display-1 fw-bold text-primary mb-4 nowrap">{{ welcomeMessage }}</h1>
+    <p class="lead mb-4">Your trusted partner in healthcare. We provide quality medical services with care and compassion.</p>
     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
       <a routerLink="/booking" class="btn btn-primary btn-lg px-4 gap-3">Book Appointment</a>
+      <a href="#services" class="btn btn-outline-primary btn-lg px-4">Our Services</a>
     </div>
   </div>
-</div> 
+</div>
+
+<!-- Services Section -->
+<section id="services" class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Our Services</h2>
+    <div class="row g-4">
+      <div class="col-md-4" *ngFor="let service of services">
+        <div class="feature-card">
+          <i [class]="service.icon + ' fs-1 text-primary mb-3'"></i>
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="bg-light py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Why Choose Us</h2>
+    <div class="row g-4">
+      <div class="col-md-3" *ngFor="let feature of features">
+        <div class="text-center">
+          <i [class]="feature.icon + ' fs-1 text-primary mb-3'"></i>
+          <h4>{{ feature.title }}</h4>
+          <p>{{ feature.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5">
+  <div class="container text-center">
+    <h2 class="mb-4">Ready to Get Started?</h2>
+    <p class="lead mb-4">Book your appointment today and take the first step towards better health.</p>
+  </div>
+</section> 
