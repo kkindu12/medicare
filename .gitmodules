@@ -1,0 +1,3 @@
+[submodule "medicare"]
+	path = medicare
+	url = https://github.com/kkindu12/medicare.git
