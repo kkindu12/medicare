@@ -1,0 +1,60 @@
+<div class="container py-5">
+  <h1 class="fw-bold mb-4 text-primary">Appointment Management</h1>
+  <div class="mb-4">
+    <button class="btn btn-primary me-2" [class.active]="activeTab === 'find'" (click)="setTab('find')">Find Doctor</button>
+    <button class="btn btn-outline-primary" [class.active]="activeTab === 'my'" (click)="setTab('my')">My Appointments</button>
+  </div>
+
+  <div *ngIf="activeTab === 'find'">
+    <p class="mb-3">Find a doctor and book your appointment today.</p>
+    <div class="mb-3">
+      <input type="text" class="form-control" placeholder="Search by doctor name, specialty, or location..." [(ngModel)]="search">
+    </div>
+    <div class="row g-3 align-items-end mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Specialty:</label>
+        <select class="form-select" [(ngModel)]="selectedSpecialty">
+          <option value="">All Specialties</option>
+          <option *ngFor="let s of specialties" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Location:</label>
+        <select class="form-select" [(ngModel)]="selectedLocation">
+          <option value="">All Locations</option>
+          <option *ngFor="let l of locations" [value]="l">{{ l }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Time Slot:</label>
+        <select class="form-select" [(ngModel)]="selectedTime">
+          <option value="">All Time Slots</option>
+          <option *ngFor="let t of timeSlots" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-light mb-4" (click)="clearFilters()">Clear Filters</button>
+
+    <h3 class="fw-bold mb-3">Available Doctors ({{ filteredDoctors.length }})</h3>
+    <div class="row g-4">
+      <div class="col-md-4" *ngFor="let doc of filteredDoctors">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ doc.name }}</h5>
+            <div class="mb-2">
+              <a href="#" class="text-decoration-none text-primary">{{ doc.specialty }}</a>
+            </div>
+            <div class="mb-2">{{ doc.location }}</div>
+            <div class="mb-2 text-warning">
+              Rating: {{ doc.rating }} <span class="bi bi-star-fill"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'my'">
+    <div class="alert alert-info">You have no appointments yet.</div>
+  </div>
+</div> 
