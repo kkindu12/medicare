@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-# Medicare
+# Docterandpatient
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.10.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.9.
 
 ## Development server
 
@@ -58,6 +57,3 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-=======
-# medicare
->>>>>>> eac483afe8a704b39bd51deef1641f44471f1656
