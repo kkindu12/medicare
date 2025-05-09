@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy & Laboratory Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #1976d2;
+            font-size: 32px;
+            margin: 0;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-outline {
+            background-color: white;
+            color: #1976d2;
+            border: 1px solid #1976d2;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .filter-group {
+            flex: 1;
+        }
+        .filter-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .filter-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        .clear-btn {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #444;
+            font-size: 22px;
+        }
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .card {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .card-title {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 18px;
+        }
+        .card-subtitle {
+            color: #1976d2;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .card-location {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .card-rating {
+            color: #f4b400;
+            margin-bottom: 10px;
+        }
+        .card-detail {
+            margin: 5px 0;
+            color: #555;
+        }
+        .tab-container {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .tab.active {
+            border-bottom: 3px solid #1976d2;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Pharmacy & Laboratory Management</h1>
+        <div class="buttons">
+            <button class="btn">Find Services</button>
+            <button class="btn btn-outline">My Orders</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tab-container">
+            <div class="tab active">Pharmacy</div>
+            <div class="tab">Laboratory</div>
+        </div>
+
+        <p>Search for medications or book laboratory tests today.</p>
+
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search by medication name, lab test, or service...">
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <span class="filter-label">Category:</span>
+                <select class="filter-select">
+                    <option>All Categories</option>
+                    <option>Prescription Drugs</option>
+                    <option>Over-the-Counter</option>
+                    <option>Health Supplements</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Location:</span>
+                <select class="filter-select">
+                    <option>All Locations</option>
+                    <option>Colombo</option>
+                    <option>Kandy</option>
+                    <option>Galle</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Availability:</span>
+                <select class="filter-select">
+                    <option>All Availability</option>
+                    <option>In Stock</option>
+                    <option>Same Day Delivery</option>
+                    <option>Next Day Delivery</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="clear-btn">Clear Filters</button>
+
+        <h2 class="section-title">Available Pharmacies (4)</h2>
+
+        <div class="cards-container">
+            <div class="card">
+                <h3 class="card-title">MediCare Pharmacy</h3>
+                <p class="card-subtitle">24/7 Service</p>
+                <p class="card-location">Colombo</p>
+                <p class="card-rating">Rating: 4.8 ★</p>
+                <p class="card-detail">Delivery Time: 30 mins</p>
+                <p class="card-detail">Prescription Required: Yes</p>
+                <button class="btn">Order Now</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Health First Pharmacy</h3>
+                <p class="card-subtitle">Family Pharmacy</p>
+                <p class="card-location">Kandy</p>
+                <p class="card-rating">Rating: 4.5 ★</p>
+                <p class="card-detail">Delivery Time: 1 hour</p>
+                <p class="card-detail">Prescription Required: Yes</p>
+                <button class="btn">Order Now</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Union Pharmacy</h3>
+                <p class="card-subtitle">Specialty Medications</p>
+                <p class="card-location">Galle</p>
+                <p class="card-rating">Rating: 4.6 ★</p>
+                <p class="card-detail">Delivery Time: 45 mins</p>
+                <p class="card-detail">Prescription Required: Yes</p>
+                <button class="btn">Order Now</button>
+            </div>
+        </div>
+
+        <h2 class="section-title">Popular Laboratory Tests</h2>
+
+        <div class="cards-container">
+            <div class="card">
+                <h3 class="card-title">Complete Blood Count (CBC)</h3>
+                <p class="card-subtitle">General Health</p>
+                <p class="card-location">Available at: 5 labs</p>
+                <p class="card-rating">Rating: 4.7 ★</p>
+                <p class="card-detail">Results in: 24 hours</p>
+                <p class="card-detail">Price: Rs. 1,200</p>
+                <button class="btn">Book Now</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Lipid Profile</h3>
+                <p class="card-subtitle">Cardiac Health</p>
+                <p class="card-location">Available at: 4 labs</p>
+                <p class="card-rating">Rating: 4.8 ★</p>
+                <p class="card-detail">Results in: 12 hours</p>
+                <p class="card-detail">Price: Rs. 1,800</p>
+                <button class="btn">Book Now</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">HbA1c</h3>
+                <p class="card-subtitle">Diabetes Management</p>
+                <p class="card-location">Available at: 3 labs</p>
+                <p class="card-rating">Rating: 4.9 ★</p>
+                <p class="card-detail">Results in: 48 hours</p>
+                <p class="card-detail">Price: Rs. 2,200</p>
+                <button class="btn">Book Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // This would change the content based on selected tab
+                if(this.textContent === 'Pharmacy') {
+                    document.querySelector('.section-title').textContent = 'Available Pharmacies (4)';
+                } else {
+                    document.querySelector('.section-title').textContent = 'Available Laboratories (3)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
