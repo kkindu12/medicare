@@ -1,0 +1,15 @@
+<div class="billing-container">
+  <h2>Billing Summary</h2>
+  <table>
+    <tr>
+      <th>Service</th>
+      <th>Cost</th>
+    </tr>
+    <tr *ngFor="let item of billingDetails?.items">
+      <td>{{ item.service }}</td>
+      <td>{{ item.amount | currency }}</td>
+    </tr>
+  </table>
+  <h3>Total: {{ totalAmount | currency }}</h3>
+  <button routerLink="/payment" class="btn btn-primary">Proceed to Payment</button>
+</div>
