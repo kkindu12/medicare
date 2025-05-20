@@ -7,7 +7,7 @@ import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angula
   selector: 'app-emr',
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './emr.component.html',
-  styleUrl: './emr.component.css'
+  styleUrl: './emr.component.scss'
 })
 export class EmrComponent implements OnInit {
   // Search and filter variables

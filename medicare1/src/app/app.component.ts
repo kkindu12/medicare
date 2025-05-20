@@ -7,7 +7,7 @@ import { EmrComponent } from "./emr/emr.component";
   standalone: true,
   imports: [RouterOutlet, EmrComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'emr';
