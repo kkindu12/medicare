@@ -42,7 +42,7 @@
   </div>
 
   <!-- Patient Records List -->
-  <div class="d-flex justify-content-between align-items-center mb-4 ">
+  <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="mb-3">Patient Records ({{ filteredRecords.length }})</h3>
     <div>
       <button class="btn btn-primary me-2" (click)="openAddRecordModal()">Add New Record</button> 
@@ -51,7 +51,7 @@
 
   <div class="row">
     <div class="col-md-4 mb-3" *ngFor="let record of filteredRecords">
-      <div class="card p-3">
+      <div class="card p-3" (click)="openPatientModal(record)" style="cursor: pointer;">
         <h5 class="card-title">{{ record.patientName }}</h5>
         <p class="card-text text-muted">
           Condition: {{ record.condition }}<br>
@@ -69,7 +69,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addRecordModalLabel">Add New Record</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
+          <button type="button" class="btn-close" (click)="close()"></button>
         </div>
         <div class="modal-body">
           <form [formGroup]="recordForm" (ngSubmit)="addRecord()">
@@ -111,6 +111,40 @@
         <!-- <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
         </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Patient Details Modal -->
+  <div class="modal fade" id="patientModal" tabindex="-1" aria-labelledby="patientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="patientModalLabel">Patient Details: {{ selectedPatient?.patientName }}</h5>
+          <button type="button" class="btn-close" (click)="close()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <h6>Prescription</h6>
+            <textarea class="form-control" rows="3" [(ngModel)]="selectedPatientPrescription" placeholder="Enter prescription details..."></textarea>
+          </div>
+          <div class="mb-3">
+            <h6>Reports</h6>
+            <div *ngIf="selectedPatient?.reports?.length > 0">
+              <ul class="list-group mb-3">
+                <li class="list-group-item" *ngFor="let report of selectedPatient.reports">{{ report }}</li>
+              </ul>
+            </div>
+            <div class="input-group">
+              <input type="text" class="form-control" [(ngModel)]="newReport" placeholder="Enter report name or description (e.g., Blood Test Report)">
+              <button class="btn btn-primary" (click)="addReport()">Add Report</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="savePatientDetails()">Save</button>
+          <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+        </div>
       </div>
     </div>
   </div>
