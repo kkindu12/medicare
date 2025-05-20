@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { NavbarComponent } from '../shared/navbar/navbar.component';
+import { CommonModule } from '@angular/common';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-home',
@@ -11,5 +11,5 @@ import { NavbarComponent } from '../shared/navbar/navbar.component';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  title = 'Medicare';
+  constructor() {}
 } 
