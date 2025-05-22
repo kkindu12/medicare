@@ -55,6 +55,8 @@ export class EmrComponent implements OnInit {
   newReportName: string = '';
   newReportType: string = 'Lab Test';
   showPreviousRecords: boolean = false;
+  showAddRecordModal: boolean = false; // New flag for Add Record modal
+  showPatientModal: boolean = false;   // New flag for Patient modal
 
   selectedPatient: Patient = {
     id: '',
@@ -190,6 +192,7 @@ export class EmrComponent implements OnInit {
       prescription: ''
     });
 
+    this.showAddRecordModal = true;
     const modal = document.getElementById('addRecordModal');
     if (modal) {
       modal.classList.add('show');
@@ -231,6 +234,7 @@ export class EmrComponent implements OnInit {
     this.newReportName = '';
     this.selectedFile = null;
     
+    this.showPatientModal = true;
     const modal = document.getElementById('patientModal');
     if (modal) {
       modal.classList.add('show');
@@ -380,6 +384,10 @@ export class EmrComponent implements OnInit {
   }
 
   close() {
+    this.showAddRecordModal = false;
+    this.showPatientModal = false;
+    this.showPreviousRecords = false;
+
     ['addRecordModal', 'patientModal', 'previousRecordsModal'].forEach(id => {
       const modal = document.getElementById(id);
       if (modal && modal.classList.contains('show')) {
