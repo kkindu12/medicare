@@ -12,14 +12,26 @@ interface Report {
   url?: string;
 }
 
+interface PatientRecord {
+  visitDate: string;
+  visitTime: string;
+  condition: string;
+  doctor: string;
+  prescription: string;
+  status: string;
+}
+
 interface Patient {
+  id: string;
   patientName: string;
   condition: string;
   doctor: string;
   lastVisit: string;
+  lastVisitTime: string;
   status: string;
   prescription: string;
   reports: Report[];
+  previousRecords: PatientRecord[];
 }
 
 @Component({
@@ -38,58 +50,76 @@ export class EmrComponent implements OnInit {
   recordForm: FormGroup;
   currentDate = new Date();
   printPrescriptionVisible = false;
-  selectedPatient: Patient | null = null;
   selectedPatientPrescription: string = '';
   selectedFile: File | null = null;
   newReportName: string = '';
   newReportType: string = 'Lab Test';
+  showPreviousRecords: boolean = false;
+
+  selectedPatient: Patient = {
+    id: '',
+    patientName: 'Loading...',
+    condition: '',
+    doctor: '',
+    lastVisit: '',
+    lastVisitTime: '',
+    status: '',
+    prescription: '',
+    reports: [],
+    previousRecords: []
+  };
 
   records: Patient[] = [
     { 
+      id: '1',
       patientName: 'John Doe', 
       condition: 'Diabetes', 
       doctor: 'Dr. Samantha Kumara', 
       lastVisit: '2025-04-15', 
+      lastVisitTime: '09:30',
       status: 'Stable', 
-      prescription: '', 
-      reports: [] 
+      prescription: 'Metformin 500mg twice daily', 
+      reports: [],
+      previousRecords: [
+        {
+          visitDate: '2025-03-10',
+          visitTime: '10:00',
+          condition: 'Diabetes Checkup',
+          doctor: 'Dr. Samantha Kumara',
+          prescription: 'Continue current medication',
+          status: 'Stable'
+        },
+        {
+          visitDate: '2025-02-05',
+          visitTime: '14:30',
+          condition: 'Routine Checkup',
+          doctor: 'Dr. Samantha Kumara',
+          prescription: 'Metformin 500mg once daily',
+          status: 'Stable'
+        }
+      ]
     },
     { 
+      id: '2',
       patientName: 'Jane Smith', 
       condition: 'Hypertension', 
       doctor: 'Dr. Piyal Kodikara', 
       lastVisit: '2025-03-10', 
+      lastVisitTime: '14:15',
       status: 'Critical', 
-      prescription: '', 
-      reports: [] 
-    },
-    { 
-      patientName: 'Emily Johnson', 
-      condition: 'Asthma', 
-      doctor: 'Dr. Sunil Jayathilake', 
-      lastVisit: '2025-02-20', 
-      status: 'Stable', 
-      prescription: '', 
-      reports: [] 
-    },
-    { 
-      patientName: 'Michael Brown', 
-      condition: 'Diabetes', 
-      doctor: 'Dr. Samantha Kumara', 
-      lastVisit: '2025-04-01', 
-      status: 'Stable', 
-      prescription: '', 
-      reports: [] 
-    },
-    { 
-      patientName: 'Sarah Davis', 
-      condition: 'Hypertension', 
-      doctor: 'Dr. Piyal Kodikara', 
-      lastVisit: '2025-03-25', 
-      status: 'Critical', 
-      prescription: '', 
-      reports: [] 
-    },
+      prescription: 'Lisinopril 10mg daily', 
+      reports: [],
+      previousRecords: [
+        {
+          visitDate: '2025-02-01',
+          visitTime: '11:00',
+          condition: 'Blood Pressure Check',
+          doctor: 'Dr. Piyal Kodikara',
+          prescription: 'Lisinopril 5mg daily',
+          status: 'Stable'
+        }
+      ]
+    }
   ];
 
   constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) private platformId: Object) {
@@ -98,10 +128,16 @@ export class EmrComponent implements OnInit {
       condition: ['', Validators.required],
       doctor: ['', Validators.required],
       lastVisit: ['', Validators.required],
+      lastVisitTime: [this.getCurrentTime(), Validators.required],
       status: ['', Validators.required],
       prescription: [''],
       reports: this.fb.array([])
     });
+  }
+
+  getCurrentTime(): string {
+    const now = new Date();
+    return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   }
 
   ngOnInit(): void {
@@ -140,9 +176,23 @@ export class EmrComponent implements OnInit {
   }
 
   openAddRecordModal() {
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTime = this.getCurrentTime();
+
+    this.recordForm.reset({
+      lastVisit: currentDate,
+      lastVisitTime: currentTime,
+      patientName: '',
+      condition: '',
+      doctor: '',
+      status: '',
+      prescription: ''
+    });
+
     const modal = document.getElementById('addRecordModal');
     if (modal) {
-      (modal as any).classList.add('show');
+      modal.classList.add('show');
       modal.style.display = 'block';
       document.body.classList.add('modal-open');
     }
@@ -150,12 +200,27 @@ export class EmrComponent implements OnInit {
 
   addRecord() {
     if (this.recordForm.valid) {
-      const newRecord: Patient = { 
-        ...this.recordForm.value,
-        reports: []
+      const formValue = this.recordForm.value;
+      
+      const newRecord: Patient = {
+        id: Date.now().toString(),
+        patientName: formValue.patientName,
+        condition: formValue.condition,
+        doctor: formValue.doctor,
+        lastVisit: formValue.lastVisit,
+        lastVisitTime: formValue.lastVisitTime,
+        status: formValue.status,
+        prescription: formValue.prescription,
+        reports: [],
+        previousRecords: []
       };
+      
       this.records.push(newRecord);
-      this.recordForm.reset();
+      
+      this.recordForm.reset({
+        lastVisitTime: this.getCurrentTime()
+      });
+      
       this.close();
     }
   }
@@ -168,7 +233,7 @@ export class EmrComponent implements OnInit {
     
     const modal = document.getElementById('patientModal');
     if (modal) {
-      (modal as any).classList.add('show');
+      modal.classList.add('show');
       modal.style.display = 'block';
       document.body.classList.add('modal-open');
     }
@@ -189,7 +254,6 @@ export class EmrComponent implements OnInit {
   }
 
   uploadReport() {
-    if (!this.selectedPatient) return;
     if (!this.newReportName?.trim()) {
       alert('Please enter a report name');
       return;
@@ -219,15 +283,14 @@ export class EmrComponent implements OnInit {
   }
 
   viewReport(report: Report) {
-    if (report?.url) {
-      window.open(report.url, '_blank');
-    } else {
+    if (!report?.url) {
       alert('Unable to preview this report');
+      return;
     }
+    window.open(report.url, '_blank');
   }
 
   deleteReport(index: number) {
-    if (!this.selectedPatient) return;
     if (confirm('Are you sure you want to delete this report?')) {
       this.selectedPatient.reports.splice(index, 1);
     }
@@ -238,7 +301,6 @@ export class EmrComponent implements OnInit {
       alert('Please add prescription details before printing');
       return;
     }
-    if (!this.selectedPatient) return;
     
     const printWindow = window.open('', '_blank');
     if (printWindow) {
@@ -257,7 +319,7 @@ export class EmrComponent implements OnInit {
           <body>
             <div class="header">
               <h2>Medical Prescription</h2>
-              <p>Date: ${new Date().toLocaleDateString()}</p>
+              <p>Date: ${this.selectedPatient.lastVisit} at ${this.selectedPatient.lastVisitTime}</p>
             </div>
             <div class="patient-info">
               <p><strong>Patient:</strong> ${this.selectedPatient.patientName}</p>
@@ -279,32 +341,52 @@ export class EmrComponent implements OnInit {
     }
   }
 
-  emailPrescription() {
-    if (!this.selectedPatientPrescription?.trim()) {
-      alert('Please add prescription details before emailing');
-      return;
-    }
-    if (!this.selectedPatient) return;
-    
-    alert(`Prescription for ${this.selectedPatient.patientName} would be emailed here.`);
-  }
-
   savePatientDetails() {
-    if (!this.selectedPatient) return;
+    const currentRecord: PatientRecord = {
+      visitDate: this.selectedPatient.lastVisit,
+      visitTime: this.selectedPatient.lastVisitTime,
+      condition: this.selectedPatient.condition,
+      doctor: this.selectedPatient.doctor,
+      prescription: this.selectedPatient.prescription,
+      status: this.selectedPatient.status
+    };
     
+    this.selectedPatient.previousRecords.unshift(currentRecord);
     this.selectedPatient.prescription = this.selectedPatientPrescription;
     this.close();
     alert('Patient details saved successfully');
   }
 
+  togglePreviousRecords(patient: Patient) {
+    this.selectedPatient = patient;
+    this.showPreviousRecords = true;
+    
+    const modal = document.getElementById('previousRecordsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  closePreviousRecords() {
+    this.showPreviousRecords = false;
+    const modal = document.getElementById('previousRecordsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    }
+  }
+
   close() {
-    ['addRecordModal', 'patientModal'].forEach(id => {
+    ['addRecordModal', 'patientModal', 'previousRecordsModal'].forEach(id => {
       const modal = document.getElementById(id);
-      if (modal && (modal as any).classList.contains('show')) {
-        (modal as any).classList.remove('show');
+      if (modal && modal.classList.contains('show')) {
+        modal.classList.remove('show');
         modal.style.display = 'none';
-        document.body.classList.remove('modal-open');
       }
     });
+    document.body.classList.remove('modal-open');
   }
 }

@@ -51,14 +51,70 @@
 
   <div class="row">
     <div class="col-md-4 mb-3" *ngFor="let record of filteredRecords">
-      <div class="card p-3" (click)="openPatientModal(record)" style="cursor: pointer;">
+      <div class="card p-3">
         <h5 class="card-title">{{ record.patientName }}</h5>
         <p class="card-text text-muted">
           Condition: {{ record.condition }}<br>
           Doctor: {{ record.doctor }}<br>
-          Last Visit: {{ record.lastVisit }}<br>
+          Last Visit: {{ record.lastVisit }} at {{ record.lastVisitTime }}<br>
           Status: <span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span>
         </p>
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-outline-primary btn-sm" (click)="openPatientModal(record)">
+            <i class="bi bi-pencil"></i> Edit
+          </button>
+          <button class="btn btn-outline-info btn-sm" (click)="togglePreviousRecords(record)">
+            <i class="bi bi-clock-history"></i> View History
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Previous Records Modal -->
+  <div class="modal fade" id="previousRecordsModal" tabindex="-1" aria-labelledby="previousRecordsModalLabel" aria-hidden="true" [class.show]="showPreviousRecords" [style.display]="showPreviousRecords ? 'block' : 'none'">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="previousRecordsModalLabel">
+            Medical History: {{selectedPatient.patientName}}
+          </h5>
+          <button type="button" class="btn-close" (click)="closePreviousRecords()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="selectedPatient.previousRecords.length > 0">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Condition</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                    <th>Prescription</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let record of selectedPatient.previousRecords">
+                    <td>{{record.visitDate}}</td>
+                    <td>{{record.visitTime}}</td>
+                    <td>{{record.condition}}</td>
+                    <td>{{record.doctor}}</td>
+                    <td><span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span></td>
+                    <td>{{record.prescription}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div *ngIf="selectedPatient.previousRecords.length === 0">
+            <p class="text-muted">No previous records found for this patient.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closePreviousRecords()">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -94,8 +150,14 @@
               </select>
             </div>
             <div class="mb-3">
-              <label for="lastVisit" class="form-label">Last Visit</label>
+              <label for="lastVisit" class="form-label">Visit Date</label>
               <input type="date" class="form-control" id="lastVisit" formControlName="lastVisit" required>
+            </div>
+            <div class="mb-3">
+              <label for="lastVisitTime" class="form-label">Visit Time</label>
+              <input type="time" class="form-control" id="lastVisitTime" 
+                     formControlName="lastVisitTime" required
+                     [value]="recordForm.get('lastVisitTime')?.value">
             </div>
             <div class="mb-3">
               <label for="status" class="form-label">Status</label>
@@ -104,7 +166,6 @@
                 <option value="Critical">Critical</option>
               </select>
             </div>
-            <!-- Prescription Section -->
             <div class="mb-4">
               <h6 class="border-bottom pb-2">Prescription</h6>
               <div class="mb-3">
@@ -125,16 +186,14 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="patientModalLabel">Patient Details: {{ selectedPatient?.patientName || 'Loading...' }}</h5>
+          <h5 class="modal-title" id="patientModalLabel">Patient Details: {{ selectedPatient.patientName }}</h5>
           <button type="button" class="btn-close" (click)="close()"></button>
         </div>
         <div class="modal-body">
-          <!-- Reports Section -->
           <div class="mb-4">
             <h6 class="border-bottom pb-2">Reports</h6>
             
-            <!-- Uploaded Reports List -->
-            <div *ngIf="selectedPatient && selectedPatient.reports.length > 0" class="mb-3">
+            <div *ngIf="selectedPatient.reports.length > 0" class="mb-3">
               <h6 class="small text-muted">Uploaded Reports</h6>
               <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center" 
@@ -156,7 +215,6 @@
               </ul>
             </div>
             
-            <!-- Upload New Report -->
             <div class="card p-3 border-dashed">
               <h6 class="small text-muted">Upload New Report</h6>
               
@@ -201,3 +259,6 @@
     </div>
   </div>
 </div>
+
+<!-- Modal backdrop -->
+<div *ngIf="showPreviousRecords" class="modal-backdrop fade show"></div>
