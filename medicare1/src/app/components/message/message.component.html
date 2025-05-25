@@ -1,0 +1,26 @@
+<p>message works!</p>
+<div 
+      class="message-container" 
+      [ngClass]="{
+        'user-message': message.type === messageType.USER,
+        'bot-message': message.type === messageType.BOT
+      }"
+    >
+      <div class="message-content">
+        <div class="message-text">{{ message.text }}</div>
+        <div class="message-time">{{ message.timestamp | date:'shortTime' }}</div>
+      </div>
+      
+      @if (message.options && message.options.length > 0) {
+        <div class="message-options">
+          @for (option of message.options; track option) {
+            <button 
+              class="option-button" 
+              (click)="onOptionSelected(option)"
+            >
+              {{ option }}
+            </button>
+          }
+        </div>
+      }
+    </div>
