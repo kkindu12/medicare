@@ -1,3 +1,5 @@
+
+# This code is part of a FastAPI application that serves as a health assistant bot.
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -5,6 +7,12 @@ from typing import List, Optional
 import json
 import random
 from datetime import datetime
+
+#  This code is part of a FastAPI application that serves as a chat bot to patients and doctors.
+from typing import List, Optional
+import json
+from datetime import datetime
+import base64
 
 app = FastAPI(title="HealthBot API")
 
@@ -121,3 +129,81 @@ def chat(request: MessageRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    app = FastAPI(title="Healthcare Chat API")
+
+# # Configure CORS
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+# class Doctor(BaseModel):
+#     id: str
+#     name: str
+#     specialty: str
+#     image: str
+#     status: str = "online"
+
+# class Message(BaseModel):
+#     id: str
+#     sender_id: str
+#     receiver_id: str
+#     content: str
+#     timestamp: datetime
+#     image_url: Optional[str] = None
+
+# # Sample data - In production, use a database
+# doctors = [
+#     Doctor(
+#         id="1",
+#         name="Dr. Sarah Johnson",
+#         specialty="Cardiologist",
+#         image="https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg",
+#         status="online"
+#     ),
+#     Doctor(
+#         id="2",
+#         name="Dr. Michael Chen",
+#         specialty="Dermatologist",
+#         image="https://images.pexels.com/photos/5452291/pexels-photo-5452291.jpeg",
+#         status="online"
+#     ),
+#     Doctor(
+#         id="3",
+#         name="Dr. Emily Brown",
+#         specialty="Pediatrician",
+#         image="https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg",
+#         status="offline"
+#     )
+# ]
+
+# messages = []
+
+# @app.get("/doctors")
+# async def get_doctors():
+#     return doctors
+
+# @app.get("/messages/{user_id}/{doctor_id}")
+# async def get_messages(user_id: str, doctor_id: str):
+#     chat_messages = [
+#         msg for msg in messages 
+#         if (msg.sender_id == user_id and msg.receiver_id == doctor_id) or 
+#            (msg.sender_id == doctor_id and msg.receiver_id == user_id)
+#     ]
+#     return chat_messages
+
+# @app.post("/messages")
+# async def send_message(message: Message):
+#     messages.append(message)
+#     return message
+
+# @app.post("/upload-image")
+# async def upload_image(file: UploadFile = File(...)):
+#     # In production, save to cloud storage and return URL
+#     contents = await file.read()
+#     base64_image = base64.b64encode(contents).decode()
+#     return {"image_url": f"data:{file.content_type};base64,{base64_image}"}

@@ -8,6 +8,9 @@ import { Message, MessageType } from '../models/message.model';
   providedIn: 'root'
 })
 export class ChatService {
+  getDoctors() {
+    throw new Error('Method not implemented.');
+  }
   private readonly API_URL = 'http://localhost:8000';
   private messagesSubject = new BehaviorSubject<Message[]>([]);
   public messages$ = this.messagesSubject.asObservable();

@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { PrescriptionFormComponent } from './prescription-form/prescription-form.component';
-import { ChatPageComponent } from './chat-page/chat-page.component';
-import { AIDrivenPageComponent } from './ai-driven-page/ai-driven-page.component';
+
 import { HeaderComponent } from './components/header/header.component';
-import { ChatComponent } from './components/chat/chat.component';
+import { DoctorListComponent } from "./components/doctor-list/doctor-list.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,PrescriptionFormComponent,ChatPageComponent,AIDrivenPageComponent,HeaderComponent,ChatComponent],
+  standalone: true,
+  imports: [RouterOutlet, PrescriptionFormComponent, HeaderComponent, DoctorListComponent],
+  // need to be import
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -16,5 +17,7 @@ export class AppComponent {
   // title = 'medicare1';
   title = 'HealthBot';
 }
+
+
 
 
