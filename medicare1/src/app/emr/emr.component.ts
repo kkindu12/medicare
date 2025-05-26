@@ -1,15 +1,17 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { MedicalRecordsService } from './services/medical-records.service';
 
 interface Report {
   name: string;
   type: string;
   date: string;
-  fileType: string;
-  file?: File;
-  url?: string;
+  file_id?: string;
+  fileType?: string;
+  description?: string;
 }
 
 interface PatientRecord {
@@ -37,7 +39,7 @@ interface Patient {
 @Component({
   selector: 'app-emr',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './emr.component.html',
   styleUrl: './emr.component.scss'
 })
@@ -55,8 +57,10 @@ export class EmrComponent implements OnInit {
   newReportName: string = '';
   newReportType: string = 'Lab Test';
   showPreviousRecords: boolean = false;
-  showAddRecordModal: boolean = false; // New flag for Add Record modal
-  showPatientModal: boolean = false;   // New flag for Patient modal
+  showAddRecordModal: boolean = false;
+  showPatientModal: boolean = false;
+  isEditMode: boolean = false;
+  reportNames: string[] = [];
 
   selectedPatient: Patient = {
     id: '',
@@ -71,60 +75,14 @@ export class EmrComponent implements OnInit {
     previousRecords: []
   };
 
-  records: Patient[] = [
-    { 
-      id: '1',
-      patientName: 'John Doe', 
-      condition: 'Diabetes', 
-      doctor: 'Dr. Samantha Kumara', 
-      lastVisit: '2025-04-15', 
-      lastVisitTime: '09:30',
-      status: 'Stable', 
-      prescription: 'Metformin 500mg twice daily', 
-      reports: [],
-      previousRecords: [
-        {
-          visitDate: '2025-03-10',
-          visitTime: '10:00',
-          condition: 'Diabetes Checkup',
-          doctor: 'Dr. Samantha Kumara',
-          prescription: 'Continue current medication',
-          status: 'Stable'
-        },
-        {
-          visitDate: '2025-02-05',
-          visitTime: '14:30',
-          condition: 'Routine Checkup',
-          doctor: 'Dr. Samantha Kumara',
-          prescription: 'Metformin 500mg once daily',
-          status: 'Stable'
-        }
-      ]
-    },
-    { 
-      id: '2',
-      patientName: 'Jane Smith', 
-      condition: 'Hypertension', 
-      doctor: 'Dr. Piyal Kodikara', 
-      lastVisit: '2025-03-10', 
-      lastVisitTime: '14:15',
-      status: 'Critical', 
-      prescription: 'Lisinopril 10mg daily', 
-      reports: [],
-      previousRecords: [
-        {
-          visitDate: '2025-02-01',
-          visitTime: '11:00',
-          condition: 'Blood Pressure Check',
-          doctor: 'Dr. Piyal Kodikara',
-          prescription: 'Lisinopril 5mg daily',
-          status: 'Stable'
-        }
-      ]
-    }
-  ];
+  records: Patient[] = [];
 
-  constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private medicalRecordsService: MedicalRecordsService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.recordForm = this.fb.group({
       patientName: ['', Validators.required],
       condition: ['', Validators.required],
@@ -133,7 +91,6 @@ export class EmrComponent implements OnInit {
       lastVisitTime: [this.getCurrentTime(), Validators.required],
       status: ['', Validators.required],
       prescription: [''],
-      reports: this.fb.array([])
     });
   }
 
@@ -151,7 +108,22 @@ export class EmrComponent implements OnInit {
         link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css';
         document.head.appendChild(link);
       }
+      this.loadPatients();
     }
+    console.log('EMR Component initialized');
+    console.log(this.medicalRecordsService.getPatientRecords());
+  }
+
+  loadPatients() {
+    this.http.get<Patient[]>('http://localhost:8000/api/patients').subscribe({
+      next: (patients) => {
+        this.records = patients;
+      },
+      error: (err) => {
+        console.error('Error loading patients:', err);
+        alert('Failed to load patients');
+      }
+    });
   }
 
   get filteredRecords() {
@@ -192,6 +164,11 @@ export class EmrComponent implements OnInit {
       prescription: ''
     });
 
+    // Ensure fields are enabled in add mode
+    this.isEditMode = false;
+    this.recordForm.get('doctor')?.enable();
+    this.recordForm.get('prescription')?.enable();
+
     this.showAddRecordModal = true;
     const modal = document.getElementById('addRecordModal');
     if (modal) {
@@ -201,30 +178,102 @@ export class EmrComponent implements OnInit {
     }
   }
 
+  onSubmit(event: Event) {
+    event.preventDefault(); // prevent default form submission
+
+    if (this.selectedFile) {
+      this.uploadFileToServer(this.selectedFile);
+    }
+  }
+
+  uploadFileToServer(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http.post('http://localhost:8000/api/patients/upload-to-dropbox', formData).subscribe({
+      next: (res) => alert('Upload success'),
+      error: (err) => alert('Upload failed')
+    });
+  }
+
   addRecord() {
     if (this.recordForm.valid) {
-      const formValue = this.recordForm.value;
-      
-      const newRecord: Patient = {
-        id: Date.now().toString(),
-        patientName: formValue.patientName,
-        condition: formValue.condition,
-        doctor: formValue.doctor,
-        lastVisit: formValue.lastVisit,
-        lastVisitTime: formValue.lastVisitTime,
-        status: formValue.status,
-        prescription: formValue.prescription,
-        reports: [],
-        previousRecords: []
-      };
-      
-      this.records.push(newRecord);
-      
-      this.recordForm.reset({
-        lastVisitTime: this.getCurrentTime()
-      });
-      
-      this.close();
+      const formValue = this.recordForm.getRawValue(); // Use getRawValue to include disabled fields
+      if (this.isEditMode) {
+        // Update existing record
+        this.http.put<Patient>(
+          `http://localhost:8000/api/patients/${this.selectedPatient.id}`,
+          formValue
+        ).subscribe({
+          next: (updatedPatient) => {
+            const index = this.records.findIndex(record => record.id === updatedPatient.id);
+            if (index !== -1) {
+              this.records[index] = updatedPatient;
+            }
+            this.recordForm.reset({
+              lastVisitTime: this.getCurrentTime()
+            });
+            this.close();
+            alert('Record updated successfully');
+          },
+          error: (err) => {
+            console.error('Error updating patient:', err);
+            alert('Failed to update patient');
+          }
+        });
+      } else {
+        // Add new record
+        this.http.post<Patient>('http://localhost:8000/api/patients', formValue).subscribe({
+          next: (newPatient) => {
+            this.records.push(newPatient);
+            this.recordForm.reset({
+              lastVisitTime: this.getCurrentTime()
+            });
+            this.close();
+            alert('Record added successfully');
+          },
+          error: (err) => {
+            console.error('Error adding patient:', err);
+            alert('Failed to add patient');
+          }
+        });
+      }
+    }
+  }
+
+  editRecordModal(record: Patient) {
+    this.selectedPatient = record;
+
+    // Pre-fill the form with patient data
+    this.recordForm.patchValue({
+      patientName: record.patientName,
+      condition: record.condition,
+      doctor: record.doctor,
+      lastVisit: record.lastVisit,
+      lastVisitTime: record.lastVisitTime,
+      status: record.status,
+      prescription: record.prescription
+    });
+
+    // Set edit mode flag
+    this.isEditMode = true;
+
+    // Disable doctor and prescription fields in edit mode
+    if (this.isEditMode) {
+      this.recordForm.get('doctor')?.disable();
+      this.recordForm.get('prescription')?.disable();
+    } else {
+      this.recordForm.get('doctor')?.enable();
+      this.recordForm.get('prescription')?.enable();
+    }
+
+    // Show the modal
+    this.showAddRecordModal = true;
+    const modal = document.getElementById('addRecordModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      document.body.classList.add('modal-open');
     }
   }
 
@@ -235,6 +284,16 @@ export class EmrComponent implements OnInit {
     this.selectedFile = null;
     
     this.showPatientModal = true;
+    this.http.get<string[]>(`http://localhost:8000/api/patients/getPatientRecords/${this.selectedPatient.id}`)
+    .subscribe({
+      next: (data: string[]) => {
+        this.reportNames = data;  
+        console.log('Report names:', this.reportNames);
+      },
+      error: (err) => {
+        console.error('Failed to load report names:', err);
+      }
+    });
     const modal = document.getElementById('patientModal');
     if (modal) {
       modal.classList.add('show');
@@ -267,36 +326,69 @@ export class EmrComponent implements OnInit {
       return;
     }
     
-    const currentDate = new Date();
-    const report: Report = {
-      name: this.newReportName.trim(),
-      type: this.newReportType,
-      date: currentDate.toISOString().split('T')[0],
-      fileType: 'pdf',
-      file: this.selectedFile,
-      url: URL.createObjectURL(this.selectedFile)
-    };
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+    formData.append('name', this.newReportName.trim());
+    formData.append('type', this.newReportType);
+    if (this.newReportName) {
+      formData.append('description', this.newReportName);
+    }
     
-    this.selectedPatient.reports.push(report);
-    this.newReportName = '';
-    this.selectedFile = null;
-    const fileInput = document.getElementById('reportFile') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-    
-    alert('Report uploaded successfully');
+    this.http.post<Report>(
+      `http://localhost:8000/api/patients/${this.selectedPatient.id}/reports`,
+      formData
+    ).subscribe({
+      next: (report) => {
+        this.selectedPatient.reports.push(report);
+        this.newReportName = '';
+        this.selectedFile = null;
+        const fileInput = document.getElementById('reportFile') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        alert('Report uploaded successfully');
+      },
+      error: (err) => {
+        console.error('Error uploading report:', err);
+        alert('Failed to upload report');
+      }
+    });
   }
 
   viewReport(report: Report) {
-    if (!report?.url) {
+    if (!report.file_id) {
       alert('Unable to preview this report');
       return;
     }
-    window.open(report.url, '_blank');
+    this.http.get(`http://localhost:8000/api/patients/${this.selectedPatient.id}/reports/${report.file_id}`, {
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      },
+      error: (err) => {
+        console.error('Error viewing report:', err);
+        alert('Unable to preview this report');
+      }
+    });
   }
 
   deleteReport(index: number) {
+    const report = this.selectedPatient.reports[index];
+    if (!report.file_id) {
+      alert('No file ID associated with this report');
+      return;
+    }
     if (confirm('Are you sure you want to delete this report?')) {
-      this.selectedPatient.reports.splice(index, 1);
+      this.http.delete(`http://localhost:8000/api/patients/${this.selectedPatient.id}/reports/${report.file_id}`).subscribe({
+        next: () => {
+          this.selectedPatient.reports.splice(index, 1);
+          alert('Report deleted successfully');
+        },
+        error: (err) => {
+          console.error('Error deleting report:', err);
+          alert('Failed to delete report');
+        }
+      });
     }
   }
 
@@ -346,19 +438,40 @@ export class EmrComponent implements OnInit {
   }
 
   savePatientDetails() {
-    const currentRecord: PatientRecord = {
-      visitDate: this.selectedPatient.lastVisit,
-      visitTime: this.selectedPatient.lastVisitTime,
+    const updateData: any = {
+      patientName: this.selectedPatient.patientName,
       condition: this.selectedPatient.condition,
       doctor: this.selectedPatient.doctor,
-      prescription: this.selectedPatient.prescription,
-      status: this.selectedPatient.status
+      lastVisit: this.selectedPatient.lastVisit,
+      lastVisitTime: this.selectedPatient.lastVisitTime,
+      status: this.selectedPatient.status,
+      prescription: this.selectedPatientPrescription
     };
     
-    this.selectedPatient.previousRecords.unshift(currentRecord);
-    this.selectedPatient.prescription = this.selectedPatientPrescription;
-    this.close();
-    alert('Patient details saved successfully');
+    this.http.put<Patient>(
+      `http://localhost:8000/api/patients/${this.selectedPatient.id}`,
+      updateData
+    ).subscribe({
+      next: (updatedPatient) => {
+        const currentRecord: PatientRecord = {
+          visitDate: this.selectedPatient.lastVisit,
+          visitTime: this.selectedPatient.lastVisitTime,
+          condition: this.selectedPatient.condition,
+          doctor: this.selectedPatient.doctor,
+          prescription: this.selectedPatient.prescription,
+          status: this.selectedPatient.status
+        };
+        
+        this.selectedPatient.previousRecords.unshift(currentRecord);
+        this.selectedPatient = updatedPatient;
+        this.close();
+        alert('Patient details saved successfully');
+      },
+      error: (err) => {
+        console.error('Error saving patient details:', err);
+        alert('Failed to save patient details');
+      }
+    });
   }
 
   togglePreviousRecords(patient: Patient) {
@@ -396,5 +509,11 @@ export class EmrComponent implements OnInit {
       }
     });
     document.body.classList.remove('modal-open');
+  }
+
+  viewReportByPatient(reportPath: string) {
+    const dropboxBaseUrl = 'https://www.dropbox.com/home/Apps/medicare_capstone/'; 
+    const fullUrl = `${dropboxBaseUrl}medicare_uploads/${this.selectedPatient.id}/${reportPath}?raw=1`;
+    window.open(fullUrl, '_blank');
   }
 }
