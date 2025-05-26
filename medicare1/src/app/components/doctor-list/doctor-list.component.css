@@ -120,3 +120,67 @@ border-radius: 100%;
     
 }
 
+/* Responsive styles for doctor list page */
+
+@media (max-width: 900px) {
+  .doctors-list {
+    flex-direction: column;
+    align-items: center;
+  }
+  .container {
+    max-width: 60%;
+    padding: 0 10px;
+  }
+  .card {
+    width: 95%;
+    margin-bottom: 24px;
+  }
+  .doctors-list img {
+    height: 150px;
+    width: 150px;
+  }
+}
+
+
+@media (max-width: 1280px) {
+  .doctors-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    align-items: center;
+  }
+  .container {
+    max-width: 60%;
+    padding: 0 10px;
+  }
+  .card {
+    width: 90%;
+    margin-bottom: 24px;
+  }
+  .doctors-list img {
+    height: 150px;
+    width: 150px;
+  }
+  .stats {
+    width: 100%;
+    font-size: 16px;
+  }
+}
+@media (max-width: 600px) {
+  
+  .card {
+    width: 40%;
+    padding: 5px;
+  }
+  .doctors-list img {
+    height: 100px;
+    width: 100px;
+    
+  }
+  .stats {
+    width: 70%;
+    gap: 10px;
+    font-size: 12px;
+  }
+}

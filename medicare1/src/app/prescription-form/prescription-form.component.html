@@ -1,1 +1,37 @@
-<p>prescription-form works!</p>
+
+ <header class="header">
+      <div class="container">
+        <div class="logo-container">
+          <div class="logo">
+            <i class="bi bi-heart-pulse"></i>
+            <span class="logo-text">Prescription Form</span>
+          </div>
+          <div class="tagline">Your Can Download Your Prescription.</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="form-container">
+  <h2>Prescription Form</h2>
+  <form >
+    <label>Patient ID</label>
+    <input type="text" formControlName="patientid" placeholder="Enter Patient ID" />
+
+    <label>Date</label>
+    <input type="date" formControlName="date" />
+
+    <label>Medicine Name</label>
+    <input type="text" formControlName="medicineName" placeholder="Enter medicine name" />
+
+    <label>Dosage</label>
+    <input type="text" formControlName="dosage" placeholder="Enter dosage" />
+
+    <label>Frequency</label>
+    <input type="text" formControlName="frequency" placeholder="Enter frequency" />
+
+    <label>Instructions</label>
+    <textarea formControlName="instructions" placeholder="Enter any special instructions"></textarea>
+
+    <button type="submit">Submit Prescription</button>
+  </form>
+</div>

@@ -4,11 +4,12 @@ import { PrescriptionFormComponent } from './prescription-form/prescription-form
 
 import { HeaderComponent } from './components/header/header.component';
 import { DoctorListComponent } from "./components/doctor-list/doctor-list.component";
+import { ChatPageComponent } from "./components/chat-page/chat-page.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, PrescriptionFormComponent, HeaderComponent, DoctorListComponent],
+  imports: [RouterOutlet, PrescriptionFormComponent, HeaderComponent, DoctorListComponent, ChatPageComponent],
   // need to be import
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
