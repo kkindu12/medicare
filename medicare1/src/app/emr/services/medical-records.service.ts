@@ -9,15 +9,15 @@ export class MedicalRecordsService {
   constructor(private http: HttpClient) {}
 
   getPatientRecords() {
-    return this.http.get(`${this.apiUrl}/patients`);
+    return this.http.get(`${this.apiUrl}/api/patients`);
   }
 
   addPatientRecord(PatientRecord: PatientRecord) {
-    return this.http.post(`${this.apiUrl}/patients`, PatientRecord);
+    return this.http.post(`${this.apiUrl}/api/patients`, PatientRecord);
   }
 
   updatePatientRecord(id: number, patientRecord: PatientRecord) {
-    return this.http.put(`${this.apiUrl}/patients/${id}`, patientRecord);
+    return this.http.put(`${this.apiUrl}/api/patients/${id}`, patientRecord);
   }
 
   getPatientReportsById(id: string) {
