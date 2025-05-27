@@ -1,7 +1,10 @@
 from pymongo import MongoClient
 import certifi
+from dotenv import load_dotenv
+import os
 
-MONGODB_URI = "mongodb+srv://kaveeshashaminda01:E92RwdciHLwhTjvp@aisacluster.pfqkjtv.mongodb.net/?retryWrites=true&w=majority&appName=AisaCluster"
+load_dotenv()
+MONGODB_URI = os.getenv("MONGODB_URI")
 
 try:
     client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
