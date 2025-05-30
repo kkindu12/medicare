@@ -8,10 +8,12 @@
       z-index: 100;
     }
     
-    .container {
+    .container2 {
       padding: 0 var(--spacing-md);
       max-width: 1200px;
       margin: 0 auto;
+      
+      
     }
     
     .logo-container {
@@ -169,9 +171,28 @@ padding: 2px;
       margin-top: 10px;
       margin-right: 10px;
     }
+    .chat-form a {
+        text-decoration: none;
+        color: #1731d9;
+        font-weight: bold;
+        margin-right: 10px; 
+        font-size: 18px;
+        margin-top: 10px;
+    }
+    .chat-form a:hover {
+        color: #4975d3;
+       
+        transition: color 0.3s ease-in-out; 
+        box-shadow: 0  0 20px #777474;
+        border-radius: 5px;
+        Cursor: pointer;
+        
+    }   
     .chat-form button:hover{
         background-color: #4975d3;
         transition: background-color 0.3s ease-in-out;
+        border: #9c9b9b 0.6px solid;
+       
     }
     .chat-interface{
         display: flex;

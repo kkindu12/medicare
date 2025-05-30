@@ -15,23 +15,30 @@
   <h2>Prescription Form</h2>
   <form >
     <label>Patient ID</label>
-    <input type="text" formControlName="patientid" placeholder="Enter Patient ID" />
+    <input type="text" formControlName="patientid" placeholder="Enter Patient ID" required />
+    
+    <label>Medicine Name</label>
+    <input type="text" formControlName="doctorName" placeholder="Enter Doctor name" required />
 
     <label>Date</label>
-    <input type="date" formControlName="date" />
+    <input type="date" formControlName="date"  required/>
 
     <label>Medicine Name</label>
-    <input type="text" formControlName="medicineName" placeholder="Enter medicine name" />
+    <input type="text" formControlName="medicineName" placeholder="Enter medicine name" required />
 
     <label>Dosage</label>
-    <input type="text" formControlName="dosage" placeholder="Enter dosage" />
+    <input type="text" formControlName="dosage" placeholder="Enter dosage" required/>
 
     <label>Frequency</label>
-    <input type="text" formControlName="frequency" placeholder="Enter frequency" />
+    <input type="text" formControlName="frequency" placeholder="Enter frequency"  required/>
 
     <label>Instructions</label>
     <textarea formControlName="instructions" placeholder="Enter any special instructions"></textarea>
 
-    <button type="submit">Submit Prescription</button>
+    <button (click)="clickSubmit()" type="submit">Submit Prescription</button>
+     placeholder="Type your message..." />
   </form>
+  
+
+  
 </div>

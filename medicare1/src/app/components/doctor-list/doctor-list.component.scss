@@ -9,6 +9,14 @@
     }
     
     .container {
+      display: flex;
+
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+
+
       padding: 0 var(--spacing-md);
       max-width: 1200px;
       margin: 0 auto;
@@ -62,9 +70,8 @@
   width: 400px;
   border: none;
   border-radius: 10px;
-  
-    
   background-color: #fff;
+  flex-direction: column;
 }
 
 
@@ -103,7 +110,7 @@ margin-left: 10px;
 }
 .doctors-list{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 .doctors-list img{
 height: 200px;

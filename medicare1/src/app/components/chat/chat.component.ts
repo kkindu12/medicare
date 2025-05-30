@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
 import { Message, MessageType } from '../models/message.model';
 import { MessageComponent } from '../message/message.component';
+import { ChatPageComponent } from '../chat-page/chat-page.component';
 
 @Component({
   selector: 'app-chat',
-  standalone: true, // Add this for standalone components
-  imports: [CommonModule, FormsModule, MessageComponent],
+  standalone: true, 
+  imports: [CommonModule, FormsModule, MessageComponent,ChatPageComponent], 
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css'], // Correct property name is styleUrls (array)
+  styleUrls: ['./chat.component.scss'], 
   providers: [ChatService]
 })
 export class ChatComponent implements OnInit, AfterViewChecked { // Implement interfaces
