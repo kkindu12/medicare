@@ -3,9 +3,10 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { MedicalRecordsService } from './services/medical-records.service';
+import { MedicalRecordsService } from '../services/medicalRecordService/medical-records.service'
+import { PatientService } from '../services/patientService/patient.service';
 
-interface Report {
+export interface Report {
   name: string;
   type: string;
   date: string;
@@ -23,7 +24,7 @@ interface PatientRecord {
   status: string;
 }
 
-interface Patient {
+export interface Patient {
   id: string;
   patientName: string;
   condition: string;
@@ -81,6 +82,7 @@ export class EmrComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private medicalRecordsService: MedicalRecordsService,
+    private patiendService: PatientService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.recordForm = this.fb.group({
@@ -115,7 +117,7 @@ export class EmrComponent implements OnInit {
   }
 
   loadPatients() {
-    this.http.get<Patient[]>('http://localhost:8000/api/patients').subscribe({
+    this.patiendService.getPatients().subscribe({
       next: (patients) => {
         this.records = patients;
       },
@@ -190,7 +192,7 @@ export class EmrComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    this.http.post('http://localhost:8000/api/patients/upload-to-dropbox', formData).subscribe({
+    this.medicalRecordsService.uploadMedicalRecordPDFs(formData).subscribe({
       next: (res) => alert('Upload success'),
       error: (err) => alert('Upload failed')
     });
@@ -201,10 +203,7 @@ export class EmrComponent implements OnInit {
       const formValue = this.recordForm.getRawValue(); // Use getRawValue to include disabled fields
       if (this.isEditMode) {
         // Update existing record
-        this.http.put<Patient>(
-          `http://localhost:8000/api/patients/${this.selectedPatient.id}`,
-          formValue
-        ).subscribe({
+        this.patiendService.updatePatient(this.selectedPatient.id, formValue).subscribe({
           next: (updatedPatient) => {
             const index = this.records.findIndex(record => record.id === updatedPatient.id);
             if (index !== -1) {
@@ -223,7 +222,7 @@ export class EmrComponent implements OnInit {
         });
       } else {
         // Add new record
-        this.http.post<Patient>('http://localhost:8000/api/patients', formValue).subscribe({
+        this.patiendService.addPatient(formValue).subscribe({
           next: (newPatient) => {
             this.records.push(newPatient);
             this.recordForm.reset({
@@ -284,7 +283,7 @@ export class EmrComponent implements OnInit {
     this.selectedFile = null;
     
     this.showPatientModal = true;
-    this.http.get<string[]>(`http://localhost:8000/api/patients/getPatientRecords/${this.selectedPatient.id}`)
+    this.patiendService.getPatientRecordNames(this.selectedPatient.id)
     .subscribe({
       next: (data: string[]) => {
         this.reportNames = data;  
@@ -334,10 +333,7 @@ export class EmrComponent implements OnInit {
       formData.append('description', this.newReportName);
     }
     
-    this.http.post<Report>(
-      `http://localhost:8000/api/patients/${this.selectedPatient.id}/reports`,
-      formData
-    ).subscribe({
+    this.medicalRecordsService.addPatientRecordById(this.selectedPatient.id, formData).subscribe({
       next: (report) => {
         this.selectedPatient.reports.push(report);
         this.newReportName = '';
@@ -358,9 +354,7 @@ export class EmrComponent implements OnInit {
       alert('Unable to preview this report');
       return;
     }
-    this.http.get(`http://localhost:8000/api/patients/${this.selectedPatient.id}/reports/${report.file_id}`, {
-      responseType: 'blob'
-    }).subscribe({
+    this.medicalRecordsService.getPatientRecordByIdAndFileId(this.selectedPatient.id, report.file_id).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
@@ -379,7 +373,7 @@ export class EmrComponent implements OnInit {
       return;
     }
     if (confirm('Are you sure you want to delete this report?')) {
-      this.http.delete(`http://localhost:8000/api/patients/${this.selectedPatient.id}/reports/${report.file_id}`).subscribe({
+      this.medicalRecordsService.deleteReportByIdAndFileId(this.selectedPatient.id, report.file_id).subscribe({
         next: () => {
           this.selectedPatient.reports.splice(index, 1);
           alert('Report deleted successfully');
@@ -392,50 +386,50 @@ export class EmrComponent implements OnInit {
     }
   }
 
-  printPrescription() {
-    if (!this.selectedPatientPrescription?.trim()) {
-      alert('Please add prescription details before printing');
-      return;
-    }
+  // printPrescription() {
+  //   if (!this.selectedPatientPrescription?.trim()) {
+  //     alert('Please add prescription details before printing');
+  //     return;
+  //   }
     
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Prescription - ${this.selectedPatient.patientName}</title>
-            <style>
-              body { font-family: Arial, sans-serif; padding: 20px; }
-              .header { text-align: center; margin-bottom: 30px; }
-              .patient-info { margin-bottom: 20px; }
-              .prescription { margin-top: 30px; white-space: pre-line; }
-              .footer { margin-top: 50px; text-align: right; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h2>Medical Prescription</h2>
-              <p>Date: ${this.selectedPatient.lastVisit} at ${this.selectedPatient.lastVisitTime}</p>
-            </div>
-            <div class="patient-info">
-              <p><strong>Patient:</strong> ${this.selectedPatient.patientName}</p>
-              <p><strong>Condition:</strong> ${this.selectedPatient.condition}</p>
-              <p><strong>Doctor:</strong> ${this.selectedPatient.doctor}</p>
-            </div>
-            <div class="prescription">
-              <h3>Prescription Details:</h3>
-              <p>${this.selectedPatientPrescription}</p>
-            </div>
-            <div class="footer">
-              <p>Doctor's Signature: ____________________</p>
-            </div>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.print();
-    }
-  }
+  //   const printWindow = window.open('', '_blank');
+  //   if (printWindow) {
+  //     printWindow.document.write(`
+  //       <html>
+  //         <head>
+  //           <title>Prescription - ${this.selectedPatient.patientName}</title>
+  //           <style>
+  //             body { font-family: Arial, sans-serif; padding: 20px; }
+  //             .header { text-align: center; margin-bottom: 30px; }
+  //             .patient-info { margin-bottom: 20px; }
+  //             .prescription { margin-top: 30px; white-space: pre-line; }
+  //             .footer { margin-top: 50px; text-align: right; }
+  //           </style>
+  //         </head>
+  //         <body>
+  //           <div class="header">
+  //             <h2>Medical Prescription</h2>
+  //             <p>Date: ${this.selectedPatient.lastVisit} at ${this.selectedPatient.lastVisitTime}</p>
+  //           </div>
+  //           <div class="patient-info">
+  //             <p><strong>Patient:</strong> ${this.selectedPatient.patientName}</p>
+  //             <p><strong>Condition:</strong> ${this.selectedPatient.condition}</p>
+  //             <p><strong>Doctor:</strong> ${this.selectedPatient.doctor}</p>
+  //           </div>
+  //           <div class="prescription">
+  //             <h3>Prescription Details:</h3>
+  //             <p>${this.selectedPatientPrescription}</p>
+  //           </div>
+  //           <div class="footer">
+  //             <p>Doctor's Signature: ____________________</p>
+  //           </div>
+  //         </body>
+  //       </html>
+  //     `);
+  //     printWindow.document.close();
+  //     printWindow.print();
+  //   }
+  // }
 
   savePatientDetails() {
     const updateData: any = {
@@ -448,10 +442,11 @@ export class EmrComponent implements OnInit {
       prescription: this.selectedPatientPrescription
     };
     
-    this.http.put<Patient>(
-      `http://localhost:8000/api/patients/${this.selectedPatient.id}`,
-      updateData
-    ).subscribe({
+    // this.http.put<Patient>(
+    //   `http://localhost:8000/api/patients/${this.selectedPatient.id}`,
+    //   updateData
+    // )
+    this.patiendService.updatePatient(this.selectedPatient.id, updateData).subscribe({
       next: (updatedPatient) => {
         const currentRecord: PatientRecord = {
           visitDate: this.selectedPatient.lastVisit,

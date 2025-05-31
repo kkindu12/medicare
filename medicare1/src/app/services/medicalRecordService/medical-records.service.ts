@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PatientRecord } from '../models/PatientRecord';
+import { PatientRecord } from '../../emr/models/PatientRecord';
+import { Report } from '../../emr/emr.component';
 
 @Injectable({ providedIn: 'root' })
 export class MedicalRecordsService {
@@ -22,6 +23,24 @@ export class MedicalRecordsService {
 
   getPatientReportsById(id: string) {
     return this.http.get<string[]>(`${this.apiUrl}/api/patients/getPatientRecords/${id}`);
+  }
+
+  uploadMedicalRecordPDFs(formData: FormData) {
+    return this.http.post(`${this.apiUrl}/api/patients/upload-to-dropbox`, formData);
+  }
+
+  addPatientRecordById(id: string, formData : FormData) {
+    return this.http.post<Report>(`${this.apiUrl}/api/patients/${id}/reports`, formData);
+  }
+
+  getPatientRecordByIdAndFileId(id: string, fileId: string) {
+    return this.http.get(`${this.apiUrl}/api/patients/${id}/reports/${fileId}`, {
+      responseType: 'blob'
+    });
+  }
+
+  deleteReportByIdAndFileId(id: string, fileId: string) {
+    return this.http.delete(`${this.apiUrl}/api/patients/${id}/reports/${fileId}`)
   }
   
 }
