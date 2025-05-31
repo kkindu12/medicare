@@ -78,5 +78,3 @@
   * Start new fastapi project as backend  
   * Find Html template  
     
-
-
