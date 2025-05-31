@@ -1,0 +1,12 @@
+medicare1/node_modules/
+node_modules/
+
+# Environment files
+.env
+*.env
+.env.*
+__pycache__/
+*.py[cod]
+
+# Testing files with potential credentials
+testing.py
