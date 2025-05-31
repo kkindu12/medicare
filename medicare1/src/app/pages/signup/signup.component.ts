@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import {SignupService} from '../../services/signupService/signup.service';
+import { User } from '../../emr/models/User';
 
 @Component({
   selector: 'app-signup',
@@ -18,53 +20,47 @@ export class SignupComponent {
   password: string = '';
   confirmPassword: string = '';
   phoneNumber: string = '';
-  role: string = 'patient'; // Default role
-  specialty: string = ''; // For doctors
+  role: string = 'patient';
+  specialty: string = ''; 
   error: string = '';
   
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient, private signupService : SignupService) {}
   
   onSubmit() {
-    // Reset error
     this.error = '';
     
-    // Validate required fields
     if (!this.firstName || !this.lastName || !this.email || !this.password || !this.confirmPassword) {
       this.error = 'Please fill in all required fields.';
       return;
     }
     
-    // Validate email format
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.email)) {
       this.error = 'Please enter a valid email address.';
       return;
     }
     
-    // Validate password match
     if (this.password !== this.confirmPassword) {
       this.error = 'Passwords do not match.';
       return;
     }
-    
-    // Prepare signup data
-    const signupData = {
+
+    const newUser: User = {
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
-      password: this.password,
-      phoneNumber: this.phoneNumber,
-      role: this.role,
-      specialty: this.specialty
+      phoneNumber: this.phoneNumber, 
+      password: this.password, 
+      role: !(this.role == "patient") ? true : false  
     };
-    
-    // In a real app, you'd send this to your backend server
-    // For demo, just log and navigate to signin
-    console.log('Signup data:', signupData);
-    
-    // Navigate to sign-in page after successful signup
-    // In a real app, you'd wait for API response before redirecting
-    setTimeout(() => {
-      this.router.navigate(['/signin']);
-    }, 1000);
+
+    this.signupService.addUser(newUser).subscribe({
+      next: () => {
+        alert('User created successfully');
+        this.router.navigate(['/signin']);
+      },
+      error: () => {
+        alert('User creation failed');
+      }
+    });
   }
 }

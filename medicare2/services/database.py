@@ -19,6 +19,7 @@ except errors.ServerSelectionTimeoutError as err:
 db = client[DATABASE_NAME]
 fs = GridFS(db)
 patients_collection = db["patients"]
+user_collection = db["users"]
 
 def get_db():
     return db
