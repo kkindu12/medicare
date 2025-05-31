@@ -7,3 +7,13 @@ export interface User {
   password: string; // e.g., "13:42"
   role: boolean; // Same as above
 }
+
+export interface GetUserDTO{
+  email: string;
+  password: string;
+}
+
+export interface SigninUserResponse{
+  _id: string;
+  firstName: string;
+}

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from models.patient import Patient, PatientCreate, PatientUpdate, Report
-from models.user import User, UserCreate, UserUpdate
+from models.user import User, UserCreate, UserUpdate, UserLogin, UserLoginResponse
 from services.database import get_db, get_fs
 from services.dropboxService import upload_file_to_dropbox
 from bson import ObjectId
@@ -25,6 +25,20 @@ async def create_user(user: UserCreate):
     print("✅ User created:", user_dict)  # For console logging
 
     return user_dict
+
+@router.post("/users/signin", response_model=UserLoginResponse)
+async def signin(user: UserLogin):
+    db = get_db()
+    found_user = db.users.find_one({
+        "email": user.email,
+        "password": user.password  # In production, use hashed passwords!
+    })
+    if not found_user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    found_user["id"] = str(found_user["_id"])
+    found_user.pop("_id")
+    return found_user
 
 @router.get("/users", response_model=List[User])
 async def get_users():

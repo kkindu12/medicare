@@ -29,6 +29,14 @@ class UserCreate(BaseModel):
 class User(UserCreate):
     id: str
 
+class UserLoginResponse(BaseModel):
+    id: str
+    firstName: str
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
 class UserUpdate(BaseModel):
     firstName: Optional[str] = None
     lastName: Optional[str] = None

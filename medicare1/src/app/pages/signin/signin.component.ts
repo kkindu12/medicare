@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { SigninService } from '../../services/signinService/signin.service';
 
 @Component({
   selector: 'app-signin',
@@ -16,24 +17,31 @@ export class SigninComponent {
   password: string = '';
   error: string = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private signinService : SigninService) {}
 
   onSubmit() {
     this.error = '';
     if (!this.email || !this.password) {
-      this.error = 'Email and password are required.';
+      alert("Email and password are required.");
       return;
     }
-    // Simple email validation
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.email)) {
-      this.error = 'Please enter a valid email address.';
+      alert("IPlease enter a valid email address.");
       return;
     }
-    // Dummy authentication logic (replace with real API call)
-    if (this.email === 'user@example.com' && this.password === 'password') {
-      this.router.navigate(['/emr']);
+    if (this.email && this.password &&  this.email.trim() !== '' && this.password.trim() !== '') {
+      this.signinService.GetUser({ email: this.email, password: this.password }).subscribe(
+        (response) => { 
+          if (response) {
+            sessionStorage.setItem('user', JSON.stringify(response));
+            this.router.navigate(['/emr']);
+          } else {
+            alert("Invalid email or password.");
+          }
+        },
+      )
     } else {
-      this.error = 'Invalid email or password.';
+      alert("Invalid email or password.");
     }
   }
 }
