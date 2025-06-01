@@ -12,7 +12,8 @@
       <div class="col-md-12">
         <input type="text" class="form-control" placeholder="Search by patient name, ID, or condition..." [(ngModel)]="searchQuery">
       </div>
-      <!-- Filters -->      <div class="col-md-4">
+      <!-- Filters -->      
+       <div class="col-md-4">
         <select class="form-select" [(ngModel)]="filterStatus">
           <option value="">All Statuses</option>
           <option value="Stable">Stable</option>
@@ -26,7 +27,8 @@
           <option value="Dr. Piyal Kodikara">Dr. Piyal Kodikara</option>
           <option value="Dr. Sunil Jayathilake">Dr. Sunil Jayathilake</option>
         </select>
-      </div> -->      <div class="col-md-4">
+      </div> -->      
+      <div class="col-md-4">
         <select class="form-select" [(ngModel)]="filterDate">
           <option value="">All Dates</option>
           <option *ngFor="let month of monthOptions" [value]="month.value">
