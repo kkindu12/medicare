@@ -8,6 +8,7 @@ import { PatientService } from '../services/patientService/patient.service';
 import { UserService } from '../services/userService/user.service';
 import { User } from './models/User';
 import { PatientReportResponse } from './models/PatientReportResponse';
+import { environment } from '../../environments/environment';
 
 export interface Report {
   name: string;
@@ -593,10 +594,8 @@ export class EmrComponent implements OnInit {
     });
     document.body.classList.remove('modal-open');
   }
-
   viewReportByPatient(reportPath: string) {
-    const dropboxBaseUrl = 'https://www.dropbox.com/home/Apps/medicare_capstone/'; 
-    const fullUrl = `${dropboxBaseUrl}medicare_uploads/${this.selectedPatientRecord.id}/${reportPath}?raw=1`;
+    const fullUrl = `${environment.dropboxBaseUrl}/${this.selectedPatientRecord.id}/${reportPath}?raw=1`;
     window.open(fullUrl, '_blank');
   }
 
