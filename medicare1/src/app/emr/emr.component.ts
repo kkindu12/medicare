@@ -6,42 +6,15 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MedicalRecordsService } from '../services/medicalRecordService/medical-records.service'
 import { PatientService } from '../services/patientService/patient.service';
 import { UserService } from '../services/userService/user.service';
-import { User } from './models/User';
-import { PatientReportResponse } from './models/PatientReportResponse';
+import type { 
+  User, 
+  PatientReportResponse, 
+  Report, 
+  Patient, 
+  PatientRecordWithUser, 
+  Medication 
+} from './models';
 import { environment } from '../../environments/environment';
-
-export interface Report {
-  name: string;
-  type: string;
-  date: string;
-  file_id?: string;
-  fileType?: string;
-  description?: string;
-}
-
-export interface PatientRecordWithUser {
-  id?: string;
-  visitDate: string;
-  visitTime: string;
-  condition: string;
-  doctor: string;
-  prescription: string;
-  status: string;
-  user?: User
-}
-
-export interface Patient {
-  id: string;
-  patientName: string;
-  condition: string;
-  doctor: string;
-  visitDate: string;
-  visitTime: string;
-  status: string;
-  prescription: string;
-  reports: Report[];
-  previousRecords: PatientRecordWithUser[];
-}
 
 @Component({
   selector: 'app-emr',

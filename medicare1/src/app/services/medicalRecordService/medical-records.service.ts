@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PatientRecordWithUser } from '../../emr/emr.component';
-import { PatientRecord } from '../../emr/models/PatientRecord';
-import { Report } from '../../emr/emr.component';
+import type { 
+  PatientRecordWithUser, 
+  PatientRecord, 
+  Report, 
+  PatientReportResponse 
+} from '../../emr/models';
 import { environment } from '../../../environments/environment';
-import { PatientReportResponse } from '../../emr/models/PatientReportResponse';
 
 @Injectable({ providedIn: 'root' })
 export class MedicalRecordsService {
