@@ -339,8 +339,8 @@ export class EmrComponent implements OnInit {
     }
   }
 
-  openPatientModal(record: Patient) {
-    this.selectedPatient = record;
+  openPatientModal(record: PatientRecord) {
+    this.selectedPatientRecord = record;
     this.selectedPatientPrescription = record.prescription;
     this.newReportName = '';
     this.selectedFile = null;
