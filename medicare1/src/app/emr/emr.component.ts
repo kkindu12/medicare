@@ -168,10 +168,12 @@ export class EmrComponent implements OnInit {
 
   get filteredRecords() {
     return this.patientRecords.filter(record => {
-      const patientName = record.user?.firstName.toLowerCase() || '';
+      const patientFirstName = record.user?.firstName.toLowerCase() || '';
+      const patientLastName = record.user?.lastName.toLowerCase() || '';
       const condition = record.condition.toLowerCase();
         const matchesSearch = this.searchQuery
-        ? patientName.includes(this.searchQuery.toLowerCase()) ||
+        ? patientFirstName.includes(this.searchQuery.toLowerCase()) ||
+          patientLastName.includes(this.searchQuery.toLowerCase()) ||
           condition.includes(this.searchQuery.toLowerCase())
         : true;
       const matchesStatus = this.filterStatus ? record.status === this.filterStatus : true;
