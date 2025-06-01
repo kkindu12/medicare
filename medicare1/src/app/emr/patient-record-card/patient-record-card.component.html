@@ -1,0 +1,22 @@
+<div class="card p-3">
+  <h5 class="card-title">{{ record.user?.firstName }} {{ record.user?.lastName }}</h5>
+  <p class="card-text text-muted">
+    Condition: {{ record.condition }}<br>
+    Email: {{ record.user?.email }}<br>
+    Last Visit: {{ record.visitDate }} at {{ record.visitTime }}<br>
+    Status: <span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span>
+  </p>   
+  <div class="d-flex justify-content-between">
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary btn-sm" (click)="onEditRecord()">
+        <i class="bi bi-pencil"></i> Edit
+      </button>
+      <button class="btn btn-outline-primary btn-sm" (click)="onAddReport()">
+        <i class="bi bi-file-earmark-arrow-up"></i> Add Report
+      </button>
+    </div>
+    <button class="btn btn-outline-primary btn-sm" (click)="onViewHistory()">
+      <i class="bi bi-clock-history"></i> View History
+    </button>
+  </div>
+</div>

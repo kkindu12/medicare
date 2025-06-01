@@ -48,32 +48,14 @@
       <button class="btn btn-primary me-2" (click)="openAddRecordModal()"><i class="bi bi-plus"></i>Add New Record</button>
     </div>
   </div>
-
   <div class="row">
     <div class="col-md-4 mb-3" *ngFor="let record of filteredRecords">
-      <div class="card p-3">
-        <!-- <h5 class="card-title">{{ record.patientName }}</h5> -->
-        <h5 class="card-title">{{ record.user?.firstName }} {{record.user?.lastName}}</h5>
-        <p class="card-text text-muted">
-          Condition: {{ record.condition }}<br>
-          Email: {{ record.user?.email }}<br>
-          Last Visit: {{ record.visitDate }} at {{ record.visitTime }}<br>
-          Status: <span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span>
-        </p>   
-        <div class="d-flex justify-content-between">
-          <div class="d-flex gap-2">
-          <button class="btn btn-outline-primary btn-sm" (click)="editRecordModal(record)">
-            <i class="bi bi-pencil"></i> Edit
-          </button>
-          <button class="btn btn-outline-primary btn-sm" (click)="openPatientModal(record)">
-            <i class="bi bi-file-earmark-arrow-up"></i> Add Report
-          </button>
-        </div>
-          <button class="btn btn-outline-primary btn-sm" (click)="togglePreviousRecords(record)">
-            <i class="bi bi-clock-history"></i> View History
-          </button>
-        </div>
-      </div>
+      <app-patient-record-card 
+        [record]="record"
+        (editRecord)="editRecordModal($event)"
+        (addReport)="openPatientModal($event)"
+        (viewHistory)="togglePreviousRecords($event)">
+      </app-patient-record-card>
     </div>
   </div>
 
