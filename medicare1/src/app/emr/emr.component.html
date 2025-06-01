@@ -232,6 +232,7 @@
                 <label for="reportName" class="form-label">Report Name</label>
                 <div class="d-flex align-items-center gap-2">
                   <select class="form-select" id="reportName" [(ngModel)]="newReportName">
+                    <option value="" disabled selected>Select a report to view</option>
                     <option *ngFor="let report of reportNames" [value]="report">
                       {{ report }}
                     </option>
