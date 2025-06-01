@@ -18,8 +18,8 @@ export class MedicalRecordsService {
     return this.http.post(`${this.apiUrl}/api/patientRecords`, PatientRecord);
   }
 
-  updatePatientRecord(id: number, patientRecord: PatientRecord) {
-    return this.http.put(`${this.apiUrl}/api/patients/${id}`, patientRecord);
+  updatePatientRecord(id: string, patientRecord: PatientRecord) {
+    return this.http.put(`${this.apiUrl}/api/patientRecords/${id}`, patientRecord);
   }
 
   getPatientReportsById(id: string) {

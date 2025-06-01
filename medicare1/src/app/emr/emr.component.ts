@@ -18,6 +18,7 @@ export interface Report {
 }
 
 interface PatientRecord {
+  id?: string;
   visitDate: string;
   visitTime: string;
   condition: string;
@@ -80,6 +81,15 @@ export class EmrComponent implements OnInit {
     previousRecords: []
   };
 
+  selectedPatientRecord: PatientRecord = {
+    condition: '',
+    doctor: '',
+    visitDate: '',
+    visitTime: '',
+    status: '',
+    prescription: '',
+  };
+
   records: Patient[] = [];
   patientRecords: PatientRecord[] = [];  
   constructor(
@@ -132,11 +142,13 @@ export class EmrComponent implements OnInit {
       }
     });
   }
-
   loadPatientUsers() {
     this.userService.getPatientUsers().subscribe({
       next: (users) => {
-        this.patientUsers = users;
+        this.patientUsers = users.map(user => ({
+          ...user,
+          id: user.id ? String(user.id) : undefined
+        }));
         console.log('Patient users loaded:', this.patientUsers);
       },
       error: (err) => {
@@ -232,15 +244,10 @@ export class EmrComponent implements OnInit {
 
   addRecord() {
     if (this.recordForm.valid) {
-      const formValue = this.recordForm.getRawValue(); // Use getRawValue to include disabled fields
+      const formValue = this.recordForm.getRawValue(); 
       if (this.isEditMode) {
-        // Update existing record
-        this.patientService.updatePatient(this.selectedPatient.id, formValue).subscribe({
-          next: (updatedPatient) => {
-            const index = this.records.findIndex(record => record.id === updatedPatient.id);
-            if (index !== -1) {
-              this.records[index] = updatedPatient;
-            }
+        this.medicalRecordsService.updatePatientRecord(this.selectedPatientRecord.id ?? '', formValue).subscribe({
+          next: () => {
             this.recordForm.reset({
               visitTime: this.getCurrentTime()
             });
@@ -269,8 +276,7 @@ export class EmrComponent implements OnInit {
         //   }
         // });
         this.medicalRecordsService.addPatientRecord(formValue).subscribe({    
-          next: (response) => {
-            console.log(response)
+          next: () => {
             this.recordForm.reset({
               visitDate: new Date().toISOString().split('T')[0],
               visitTime: this.getCurrentTime(),
@@ -284,15 +290,26 @@ export class EmrComponent implements OnInit {
           }
         });
       }
+      this.loadPatientRecords(); 
+      this.close();
     }
   }
+  editRecordModal(record: PatientRecord) {
+    this.selectedPatientRecord = record;
 
-  editRecordModal(record: Patient) {
-    this.selectedPatient = record;
+    // Ensure patient users are loaded before setting form values
+    this.loadPatientUsers();
+
+    // Convert ID to string to ensure proper matching
+    const patientId = record.user?.id ? String(record.user.id) : '';
+    
+    console.log('Editing record for patient ID:', patientId);
+    console.log('Available patient users:', this.patientUsers);
+    console.log('Patient user from record:', record.user);
 
     // Pre-fill the form with patient data
     this.recordForm.patchValue({
-      patientName: record.patientName,
+      patientId: patientId,
       condition: record.condition,
       doctor: record.doctor,
       visitDate: record.visitDate,
