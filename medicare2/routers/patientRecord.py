@@ -6,6 +6,7 @@ from services.dropboxService import upload_file_to_dropbox, get_dropbox_auth_url
 from bson import ObjectId
 from typing import List
 from datetime import datetime
+from services.dropboxService import upload_file_to_dropbox_simple
 
 router = APIRouter()
 
@@ -201,22 +202,13 @@ async def delete_report(patient_id: str, file_id: str):
     get_fs().delete(ObjectId(file_id))
     return {"message": "Report deleted"}
 
-@router.post("/patientRecords/upload-to-dropbox")
-async def upload_to_dropbox(file: UploadFile = File(...)):
-    # Import the simple upload function
-    from services.dropboxService import upload_file_to_dropbox_simple
+@router.post("/patientRecords/upload-to-dropbox/{patient_record_id}")
+async def upload_to_dropbox(patient_record_id: str, file: UploadFile = File(...)):
     
-    print("🔍 Upload to Dropbox endpoint hit!")
-    print(f"📄 File: {file.filename}")
-    print(f"📏 File size: {file.size if hasattr(file, 'size') else 'Unknown'}")
-    
-    result = upload_file_to_dropbox_simple(file)
+    result = upload_file_to_dropbox_simple(patient_record_id, file)
 
     if "error" in result:
-        print(f"❌ Upload failed: {result['error']}")
         raise HTTPException(status_code=500, detail=f"Dropbox upload failed: {result['error']}")
-
-    print(f"✅ Upload successful: {result['path']}")
     return {
         "dropbox_path": result["path"],
         "message": result.get("message", "File uploaded successfully")

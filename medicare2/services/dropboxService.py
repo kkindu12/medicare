@@ -13,7 +13,6 @@ DROPBOX_APP_KEY = os.getenv("DROPBOX_APP_KEY")
 DROPBOX_APP_SECRET = os.getenv("DROPBOX_APP_SECRET")
 
 def get_valid_dropbox_client():
-    """Get a valid Dropbox client, automatically refreshing token if needed"""
     global DROPBOX_ACCESS_TOKEN
     
     if not DROPBOX_ACCESS_TOKEN:
@@ -23,11 +22,9 @@ def get_valid_dropbox_client():
         # Try to use current token
         dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
         account_info = dbx.users_get_current_account()
-        print(f"✅ Using existing token for: {account_info.email}")
         return dbx, None
         
     except dropbox.exceptions.AuthError as auth_error:
-        print(f"🔄 Token expired, attempting refresh...")
         
         # Try to refresh token
         if DROPBOX_REFRESH_TOKEN and DROPBOX_APP_KEY and DROPBOX_APP_SECRET:
@@ -35,7 +32,6 @@ def get_valid_dropbox_client():
             
             if refresh_result.get("status") == "success":
                 new_token = refresh_result.get("access_token")
-                print(f"✅ Token refreshed successfully")
                 
                 # Update environment variable for this session
                 os.environ["DROPBOX_ACCESS_TOKEN"] = new_token
@@ -55,41 +51,33 @@ def get_valid_dropbox_client():
         return None, {"error": f"Dropbox client error: {str(e)}"}
 
 def update_env_file(key: str, value: str):
-    """Update a key in the .env file"""
-    try:
-        env_path = ".env"
+    env_path = ".env"
+    
+    # Read current .env content
+    if os.path.exists(env_path):
+        with open(env_path, 'r') as f:
+            lines = f.readlines()
+    else:
+        lines = []
+    
+    # Update or add the key
+    updated = False
+    for i, line in enumerate(lines):
+        if line.startswith(f"{key}="):
+            lines[i] = f"{key}={value}\n"
+            updated = True
+            break
+    
+    if not updated:
+        lines.append(f"{key}={value}\n")
+    
+    # Write back to .env
+    with open(env_path, 'w') as f:
+        f.writelines(lines)
         
-        # Read current .env content
-        if os.path.exists(env_path):
-            with open(env_path, 'r') as f:
-                lines = f.readlines()
-        else:
-            lines = []
-        
-        # Update or add the key
-        updated = False
-        for i, line in enumerate(lines):
-            if line.startswith(f"{key}="):
-                lines[i] = f"{key}={value}\n"
-                updated = True
-                break
-        
-        if not updated:
-            lines.append(f"{key}={value}\n")
-        
-        # Write back to .env
-        with open(env_path, 'w') as f:
-            f.writelines(lines)
-        
-        print(f"✅ Updated {key} in .env file")
-        
-    except Exception as e:
-        print(f"⚠️ Failed to update .env file: {str(e)}")
 
 # OAuth2 authorization URL generation
 def get_dropbox_auth_url():
-    """Generate Dropbox OAuth2 authorization URL"""
-    print("🔗 Generating Dropbox authorization URL")
     
     if not DROPBOX_APP_KEY:
         return {"error": "DROPBOX_APP_KEY not found in environment variables"}
@@ -121,8 +109,6 @@ def get_dropbox_auth_url():
         return {"error": f"Failed to generate auth URL: {str(e)}"}
 
 def complete_dropbox_auth(auth_code: str):
-    """Complete OAuth2 flow and get access token"""
-    print(f"🔐 Completing Dropbox auth with code: {auth_code[:10]}...")
     
     if not DROPBOX_APP_KEY or not DROPBOX_APP_SECRET:
         return {"error": "App Key and App Secret required"}
@@ -157,9 +143,6 @@ def complete_dropbox_auth(auth_code: str):
         if refresh_token:
             os.environ["DROPBOX_REFRESH_TOKEN"] = refresh_token
         
-        print("✅ OAuth2 flow completed successfully")
-        print("✅ Tokens automatically saved to .env file")
-        
         return {
             "status": "success",
             "message": "Dropbox authentication completed and tokens saved",
@@ -172,11 +155,8 @@ def complete_dropbox_auth(auth_code: str):
 
 # Token refresh function using refresh token
 def refresh_dropbox_token(refresh_token: str = None):
-    """Refresh the Dropbox access token using refresh token"""
-    print("🔄 Attempting to refresh Dropbox token")
     
     if not DROPBOX_APP_KEY or not DROPBOX_APP_SECRET:
-        print("❌ App Key or App Secret not found")
         return {"error": "App Key and App Secret required for token refresh"}
     
     # Use refresh token from environment if not provided
@@ -205,8 +185,6 @@ def refresh_dropbox_token(refresh_token: str = None):
         if response.status_code == 200:
             token_data = response.json()
             new_access_token = token_data.get('access_token')
-            
-            print("✅ Token refreshed successfully")
             return {
                 "status": "success",
                 "access_token": new_access_token,
@@ -220,9 +198,6 @@ def refresh_dropbox_token(refresh_token: str = None):
         return {"error": f"Token refresh failed: {str(e)}"}
 
 def upload_file_to_dropbox(recordId: str, file: UploadFile):
-    print("🔍 Dropbox upload started")
-    print(f"📁 Record ID: {recordId}")
-    print(f"📄 File: {file.filename}")
     
     # Get valid Dropbox client (auto-refreshes token if needed)
     dbx, error = get_valid_dropbox_client()
@@ -232,7 +207,6 @@ def upload_file_to_dropbox(recordId: str, file: UploadFile):
     try:
         # Create the upload path
         dropbox_path = f"/medicare_uploads/{recordId}/{file.filename}"
-        print(f"📤 Uploading to: {dropbox_path}")
         
         # Reset file pointer and upload
         file.file.seek(0)
@@ -245,7 +219,6 @@ def upload_file_to_dropbox(recordId: str, file: UploadFile):
             mode=dropbox.files.WriteMode.overwrite
         )
         
-        print("✅ File uploaded to Dropbox successfully")
         
         # Update patient record in MongoDB
         db = get_db()
@@ -255,39 +228,25 @@ def upload_file_to_dropbox(recordId: str, file: UploadFile):
         )
 
         if update_result.modified_count == 0:
-            print("⚠️ Failed to update patient's reports in MongoDB")
             return {"error": "Failed to update patient's reports in MongoDB"}
 
-        print("✅ Patient record updated in MongoDB")
         return {
             "path": dropbox_path,
             "message": "File uploaded successfully"
         }
 
     except dropbox.exceptions.ApiError as api_error:
-        print(f"❌ Dropbox API error: {str(api_error)}")
         return {"error": f"Dropbox API error: {str(api_error)}"}
     except Exception as e:
-        print(f"❌ General error: {str(e)}")
         return {"error": str(e)}
 
-# Alternative function for simple file upload without MongoDB update
-def upload_file_to_dropbox_simple(file: UploadFile):
-    """Upload file to Dropbox without updating MongoDB"""
-    print("🔍 Simple Dropbox upload started")
-    print(f"📄 File: {file.filename}")
-    
-    # Get valid Dropbox client (auto-refreshes token if needed)
+def upload_file_to_dropbox_simple(patientRecordId: str, file: UploadFile):
     dbx, error = get_valid_dropbox_client()
     if error:
         return error
     
     try:
-        # Create upload path
-        dropbox_path = f"/medicare_uploads/general/{file.filename}"
-        print(f"📤 Uploading to: {dropbox_path}")
-        
-        # Upload file
+        dropbox_path = f"/medicare_uploads/{patientRecordId}/{file.filename}"
         file.file.seek(0)
         file_content = file.file.read()
         
@@ -296,24 +255,17 @@ def upload_file_to_dropbox_simple(file: UploadFile):
             dropbox_path, 
             mode=dropbox.files.WriteMode.overwrite
         )
-        
-        print("✅ File uploaded to Dropbox successfully")
         return {
             "path": dropbox_path,
             "message": "File uploaded successfully"
         }
 
     except dropbox.exceptions.ApiError as api_error:
-        print(f"❌ Dropbox API error: {str(api_error)}")
         return {"error": f"Dropbox API error: {str(api_error)}"}
     except Exception as e:
-        print(f"❌ General error: {str(e)}")
         return {"error": str(e)}
 
-# Test endpoint to validate Dropbox connection
 def test_dropbox_connection():
-    """Test if Dropbox connection is working"""
-    print("🔍 Testing Dropbox connection")
     
     if not DROPBOX_ACCESS_TOKEN:
         return {"error": "DROPBOX_ACCESS_TOKEN not found in environment variables"}
@@ -331,8 +283,6 @@ def test_dropbox_connection():
             "app_secret_available": bool(DROPBOX_APP_SECRET)
         }
     except dropbox.exceptions.AuthError as auth_error:
-        print(f"❌ Auth error: {str(auth_error)}")
-        # If token is expired, suggest using App Key/Secret for refresh
         if "expired" in str(auth_error).lower():
             return {
                 "status": "error",

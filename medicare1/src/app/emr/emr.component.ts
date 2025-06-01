@@ -237,7 +237,7 @@ export class EmrComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    this.medicalRecordsService.uploadMedicalRecordPDFs(formData).subscribe({
+    this.medicalRecordsService.uploadMedicalRecordPDFs(this.selectedPatientRecord.id ?? '', formData).subscribe({
       next: (res) => alert('Upload success'),
       error: (err) => alert('Upload failed')
     });
