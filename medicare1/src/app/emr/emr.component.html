@@ -12,13 +12,11 @@
       <div class="col-md-12">
         <input type="text" class="form-control" placeholder="Search by patient name, ID, or condition..." [(ngModel)]="searchQuery">
       </div>
-      <!-- Filters -->
-      <div class="col-md-4">
-        <select class="form-select" [(ngModel)]="filterCondition">
-          <option value="">All Conditions</option>
-          <option value="Diabetes">Diabetes</option>
-          <option value="Hypertension">Hypertension</option>
-          <option value="Asthma">Asthma</option>
+      <!-- Filters -->      <div class="col-md-4">
+        <select class="form-select" [(ngModel)]="filterStatus">
+          <option value="">All Statuses</option>
+          <option value="Stable">Stable</option>
+          <option value="Critical">Critical</option>
         </select>
       </div>
       <!-- <div class="col-md-4">

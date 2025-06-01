@@ -27,7 +27,7 @@ import { environment } from '../../environments/environment';
 })
 export class EmrComponent implements OnInit {
   searchQuery: string = '';
-  filterCondition: string = '';
+  filterStatus: string = '';
   filterDoctor: string = '';
   filterDate: string = '';
 
@@ -170,21 +170,19 @@ export class EmrComponent implements OnInit {
     return this.patientRecords.filter(record => {
       const patientName = record.user?.firstName.toLowerCase() || '';
       const condition = record.condition.toLowerCase();
-      
-      const matchesSearch = this.searchQuery
+        const matchesSearch = this.searchQuery
         ? patientName.includes(this.searchQuery.toLowerCase()) ||
           condition.includes(this.searchQuery.toLowerCase())
         : true;
-      const matchesCondition = this.filterCondition ? record.condition === this.filterCondition : true;
+      const matchesStatus = this.filterStatus ? record.status === this.filterStatus : true;
       const matchesDoctor = this.filterDoctor ? record.doctor === this.filterDoctor : true;
       const matchesDate = this.filterDate && record.visitDate ? record.visitDate.includes(this.filterDate) : true;
-      return matchesSearch && matchesCondition && matchesDoctor && matchesDate;
+      return matchesSearch && matchesStatus && matchesDoctor && matchesDate;
     });
   }
-
   clearFilters() {
     this.searchQuery = '';
-    this.filterCondition = '';
+    this.filterStatus = '';
     this.filterDoctor = '';
     this.filterDate = '';
   }
