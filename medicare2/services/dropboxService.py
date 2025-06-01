@@ -302,3 +302,56 @@ def test_dropbox_connection():
             "error": "Connection failed",
             "details": str(e)
         }
+
+def list_dropbox_files(patient_record_id: str = None):
+    """List files from Dropbox folder for a specific patient record or all files"""
+    dbx, error = get_valid_dropbox_client()
+    if error:
+        return error
+    
+    try:
+        if patient_record_id:
+            folder_path = f"/medicare_uploads/{patient_record_id}"
+        else:
+            folder_path = "/medicare_uploads"
+        
+        result = dbx.files_list_folder(folder_path)
+        
+        files = []
+        for entry in result.entries:
+            if hasattr(entry, 'name'):
+                files.append({
+                    "name": entry.name,
+                    "path": entry.path_lower,
+                    "size": getattr(entry, 'size', 0) if hasattr(entry, 'size') else 0,
+                    "modified": getattr(entry, 'client_modified', None) if hasattr(entry, 'client_modified') else None
+                })
+        
+        while result.has_more:
+            result = dbx.files_list_folder_continue(result.cursor)
+            for entry in result.entries:
+                if hasattr(entry, 'name'):
+                    files.append({
+                        "name": entry.name,
+                        "path": entry.path_lower,
+                        "size": getattr(entry, 'size', 0) if hasattr(entry, 'size') else 0,
+                        "modified": getattr(entry, 'client_modified', None) if hasattr(entry, 'client_modified') else None
+                    })
+        
+        return {
+            "status": "success",
+            "files": files,
+            "count": len(files)
+        }
+        
+    except dropbox.exceptions.ApiError as api_error:
+        if "not_found" in str(api_error):
+            return {
+                "status": "success",
+                "files": [],
+                "count": 0,
+                "message": "Folder not found or empty"
+            }
+        return {"error": f"Dropbox API error: {str(api_error)}"}
+    except Exception as e:
+        return {"error": f"Failed to list files: {str(e)}"}

@@ -7,6 +7,7 @@ import { MedicalRecordsService } from '../services/medicalRecordService/medical-
 import { PatientService } from '../services/patientService/patient.service';
 import { UserService } from '../services/userService/user.service';
 import { User } from './models/User';
+import { PatientReportResponse } from './models/PatientReportResponse';
 
 export interface Report {
   name: string;
@@ -356,11 +357,10 @@ export class EmrComponent implements OnInit {
     this.selectedFile = null;
     
     this.showPatientModal = true;
-    this.patientService.getPatientRecordNames(this.selectedPatientRecord.id || '')
+    this.medicalRecordsService.getMedicalRecordPDFs(this.selectedPatientRecord.id || '')
     .subscribe({
-      next: (data: string[]) => {
-        this.reportNames = data;  
-        console.log('Report names:', this.reportNames);
+      next: (data: PatientReportResponse) => {
+        this.reportNames = data.filenames; 
       },
       error: (err) => {
         console.error('Failed to load report names:', err);

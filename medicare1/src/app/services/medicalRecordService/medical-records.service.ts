@@ -4,6 +4,7 @@ import { PatientRecordWithUser } from '../../emr/emr.component';
 import { PatientRecord } from '../../emr/models/PatientRecord';
 import { Report } from '../../emr/emr.component';
 import { environment } from '../../../environments/environment';
+import { PatientReportResponse } from '../../emr/models/PatientReportResponse';
 
 @Injectable({ providedIn: 'root' })
 export class MedicalRecordsService {
@@ -27,8 +28,16 @@ export class MedicalRecordsService {
     return this.http.get<PatientRecordWithUser[]>(`${this.apiUrl}/api/patients/getPatientRecords/${id}`);
   }
 
+  getPatientReportsById(id: string) {
+    return this.http.get<PatientRecordWithUser[]>(`${this.apiUrl}/api/patientRecords/getPatientReports/${id}`);
+  }
+
   uploadMedicalRecordPDFs(patientRecordId: string, formData: FormData) {
     return this.http.post(`${this.apiUrl}/api/patientRecords/upload-to-dropbox/${patientRecordId}`, formData);
+  }
+
+  getMedicalRecordPDFs(patientRecordId: string) {
+    return this.http.get<PatientReportResponse>(`${this.apiUrl}/api/patientRecords/getPatientReports/${patientRecordId}`);
   }
 
   addPatientRecordById(id: string, formData : FormData) {

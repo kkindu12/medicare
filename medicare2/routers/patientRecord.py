@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Request
 from models.patient import Patient, PatientCreate, PatientUpdate, Report
 from models.patientRecord import PatientRecord, PatientRecordCreate, PatientRecordUpdate, Medication, PatientRecordWithUser
 from services.database import get_db, get_fs
-from services.dropboxService import upload_file_to_dropbox, get_dropbox_auth_url, complete_dropbox_auth, refresh_dropbox_token, test_dropbox_connection
+from services.dropboxService import upload_file_to_dropbox, get_dropbox_auth_url, complete_dropbox_auth, refresh_dropbox_token, test_dropbox_connection, list_dropbox_files
 from bson import ObjectId
 from typing import List
 from datetime import datetime
@@ -20,13 +20,10 @@ async def create_patient_record(record: PatientRecordCreate):
 async def get_patient_records():
     records = []
     db = get_db()
-    
     for record in db.patientRecords.find():
-        # Convert MongoDB ObjectId to string for the record
         record["id"] = str(record["_id"])
         record.pop("_id")
         
-        # Get user data based on patientId
         try:
             patient_user = db.users.find_one({"_id": ObjectId(record["patientId"])})
             if patient_user:
@@ -263,3 +260,35 @@ async def test_dropbox():
         raise HTTPException(status_code=500, detail=result)
     
     return result
+
+@router.get("/patientRecords/getPatientReports/{patient_record_id}")
+async def get_dropbox_files_for_patient(patient_record_id: str):
+    """Get list of files from Dropbox for a specific patient record"""
+    result = list_dropbox_files(patient_record_id)
+    
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=f"Failed to get files: {result['error']}")
+    
+    filenames = [file["name"] for file in result.get("files", [])]
+    
+    return {
+        "patient_record_id": patient_record_id,
+        "filenames": filenames,
+        "count": len(filenames)
+    }
+
+@router.get("/dropbox/files")
+async def get_all_dropbox_files():
+    """Get list of all files from Dropbox medicare_uploads folder"""
+    result = list_dropbox_files()
+    
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=f"Failed to get files: {result['error']}")
+    
+    filenames = [file["name"] for file in result.get("files", [])]
+    
+    return {
+        "filenames": filenames,
+        "count": len(filenames),
+        "files_with_details": result.get("files", [])
+    }

@@ -35,12 +35,12 @@ def get_new_dropbox_tokens():
         
         # Get authorization code from user
         auth_code = input("Authorization code: ").strip()
-          if not auth_code:
+        if not auth_code:
             return None
         
         # Complete the authorization flow
         oauth_result = auth_flow.finish(auth_code)
-          access_token = oauth_result.access_token
+        access_token = oauth_result.access_token
         refresh_token = oauth_result.refresh_token
         
         # Test the new tokens
@@ -74,7 +74,7 @@ def simple_token_generation():
     auth_url = f"https://www.dropbox.com/oauth2/authorize?client_id={APP_KEY}&token_access_type=offline&response_type=code"
     
     auth_code = input("Authorization code: ").strip()
-      if not auth_code:
+    if not auth_code:
         return None
     
     # Make the token request
@@ -91,7 +91,7 @@ def simple_token_generation():
         response.raise_for_status()
         
         tokens = response.json()
-          access_token = tokens['access_token']
+        access_token = tokens['access_token']
         refresh_token = tokens['refresh_token']
         
         # Test the token
