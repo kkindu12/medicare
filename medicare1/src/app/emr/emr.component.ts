@@ -596,7 +596,7 @@ export class EmrComponent implements OnInit {
 
   viewReportByPatient(reportPath: string) {
     const dropboxBaseUrl = 'https://www.dropbox.com/home/Apps/medicare_capstone/'; 
-    const fullUrl = `${dropboxBaseUrl}medicare_uploads/${this.selectedPatient.id}/${reportPath}?raw=1`;
+    const fullUrl = `${dropboxBaseUrl}medicare_uploads/${this.selectedPatientRecord.id}/${reportPath}?raw=1`;
     window.open(fullUrl, '_blank');
   }
 
