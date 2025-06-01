@@ -260,6 +260,7 @@ export class EmrComponent implements OnInit {
               visitTime: this.getCurrentTime()
             });
             this.close();
+            this.loadPatientRecords(); 
             alert('Record updated successfully');
           },
           error: (err) => {
@@ -290,6 +291,7 @@ export class EmrComponent implements OnInit {
               visitTime: this.getCurrentTime(),
               doctor: this.getDoctorName() 
             });
+            this.loadPatientRecords();
             alert('Record added successfully');
           },
           error: (err) => {
