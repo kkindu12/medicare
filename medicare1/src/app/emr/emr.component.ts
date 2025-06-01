@@ -356,7 +356,7 @@ export class EmrComponent implements OnInit {
     this.selectedFile = null;
     
     this.showPatientModal = true;
-    this.patientService.getPatientRecordNames(this.selectedPatient.id)
+    this.patientService.getPatientRecordNames(this.selectedPatientRecord.id || '')
     .subscribe({
       next: (data: string[]) => {
         this.reportNames = data;  
@@ -545,7 +545,7 @@ export class EmrComponent implements OnInit {
   togglePreviousRecords(patientRecord: PatientRecordWithUser) {
     this.selectedPatientRecord = patientRecord;
     this.showPreviousRecords = true;
-    this.medicalRecordsService.getPatientReportsById(patientRecord.user?.id || '').subscribe({
+    this.medicalRecordsService.getPatientRecordsById(patientRecord.user?.id || '').subscribe({
       next: (reports) => {
         this.previousPatientRecords = reports.map(report => ({
           id: report.id,
@@ -616,7 +616,7 @@ export class EmrComponent implements OnInit {
   }
 
   getPatientRecordsByPatientId(patientId: string) {
-    this.medicalRecordsService.getPatientReportsById(patientId).subscribe({
+    this.medicalRecordsService.getPatientRecordsById(patientId).subscribe({
       next: (reports) => {
         this.previousPatientRecords = reports.map(report => ({
           name: report.user?.firstName || 'Unknown',

@@ -23,7 +23,7 @@ export class MedicalRecordsService {
     return this.http.put(`${this.apiUrl}/api/patientRecords/${id}`, patientRecord);
   }
 
-  getPatientReportsById(id: string) {
+  getPatientRecordsById(id: string) {
     return this.http.get<PatientRecordWithUser[]>(`${this.apiUrl}/api/patients/getPatientRecords/${id}`);
   }
 
