@@ -21,20 +21,19 @@
           <option value="Asthma">Asthma</option>
         </select>
       </div>
-      <div class="col-md-4">
+      <!-- <div class="col-md-4">
         <select class="form-select" [(ngModel)]="filterDoctor">
           <option value="">All Doctors</option>
           <option value="Dr. Samantha Kumara">Dr. Samantha Kumara</option>
           <option value="Dr. Piyal Kodikara">Dr. Piyal Kodikara</option>
           <option value="Dr. Sunil Jayathilake">Dr. Sunil Jayathilake</option>
         </select>
-      </div>
-      <div class="col-md-4">
+      </div> -->      <div class="col-md-4">
         <select class="form-select" [(ngModel)]="filterDate">
           <option value="">All Dates</option>
-          <option value="2025-04">April 2025</option>
-          <option value="2025-03">March 2025</option>
-          <option value="2025-02">February 2025</option>
+          <option *ngFor="let month of monthOptions" [value]="month.value">
+            {{ month.label }}
+          </option>
         </select>
       </div>
     </div>

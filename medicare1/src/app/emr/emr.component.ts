@@ -44,6 +44,7 @@ export class EmrComponent implements OnInit {
   isEditMode: boolean = false;
   reportNames: string[] = [];
   patientUsers: User[] = [];
+  monthOptions: { value: string, label: string }[] = [];
 
   selectedPatient: Patient = {
     id: '',
@@ -92,8 +93,10 @@ export class EmrComponent implements OnInit {
     const now = new Date();
     return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   }
-
   ngOnInit(): void {
+    // Generate month options dynamically for current year
+    this.generateMonthOptions();
+    
     if (isPlatformBrowser(this.platformId)) {
       if (!document.getElementById('bootstrap-icons-css')) {
         const link = document.createElement('link');
@@ -104,10 +107,26 @@ export class EmrComponent implements OnInit {
       this.loadPatients();
       this.loadPatientUsers();
       this.loadPatientRecords();// Load patient users for dropdown
-    }
-    console.log('EMR Component initialized');
+    }    console.log('EMR Component initialized');
     console.log(this.medicalRecordsService.getPatientRecords());
   }
+
+  /**
+   * Generate month options dynamically for the current year
+   */
+  generateMonthOptions(): void {
+    const currentYear = new Date().getFullYear();
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    this.monthOptions = monthNames.map((monthName, index) => ({
+      value: `${currentYear}-${(index + 1).toString().padStart(2, '0')}`,
+      label: `${monthName} ${currentYear}`
+    }));
+  }
+
   loadPatients() {
     this.patientService.getPatients().subscribe({
       next: (patients) => {
