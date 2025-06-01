@@ -18,7 +18,6 @@ async def create_patient_record(record: PatientRecordCreate):
 
 @router.get("/patientRecords", response_model=List[PatientRecordWithUser])
 async def get_patient_records():
-    print("🔍 GET /patientRecords endpoint hit!")  # Debug logging
     records = []
     db = get_db()
     
@@ -37,19 +36,15 @@ async def get_patient_records():
                 record["user"] = patient_user
             else:
                 record["user"] = None
-                print(f"⚠️ User not found for patientId: {record['patientId']}")
         except Exception as e:
-            print(f"❌ Error fetching user for patientId {record['patientId']}: {str(e)}")
             record["user"] = None
         
         records.append(record)
     
-    print(f"📊 Found {len(records)} patient records")  # Debug logging
     return records
 
 @router.get("/patientRecords/{record_id}", response_model=PatientRecord)
 async def get_patient_record(record_id: str):
-    print(f"🔍 GET /patientRecords/{record_id} endpoint hit!")  # Debug logging
     record = get_db().patientRecords.find_one({"_id": ObjectId(record_id)})
     if not record:
         raise HTTPException(status_code=404, detail="Patient record not found")
@@ -59,7 +54,6 @@ async def get_patient_record(record_id: str):
 
 @router.put("/patientRecords/{record_id}", response_model=PatientRecord)
 async def update_patient_record(record_id: str, record_update: PatientRecordUpdate):
-    print(f"🔄 PUT /patientRecords/{record_id} endpoint hit!")  # Debug logging
     update_data = {k: v for k, v in record_update.dict().items() if v is not None}
     if update_data:
         result = get_db().patientRecords.update_one(
@@ -74,7 +68,6 @@ async def update_patient_record(record_id: str, record_update: PatientRecordUpda
 
 @router.delete("/patientRecords/{record_id}")
 async def delete_patient_record(record_id: str):
-    print(f"🗑️ DELETE /patientRecords/{record_id} endpoint hit!")  # Debug logging
     result = get_db().patientRecords.delete_one({"_id": ObjectId(record_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Patient record not found")
@@ -83,13 +76,11 @@ async def delete_patient_record(record_id: str):
 # Get patient records by patient name
 @router.get("/patientRecords/byPatient/{patient_name}", response_model=List[PatientRecord])
 async def get_records_by_patient(patient_name: str):
-    print(f"🔍 GET /patientRecords/byPatient/{patient_name} endpoint hit!")  # Debug logging
     records = []
     for record in get_db().patientRecords.find({"patientName": patient_name}):
         record["id"] = str(record["_id"])
         record.pop("_id")
         records.append(PatientRecord(**record))
-    print(f"📊 Found {len(records)} records for patient {patient_name}")  # Debug logging
     return records
 
 # Original patient endpoints (keeping existing functionality)
@@ -105,24 +96,19 @@ async def create_patient(patient: PatientCreate):
     result = get_db().patients.insert_one(patient_dict)
     patient_dict["id"] = str(result.inserted_id)
 
-    print("✅ Patient created:", patient_dict)  # For console logging
-
     return patient_dict
 
 @router.get("/patients", response_model=List[Patient])
 async def get_patients():
-    print("🔍 GET /patients endpoint hit!")  # Debug logging
     patients = []
     for patient in get_db().patients.find():
         patient["id"] = str(patient["_id"])
         patient.pop("_id")
         patients.append(Patient(**patient))
-    print(f"📊 Found {len(patients)} patients")  # Debug logging
     return patients
 
 @router.get("/patients/{patient_id}", response_model=Patient)
 async def get_patient(patient_id: str):
-    print(f"🔍 GET /patients/{patient_id} endpoint hit!")  # Debug logging
     patient = get_db().patients.find_one({"_id": ObjectId(patient_id)})
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
@@ -132,7 +118,6 @@ async def get_patient(patient_id: str):
 
 @router.put("/patients/{patient_id}", response_model=Patient)
 async def update_patient(patient_id: str, patient_update: PatientUpdate):
-    print(f"🔄 PUT /patients/{patient_id} endpoint hit!")  # Debug logging
     update_data = {k: v for k, v in patient_update.dict().items() if v is not None}
     if update_data:
         result = get_db().patients.update_one(
@@ -147,7 +132,6 @@ async def update_patient(patient_id: str, patient_update: PatientUpdate):
 
 @router.delete("/patients/{patient_id}")
 async def delete_patient(patient_id: str):
-    print(f"🗑️ DELETE /patients/{patient_id} endpoint hit!")  # Debug logging
     result = get_db().patients.delete_one({"_id": ObjectId(patient_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Patient not found")
@@ -214,16 +198,34 @@ async def upload_to_dropbox(patient_record_id: str, file: UploadFile = File(...)
         "message": result.get("message", "File uploaded successfully")
     }
 
-@router.get("/patients/getPatientRecords/{patient_id}", response_model=List[str])
+@router.get("/patients/getPatientRecords/{patient_id}", response_model=List[PatientRecordWithUser])
 async def get_patient_reports(patient_id: str):
+    records = []
     db = get_db()
+    
     try:
-        patient = db.patients.find_one({"_id": ObjectId(patient_id)})
-        if not patient:
-            raise HTTPException(status_code=404, detail="Patient not found")
+        # Find patient records filtered by patientId
+        for record in db.patientRecords.find({"patientId": patient_id}):
+            # Convert MongoDB ObjectId to string for the record
+            record["id"] = str(record["_id"])
+            record.pop("_id")
+            
+            # Get user data based on patientId
+            try:
+                patient_user = db.users.find_one({"_id": ObjectId(record["patientId"])})
+                if patient_user:
+                    # Add user data to the record
+                    patient_user["id"] = str(patient_user["_id"])
+                    patient_user.pop("_id")
+                    record["user"] = patient_user
+                else:
+                    record["user"] = None
+            except Exception as e:
+                record["user"] = None
+            
+            records.append(record)
         
-        # Return only the reports array
-        return patient.get("reports", [])
+        return records
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

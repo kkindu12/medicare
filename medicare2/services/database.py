@@ -11,9 +11,7 @@ DATABASE_NAME = os.getenv("DATABASE_NAME")
 try:
     client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)  
     client.admin.command('ping')
-    print("✅ Connected to MongoDB Atlas successfully.")
 except errors.ServerSelectionTimeoutError as err:
-    print("❌ Failed to connect to MongoDB Atlas:", err)
     raise SystemExit(1)
 
 db = client[DATABASE_NAME]

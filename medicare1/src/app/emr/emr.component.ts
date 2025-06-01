@@ -232,13 +232,20 @@ export class EmrComponent implements OnInit {
       this.uploadFileToServer(this.selectedFile);
     }
   }
-
   uploadFileToServer(file: File) {
     const formData = new FormData();
     formData.append('file', file);
 
     this.medicalRecordsService.uploadMedicalRecordPDFs(this.selectedPatientRecord.id ?? '', formData).subscribe({
-      next: (res) => alert('Upload success'),
+      next: (res) => {
+        // Clear the file selection after successful upload
+        this.selectedFile = null;
+        const fileInput = document.getElementById('reportFile') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
+        alert('Upload success');
+      },
       error: (err) => alert('Upload failed')
     });
   }

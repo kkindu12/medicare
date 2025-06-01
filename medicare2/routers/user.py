@@ -22,8 +22,6 @@ async def create_user(user: UserCreate):
     result = get_db().users.insert_one(user_dict)
     user_dict["id"] = str(result.inserted_id)
 
-    print("✅ User created:", user_dict)  # For console logging
-
     return user_dict
 
 @router.post("/users/signin", response_model=UserLoginResponse)
@@ -42,30 +40,25 @@ async def signin(user: UserLogin):
 
 @router.get("/users", response_model=List[User])
 async def get_users():
-    print("🔍 GET /users endpoint hit!")  # Debug logging
     users = []
     for user in get_db().users.find():
         user["id"] = str(user["_id"])
         user.pop("_id")
         users.append(User(**user))
-    print(f"📊 Found {len(users)} users")  # Debug logging
     return users
 
 # New endpoint to get users by role (patients only)
 @router.get("/users/patients", response_model=List[User])
 async def get_patients_by_role():
-    print("🔍 GET /users/patients endpoint hit!")  # Debug logging
     users = []
     for user in get_db().users.find({"role": False}):  # role=True means patient
         user["id"] = str(user["_id"])
         user.pop("_id")
         users.append(User(**user))
-    print(f"📊 Found {len(users)} patients")  # Debug logging
     return users
 
 @router.get("/users/{user_id}", response_model=User)
 async def get_user(user_id: str):
-    print(f"🔍 GET /users/{user_id} endpoint hit!")  # Debug logging
     user = get_db().users.find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -75,7 +68,6 @@ async def get_user(user_id: str):
 
 @router.put("/users/{user_id}", response_model=User)
 async def update_user(user_id: str, user_update: UserUpdate):
-    print(f"🔄 PUT /users/{user_id} endpoint hit!")  # Debug logging
     update_data = {k: v for k, v in user_update.dict().items() if v is not None}
     if update_data:
         result = get_db().users.update_one(
@@ -90,7 +82,6 @@ async def update_user(user_id: str, user_update: UserUpdate):
 
 @router.delete("/users/{user_id}")
 async def delete_user(user_id: str):
-    print(f"🗑️ DELETE /users/{user_id} endpoint hit!")  # Debug logging
     result = get_db().users.delete_one({"_id": ObjectId(user_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
