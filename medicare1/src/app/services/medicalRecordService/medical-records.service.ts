@@ -28,7 +28,7 @@ export class MedicalRecordsService {
   }
 
   uploadMedicalRecordPDFs(formData: FormData) {
-    return this.http.post(`${this.apiUrl}/api/patients/upload-to-dropbox`, formData);
+    return this.http.post(`${this.apiUrl}/api/patientRecords/upload-to-dropbox`, formData);
   }
 
   addPatientRecordById(id: string, formData : FormData) {

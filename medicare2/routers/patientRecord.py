@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Request
 from models.patient import Patient, PatientCreate, PatientUpdate, Report
 from models.patientRecord import PatientRecord, PatientRecordCreate, PatientRecordUpdate, Medication, PatientRecordWithUser
 from services.database import get_db, get_fs
-from services.dropboxService import upload_file_to_dropbox
+from services.dropboxService import upload_file_to_dropbox, get_dropbox_auth_url, complete_dropbox_auth, refresh_dropbox_token, test_dropbox_connection
 from bson import ObjectId
 from typing import List
 from datetime import datetime
@@ -201,39 +201,71 @@ async def delete_report(patient_id: str, file_id: str):
     get_fs().delete(ObjectId(file_id))
     return {"message": "Report deleted"}
 
-@router.post("/patients/upload-to-dropbox")
+@router.post("/patientRecords/upload-to-dropbox")
 async def upload_to_dropbox(file: UploadFile = File(...)):
-    result = upload_file_to_dropbox(file)
+    # Import the simple upload function
+    from services.dropboxService import upload_file_to_dropbox_simple
+    
+    print("🔍 Upload to Dropbox endpoint hit!")
+    print(f"📄 File: {file.filename}")
+    print(f"📏 File size: {file.size if hasattr(file, 'size') else 'Unknown'}")
+    
+    result = upload_file_to_dropbox_simple(file)
 
     if "error" in result:
+        print(f"❌ Upload failed: {result['error']}")
         raise HTTPException(status_code=500, detail=f"Dropbox upload failed: {result['error']}")
 
+    print(f"✅ Upload successful: {result['path']}")
     return {
-        "dropbox_path": result["path"]
+        "dropbox_path": result["path"],
+        "message": result.get("message", "File uploaded successfully")
     }
 
-@router.get("/patients/getPatientRecords/{patient_id}", response_model=List[PatientRecordWithUser])
-async def get_patient_records(patient_id: str):
-    print("🔍 GET /patientRecords endpoint hit!")  
-    records = []
+@router.get("/patients/getPatientRecords/{patient_id}", response_model=List[str])
+async def get_patient_reports(patient_id: str):
     db = get_db()
+    try:
+        patient = db.patients.find_one({"_id": ObjectId(patient_id)})
+        if not patient:
+            raise HTTPException(status_code=404, detail="Patient not found")
+        
+        # Return only the reports array
+        return patient.get("reports", [])
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    cursor = db.patientRecords.find({"patientId": patient_id})
+# Dropbox Authentication and File Management Endpoints
 
-    for record in cursor:
-        record["id"] = str(record["_id"])
-        record.pop("_id")
+@router.get("/dropbox/auth-url")
+async def get_dropbox_authorization_url():
+    """Get Dropbox OAuth2 authorization URL"""
+    return get_dropbox_auth_url()
 
-        try:
-            patient_user = db.users.find_one({"_id": ObjectId(record["patientId"])})
-            if patient_user:
-                patient_user["id"] = str(patient_user["_id"])
-                patient_user.pop("_id")
-                record["user"] = patient_user
-            else:
-                record["user"] = None
-        except Exception as e:
-            record["user"] = None
+@router.post("/dropbox/complete-auth")
+async def complete_dropbox_authorization(auth_code: str):
+    """Complete Dropbox OAuth2 flow with authorization code"""
+    return complete_dropbox_auth(auth_code)
 
-        records.append(record)
-    return records
+@router.post("/dropbox/refresh-token")
+async def refresh_dropbox_access_token(refresh_token: str = None):
+    """Refresh Dropbox access token using refresh token"""
+    return refresh_dropbox_token(refresh_token)
+
+@router.get("/dropbox/test")
+async def test_dropbox():
+    """Test Dropbox connection status"""
+    return test_dropbox_connection()
+
+# Test Dropbox connection endpoint
+@router.get("/test-dropbox")
+async def test_dropbox():
+    from services.dropboxService import test_dropbox_connection
+    
+    result = test_dropbox_connection()
+    
+    if result.get("status") == "error":
+        raise HTTPException(status_code=500, detail=result)
+    
+    return result

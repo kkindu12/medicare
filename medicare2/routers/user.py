@@ -58,9 +58,9 @@ async def get_patients_by_role():
     users = []
     for user in get_db().users.find({"role": False}):  # role=True means patient
         user["id"] = str(user["_id"])
+        user.pop("_id")
         users.append(User(**user))
-    print(f"📊 Found {len(users)} patients")  
-    print(users)# Debug logging
+    print(f"📊 Found {len(users)} patients")  # Debug logging
     return users
 
 @router.get("/users/{user_id}", response_model=User)
