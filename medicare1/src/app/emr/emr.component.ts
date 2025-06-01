@@ -17,7 +17,7 @@ export interface Report {
   description?: string;
 }
 
-interface PatientRecord {
+export interface PatientRecordWithUser {
   id?: string;
   visitDate: string;
   visitTime: string;
@@ -38,7 +38,7 @@ export interface Patient {
   status: string;
   prescription: string;
   reports: Report[];
-  previousRecords: PatientRecord[];
+  previousRecords: PatientRecordWithUser[];
 }
 
 @Component({
@@ -81,7 +81,7 @@ export class EmrComponent implements OnInit {
     previousRecords: []
   };
 
-  selectedPatientRecord: PatientRecord = {
+  selectedPatientRecord: PatientRecordWithUser = {
     condition: '',
     doctor: '',
     visitDate: '',
@@ -91,7 +91,8 @@ export class EmrComponent implements OnInit {
   };
 
   records: Patient[] = [];
-  patientRecords: PatientRecord[] = [];  
+  patientRecords: PatientRecordWithUser[] = [];
+  previousPatientRecords: PatientRecordWithUser[] = [];  
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
@@ -161,7 +162,7 @@ export class EmrComponent implements OnInit {
     this.medicalRecordsService.getPatientRecords().subscribe({
       next: (response) => {   
         console.log('Patient records loaded:', response);
-        this.patientRecords = response as PatientRecord[];
+        this.patientRecords = response as PatientRecordWithUser[];
       },
       error: (err) => {   
         console.error('Error loading patient records:', err);
@@ -294,7 +295,7 @@ export class EmrComponent implements OnInit {
       this.close();
     }
   }
-  editRecordModal(record: PatientRecord) {
+  editRecordModal(record: PatientRecordWithUser) {
     this.selectedPatientRecord = record;
 
     // Ensure patient users are loaded before setting form values
@@ -339,7 +340,7 @@ export class EmrComponent implements OnInit {
     }
   }
 
-  openPatientModal(record: PatientRecord) {
+  openPatientModal(record: PatientRecordWithUser) {
     this.selectedPatientRecord = record;
     this.selectedPatientPrescription = record.prescription;
     this.newReportName = '';
@@ -511,7 +512,7 @@ export class EmrComponent implements OnInit {
     // )
     this.patientService.updatePatient(this.selectedPatient.id, updateData).subscribe({
       next: (updatedPatient) => {
-        const currentRecord: PatientRecord = {
+        const currentRecord: PatientRecordWithUser = {
           visitDate: this.selectedPatient.visitDate,
           visitTime: this.selectedPatient.visitTime,
           condition: this.selectedPatient.condition,
@@ -532,20 +533,35 @@ export class EmrComponent implements OnInit {
     });
   }
 
-  togglePreviousRecords(patient: Patient) {
-    this.selectedPatient = patient;
+  togglePreviousRecords(patientRecord: PatientRecordWithUser) {
+    this.selectedPatientRecord = patientRecord;
     this.showPreviousRecords = true;
-    
+    this.medicalRecordsService.getPatientReportsById(patientRecord.user?.id || '').subscribe({
+      next: (reports) => {
+        this.previousPatientRecords = reports.map(report => ({
+          id: report.id,
+          visitDate: report.visitDate,
+          visitTime: report.visitTime,
+          condition: report.condition,
+          doctor: report.doctor,
+          prescription: report.prescription,
+          status: report.status,
+          user: report.user
+        }));
+      },})
+
     const modal = document.getElementById('previousRecordsModal');
     if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
       document.body.classList.add('modal-open');
     }
+    
   }
 
   closePreviousRecords() {
     this.showPreviousRecords = false;
+    this.previousPatientRecords = [];
     const modal = document.getElementById('previousRecordsModal');
     if (modal) {
       modal.classList.remove('show');
@@ -588,5 +604,25 @@ export class EmrComponent implements OnInit {
       }
     }
     return doctorName;
+  }
+
+  getPatientRecordsByPatientId(patientId: string) {
+    this.medicalRecordsService.getPatientReportsById(patientId).subscribe({
+      next: (reports) => {
+        this.previousPatientRecords = reports.map(report => ({
+          name: report.user?.firstName || 'Unknown',
+          visitTime: report.visitTime,
+          visitDate: report.visitDate,
+          condition: report.condition,
+          doctor: report.doctor,
+          status: report.status,
+          prescription: report.prescription
+        }));
+      },
+      error: (err) => {
+        console.error('Error loading patient reports:', err);
+        alert('Failed to load patient reports');
+      }
+    });
   }
 }

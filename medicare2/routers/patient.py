@@ -117,17 +117,3 @@ async def upload_to_dropbox(file: UploadFile = File(...)):
     return {
         "dropbox_path": result["path"]
     }
-
-@router.get("/patients/getPatientRecords/{patient_id}", response_model=List[str])
-async def get_patient_reports(patient_id: str):
-    db = get_db()
-    try:
-        patient = db.patients.find_one({"_id": ObjectId(patient_id)})
-        if not patient:
-            raise HTTPException(status_code=404, detail="Patient not found")
-        
-        # Return only the reports array
-        return patient.get("reports", [])
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))

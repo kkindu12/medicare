@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { PatientRecordWithUser } from '../../emr/emr.component';
 import { PatientRecord } from '../../emr/models/PatientRecord';
 import { Report } from '../../emr/emr.component';
 import { environment } from '../../../environments/environment';
@@ -23,7 +24,7 @@ export class MedicalRecordsService {
   }
 
   getPatientReportsById(id: string) {
-    return this.http.get<string[]>(`${this.apiUrl}/api/patients/getPatientRecords/${id}`);
+    return this.http.get<PatientRecordWithUser[]>(`${this.apiUrl}/api/patients/getPatientRecords/${id}`);
   }
 
   uploadMedicalRecordPDFs(formData: FormData) {
