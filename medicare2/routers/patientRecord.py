@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Request
 from models.patient import Patient, PatientCreate, PatientUpdate, Report
-from models.patientRecord import PatientRecord, PatientRecordCreate, PatientRecordUpdate, Medication
+from models.patientRecord import PatientRecord, PatientRecordCreate, PatientRecordUpdate, Medication, PatientRecordWithUser
 from services.database import get_db, get_fs
 from services.dropboxService import upload_file_to_dropbox
 from bson import ObjectId
@@ -15,14 +15,34 @@ async def create_patient_record(record: PatientRecordCreate):
     result = get_db().patientRecords.insert_one(record_dict)
     return {"id": str(result.inserted_id)}
 
-@router.get("/patientRecords", response_model=List[PatientRecord])
+@router.get("/patientRecords", response_model=List[PatientRecordWithUser])
 async def get_patient_records():
     print("🔍 GET /patientRecords endpoint hit!")  # Debug logging
     records = []
-    for record in get_db().patientRecords.find():
+    db = get_db()
+    
+    for record in db.patientRecords.find():
+        # Convert MongoDB ObjectId to string for the record
         record["id"] = str(record["_id"])
         record.pop("_id")
-        records.append(PatientRecord(**record))
+        
+        # Get user data based on patientId
+        try:
+            patient_user = db.users.find_one({"_id": ObjectId(record["patientId"])})
+            if patient_user:
+                # Add user data to the record
+                patient_user["id"] = str(patient_user["_id"])
+                patient_user.pop("_id")
+                record["user"] = patient_user
+            else:
+                record["user"] = None
+                print(f"⚠️ User not found for patientId: {record['patientId']}")
+        except Exception as e:
+            print(f"❌ Error fetching user for patientId {record['patientId']}: {str(e)}")
+            record["user"] = None
+        
+        records.append(record)
+    
     print(f"📊 Found {len(records)} patient records")  # Debug logging
     return records
 

@@ -56,7 +56,7 @@ async def get_users():
 async def get_patients_by_role():
     print("🔍 GET /users/patients endpoint hit!")  # Debug logging
     users = []
-    for user in get_db().users.find({"role": True}):  # role=True means patient
+    for user in get_db().users.find({"role": False}):  # role=True means patient
         user["id"] = str(user["_id"])
         users.append(User(**user))
     print(f"📊 Found {len(users)} patients")  

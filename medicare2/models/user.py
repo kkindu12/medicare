@@ -24,7 +24,7 @@ class UserCreate(BaseModel):
     email: str
     phoneNumber: str
     password: str
-    role: bool = True  # Default to False for non-admin users
+    role: bool = False  # Default to False for non-admin users
 
 class User(UserCreate):
     id: str

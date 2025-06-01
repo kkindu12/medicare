@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from .user import User
 
 class Medication(BaseModel):
     name: str
@@ -42,3 +43,15 @@ class PatientRecordUpdate(BaseModel):
     status: Optional[str] = None
     patientName: Optional[str] = None
     medications: Optional[List[Medication]] = None
+
+class PatientRecordWithUser(BaseModel):
+    id: str
+    patientId: str
+    visitDate: str
+    visitTime: str
+    condition: str
+    doctor: str
+    prescription: Optional[str] = None
+    status: str
+    medications: Optional[List[Medication]] = []
+    user: Optional[User] = None  # Include user data

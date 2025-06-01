@@ -24,6 +24,7 @@ interface PatientRecord {
   doctor: string;
   prescription: string;
   status: string;
+  user?: User
 }
 
 export interface Patient {
@@ -114,7 +115,8 @@ export class EmrComponent implements OnInit {
         link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css';
         document.head.appendChild(link);      }
       this.loadPatients();
-      this.loadPatientUsers();// Load patient users for dropdown
+      this.loadPatientUsers();
+      this.loadPatientRecords();// Load patient users for dropdown
     }
     console.log('EMR Component initialized');
     console.log(this.medicalRecordsService.getPatientRecords());
@@ -143,9 +145,22 @@ export class EmrComponent implements OnInit {
     });
   }
 
+  loadPatientRecords(){
+    this.medicalRecordsService.getPatientRecords().subscribe({
+      next: (response) => {   
+        console.log('Patient records loaded:', response);
+        this.patientRecords = response as PatientRecord[];
+      },
+      error: (err) => {   
+        console.error('Error loading patient records:', err);
+        alert('Failed to load patient records');
+      }
+    });
+  }
+
   get filteredRecords() {
-    return this.records.filter(record => {
-      const patientName = record.patientName.toLowerCase();
+    return this.patientRecords.filter(record => {
+      const patientName = record.user?.firstName.toLowerCase() || '';
       const condition = record.condition.toLowerCase();
       
       const matchesSearch = this.searchQuery
@@ -170,25 +185,12 @@ export class EmrComponent implements OnInit {
     const currentDate = now.toISOString().split('T')[0];
     const currentTime = this.getCurrentTime();
 
-    // Get doctor information from sessionStorage (browser-safe)
-    // let doctorName = '';
-    // if (isPlatformBrowser(this.platformId)) {
-    //   try {
-    //     const userString = sessionStorage.getItem('user');
-    //     const user = userString ? JSON.parse(userString) : null;
-    //     doctorName = user ? `${user.firstName} ${user.lastName}` : '';
-    //   } catch (error) {
-    //     console.error('Error reading user data from sessionStorage:', error);
-    //     doctorName = '';
-    //   }
-    // }
-
     this.recordForm.reset({
       visitDate: currentDate,
       visitTime: currentTime,
       patientId: '',
       condition: '',
-      doctor: this.getDoctorName(),  // Set doctor's full name from sessionStorage
+      doctor: this.getDoctorName(),  
       status: '',
       prescription: ''
     });

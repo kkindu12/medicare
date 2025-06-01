@@ -11,7 +11,7 @@ export class MedicalRecordsService {
   constructor(private http: HttpClient) {}
 
   getPatientRecords() {
-    return this.http.get(`${this.apiUrl}/api/patients`);
+    return this.http.get(`${this.apiUrl}/api/patientRecords`);
   }
 
   addPatientRecord(PatientRecord: PatientRecord) {
