@@ -68,8 +68,7 @@ export class EmrComponent implements OnInit {
 
   records: Patient[] = [];
   patientRecords: PatientRecordWithUser[] = [];
-  previousPatientRecords: PatientRecordWithUser[] = [];  
-  constructor(
+  previousPatientRecords: PatientRecordWithUser[] = [];  constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private medicalRecordsService: MedicalRecordsService,

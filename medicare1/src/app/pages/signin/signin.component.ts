@@ -26,7 +26,7 @@ export class SigninComponent {
       return;
     }
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.email)) {
-      alert("IPlease enter a valid email address.");
+      alert("Please enter a valid email address.");
       return;
     }
     if (this.email && this.password &&  this.email.trim() !== '' && this.password.trim() !== '') {
