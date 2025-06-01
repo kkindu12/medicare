@@ -58,55 +58,13 @@
       </app-patient-record-card>
     </div>
   </div>
-
-  <!-- Previous Records Modal -->
-  <div class="modal fade" id="previousRecordsModal" tabindex="-1" aria-labelledby="previousRecordsModalLabel" aria-hidden="true" [class.show]="showPreviousRecords" [style.display]="showPreviousRecords ? 'block' : 'none'">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="previousRecordsModalLabel">
-            Medical History: {{selectedPatientRecord?.user?.firstName}} {{selectedPatientRecord?.user?.lastName}}
-          </h5>
-          <button type="button" class="btn-close" (click)="closePreviousRecords()"></button>
-        </div>
-        <div class="modal-body">
-          <div *ngIf="previousPatientRecords.length > 0">
-            <div class="table-responsive">
-              <table class="table table-striped"> 
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Condition</th>
-                    <th>Doctor</th>
-                    <th>Status</th>
-                    <th>Prescription</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let record of previousPatientRecords">
-                    <td>{{record.visitDate}}</td>
-                    <td>{{record.visitTime}}</td>
-                    <td>{{record.condition}}</td>
-                    <td>{{record.doctor}}</td>
-                    <td><span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span></td>
-                    <td>{{record.prescription}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div *ngIf="previousPatientRecords.length === 0">
-            <p class="text-muted">No previous records found for this patient.</p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closePreviousRecords()">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="showPreviousRecords" class="modal-backdrop fade show"></div>
+  <!-- Patient History Modal Component -->
+  <app-patient-history-modal
+    [showPreviousRecords]="showPreviousRecords"
+    [selectedPatientRecord]="selectedPatientRecord"
+    [previousPatientRecords]="previousPatientRecords"
+    (closePreviousRecords)="closePreviousRecords()">
+  </app-patient-history-modal>
 
   <!-- Add New Record Modal -->
   <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true" [class.show]="showAddRecordModal" [style.display]="showAddRecordModal ? 'block' : 'none'">

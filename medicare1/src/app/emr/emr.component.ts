@@ -7,6 +7,7 @@ import { MedicalRecordsService } from '../services/medicalRecordService/medical-
 import { PatientService } from '../services/patientService/patient.service';
 import { UserService } from '../services/userService/user.service';
 import { PatientRecordCardComponent } from './patient-record-card/patient-record-card.component';
+import { PatientHistoryModalComponent } from './patient-history-modal/patient-history-modal.component';
 import type { 
   User, 
   PatientReportResponse, 
@@ -20,7 +21,7 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-emr',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, PatientRecordCardComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, PatientRecordCardComponent, PatientHistoryModalComponent],
   templateUrl: './emr.component.html',
   styleUrl: './emr.component.scss'
 })
