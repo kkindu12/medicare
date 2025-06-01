@@ -83,15 +83,10 @@
                   {{ patient.firstName }} {{ patient.lastName }}
                 </option>
               </select>
-            </div>
+            </div>            
             <div class="mb-3">
               <label for="condition" class="form-label">Condition</label>
-              <select class="form-select" id="condition" formControlName="condition" required>
-                <option value="" disabled selected>Select a condition</option>
-                <option value="Diabetes">Diabetes</option>
-                <option value="Hypertension">Hypertension</option>
-                <option value="Asthma">Asthma</option>
-              </select>
+              <input type="text" class="form-control" id="condition" placeholder="Enter medical condition" formControlName="condition" required>
             </div>
             <div class="mb-3">
               <label for="doctor" class="form-label">Doctor</label>
@@ -110,6 +105,7 @@
             <div class="mb-3">
               <label for="status" class="form-label">Status</label>
               <select class="form-select" id="status" placeholder="status" formControlName="status" required>
+                <option value="" disabled selected>Select the status</option>
                 <option value="Stable">Stable</option>
                 <option value="Critical">Critical</option>
               </select>
