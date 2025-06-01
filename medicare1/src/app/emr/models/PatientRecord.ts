@@ -8,5 +8,6 @@ export interface PatientRecord {
   status: string;
   prescription: string;
   reports: any[]; // Can be replaced with a specific type if reports have a defined structure
-  previousRecords: any[]; // Same as above
+  previousRecords: any[];
+  patientId: string // Same as above
 }

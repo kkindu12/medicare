@@ -5,6 +5,8 @@ import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angula
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MedicalRecordsService } from '../services/medicalRecordService/medical-records.service'
 import { PatientService } from '../services/patientService/patient.service';
+import { UserService } from '../services/userService/user.service';
+import { User } from './models/User';
 
 export interface Report {
   name: string;
@@ -29,8 +31,8 @@ export interface Patient {
   patientName: string;
   condition: string;
   doctor: string;
-  lastVisit: string;
-  lastVisitTime: string;
+  visitDate: string;
+  visitTime: string;
   status: string;
   prescription: string;
   reports: Report[];
@@ -62,14 +64,15 @@ export class EmrComponent implements OnInit {
   showPatientModal: boolean = false;
   isEditMode: boolean = false;
   reportNames: string[] = [];
+  patientUsers: User[] = [];
 
   selectedPatient: Patient = {
     id: '',
     patientName: 'Loading...',
     condition: '',
     doctor: '',
-    lastVisit: '',
-    lastVisitTime: '',
+    visitDate: '',
+    visitTime: '',
     status: '',
     prescription: '',
     reports: [],
@@ -77,20 +80,21 @@ export class EmrComponent implements OnInit {
   };
 
   records: Patient[] = [];
-
+  patientRecords: PatientRecord[] = [];  
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private medicalRecordsService: MedicalRecordsService,
-    private patiendService: PatientService,
+    private patientService: PatientService,
+    private userService: UserService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.recordForm = this.fb.group({
-      patientName: ['', Validators.required],
+      patientId: ['', Validators.required],
       condition: ['', Validators.required],
-      doctor: ['', Validators.required],
-      lastVisit: ['', Validators.required],
-      lastVisitTime: [this.getCurrentTime(), Validators.required],
+      doctor: ['', Validators.required], // Initialize empty, will be filled when modal opens
+      visitDate: ['', Validators.required],
+      visitTime: [this.getCurrentTime(), Validators.required],
       status: ['', Validators.required],
       prescription: [''],
     });
@@ -108,22 +112,33 @@ export class EmrComponent implements OnInit {
         link.id = 'bootstrap-icons-css';
         link.rel = 'stylesheet';
         link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css';
-        document.head.appendChild(link);
-      }
+        document.head.appendChild(link);      }
       this.loadPatients();
+      this.loadPatientUsers();// Load patient users for dropdown
     }
     console.log('EMR Component initialized');
     console.log(this.medicalRecordsService.getPatientRecords());
   }
-
   loadPatients() {
-    this.patiendService.getPatients().subscribe({
+    this.patientService.getPatients().subscribe({
       next: (patients) => {
         this.records = patients;
       },
       error: (err) => {
         console.error('Error loading patients:', err);
         alert('Failed to load patients');
+      }
+    });
+  }
+
+  loadPatientUsers() {
+    this.userService.getPatientUsers().subscribe({
+      next: (users) => {
+        this.patientUsers = users;
+        console.log('Patient users loaded:', this.patientUsers);
+      },
+      error: (err) => {
+        console.error('Error loading patient users:', err);
       }
     });
   }
@@ -139,7 +154,7 @@ export class EmrComponent implements OnInit {
         : true;
       const matchesCondition = this.filterCondition ? record.condition === this.filterCondition : true;
       const matchesDoctor = this.filterDoctor ? record.doctor === this.filterDoctor : true;
-      const matchesDate = this.filterDate && record.lastVisit ? record.lastVisit.includes(this.filterDate) : true;
+      const matchesDate = this.filterDate && record.visitDate ? record.visitDate.includes(this.filterDate) : true;
       return matchesSearch && matchesCondition && matchesDoctor && matchesDate;
     });
   }
@@ -150,18 +165,30 @@ export class EmrComponent implements OnInit {
     this.filterDoctor = '';
     this.filterDate = '';
   }
-
   openAddRecordModal() {
     const now = new Date();
     const currentDate = now.toISOString().split('T')[0];
     const currentTime = this.getCurrentTime();
 
+    // Get doctor information from sessionStorage (browser-safe)
+    // let doctorName = '';
+    // if (isPlatformBrowser(this.platformId)) {
+    //   try {
+    //     const userString = sessionStorage.getItem('user');
+    //     const user = userString ? JSON.parse(userString) : null;
+    //     doctorName = user ? `${user.firstName} ${user.lastName}` : '';
+    //   } catch (error) {
+    //     console.error('Error reading user data from sessionStorage:', error);
+    //     doctorName = '';
+    //   }
+    // }
+
     this.recordForm.reset({
-      lastVisit: currentDate,
-      lastVisitTime: currentTime,
-      patientName: '',
+      visitDate: currentDate,
+      visitTime: currentTime,
+      patientId: '',
       condition: '',
-      doctor: '',
+      doctor: this.getDoctorName(),  // Set doctor's full name from sessionStorage
       status: '',
       prescription: ''
     });
@@ -170,6 +197,9 @@ export class EmrComponent implements OnInit {
     this.isEditMode = false;
     this.recordForm.get('doctor')?.enable();
     this.recordForm.get('prescription')?.enable();
+
+    // Load patient users to ensure fresh data for dropdown
+    this.loadPatientUsers();
 
     this.showAddRecordModal = true;
     const modal = document.getElementById('addRecordModal');
@@ -203,14 +233,14 @@ export class EmrComponent implements OnInit {
       const formValue = this.recordForm.getRawValue(); // Use getRawValue to include disabled fields
       if (this.isEditMode) {
         // Update existing record
-        this.patiendService.updatePatient(this.selectedPatient.id, formValue).subscribe({
+        this.patientService.updatePatient(this.selectedPatient.id, formValue).subscribe({
           next: (updatedPatient) => {
             const index = this.records.findIndex(record => record.id === updatedPatient.id);
             if (index !== -1) {
               this.records[index] = updatedPatient;
             }
             this.recordForm.reset({
-              lastVisitTime: this.getCurrentTime()
+              visitTime: this.getCurrentTime()
             });
             this.close();
             alert('Record updated successfully');
@@ -222,13 +252,28 @@ export class EmrComponent implements OnInit {
         });
       } else {
         // Add new record
-        this.patiendService.addPatient(formValue).subscribe({
-          next: (newPatient) => {
-            this.records.push(newPatient);
+        // this.patientService.addPatient(formValue).subscribe({
+        //   next: (newPatient) => {
+        //     this.records.push(newPatient);
+        //     this.recordForm.reset({
+        //       lastVisitTime: this.getCurrentTime()
+        //     });
+        //     this.close();
+        //     alert('Record added successfully');
+        //   },
+        //   error: (err) => {
+        //     console.error('Error adding patient:', err);
+        //     alert('Failed to add patient');
+        //   }
+        // });
+        this.medicalRecordsService.addPatientRecord(formValue).subscribe({    
+          next: (response) => {
+            console.log(response)
             this.recordForm.reset({
-              lastVisitTime: this.getCurrentTime()
+              visitDate: new Date().toISOString().split('T')[0],
+              visitTime: this.getCurrentTime(),
+              doctor: this.getDoctorName() 
             });
-            this.close();
             alert('Record added successfully');
           },
           error: (err) => {
@@ -248,8 +293,8 @@ export class EmrComponent implements OnInit {
       patientName: record.patientName,
       condition: record.condition,
       doctor: record.doctor,
-      lastVisit: record.lastVisit,
-      lastVisitTime: record.lastVisitTime,
+      visitDate: record.visitDate,
+      visitTime: record.visitTime,
       status: record.status,
       prescription: record.prescription
     });
@@ -262,7 +307,6 @@ export class EmrComponent implements OnInit {
       this.recordForm.get('doctor')?.disable();
       this.recordForm.get('prescription')?.disable();
     } else {
-      this.recordForm.get('doctor')?.enable();
       this.recordForm.get('prescription')?.enable();
     }
 
@@ -283,7 +327,7 @@ export class EmrComponent implements OnInit {
     this.selectedFile = null;
     
     this.showPatientModal = true;
-    this.patiendService.getPatientRecordNames(this.selectedPatient.id)
+    this.patientService.getPatientRecordNames(this.selectedPatient.id)
     .subscribe({
       next: (data: string[]) => {
         this.reportNames = data;  
@@ -436,8 +480,8 @@ export class EmrComponent implements OnInit {
       patientName: this.selectedPatient.patientName,
       condition: this.selectedPatient.condition,
       doctor: this.selectedPatient.doctor,
-      lastVisit: this.selectedPatient.lastVisit,
-      lastVisitTime: this.selectedPatient.lastVisitTime,
+      visitDate: this.selectedPatient.visitDate,
+      visitTime: this.selectedPatient.visitTime,
       status: this.selectedPatient.status,
       prescription: this.selectedPatientPrescription
     };
@@ -446,11 +490,11 @@ export class EmrComponent implements OnInit {
     //   `http://localhost:8000/api/patients/${this.selectedPatient.id}`,
     //   updateData
     // )
-    this.patiendService.updatePatient(this.selectedPatient.id, updateData).subscribe({
+    this.patientService.updatePatient(this.selectedPatient.id, updateData).subscribe({
       next: (updatedPatient) => {
         const currentRecord: PatientRecord = {
-          visitDate: this.selectedPatient.lastVisit,
-          visitTime: this.selectedPatient.lastVisitTime,
+          visitDate: this.selectedPatient.visitDate,
+          visitTime: this.selectedPatient.visitTime,
           condition: this.selectedPatient.condition,
           doctor: this.selectedPatient.doctor,
           prescription: this.selectedPatient.prescription,
@@ -510,5 +554,20 @@ export class EmrComponent implements OnInit {
     const dropboxBaseUrl = 'https://www.dropbox.com/home/Apps/medicare_capstone/'; 
     const fullUrl = `${dropboxBaseUrl}medicare_uploads/${this.selectedPatient.id}/${reportPath}?raw=1`;
     window.open(fullUrl, '_blank');
+  }
+
+  getDoctorName(){
+    let doctorName = '';
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const userString = sessionStorage.getItem('user');
+        const user = userString ? JSON.parse(userString) : null;
+        doctorName = user ? `${user.firstName} ${user.lastName}` : '';
+      } catch (error) {
+        console.error('Error reading user data from sessionStorage:', error);
+        doctorName = '';
+      }
+    }
+    return doctorName;
   }
 }

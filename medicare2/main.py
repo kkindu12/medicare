@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers.patient import router as patient_router
 from routers.user import router as user_router
+from routers.patientRecord import router as patientRecord_router
 import uvicorn
 
 app = FastAPI(title="Medicare EMR API")
@@ -17,6 +18,7 @@ app.add_middleware(
 
 # Include patient router
 app.include_router(patient_router, prefix="/api")
+app.include_router(patientRecord_router, prefix="/api")
 app.include_router(user_router, prefix="/api")
 
 if __name__ == "__main__":

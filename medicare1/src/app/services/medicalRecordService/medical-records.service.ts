@@ -15,7 +15,7 @@ export class MedicalRecordsService {
   }
 
   addPatientRecord(PatientRecord: PatientRecord) {
-    return this.http.post(`${this.apiUrl}/api/patients`, PatientRecord);
+    return this.http.post(`${this.apiUrl}/api/patientRecords`, PatientRecord);
   }
 
   updatePatientRecord(id: number, patientRecord: PatientRecord) {

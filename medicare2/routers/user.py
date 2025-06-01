@@ -51,6 +51,18 @@ async def get_users():
     print(f"📊 Found {len(users)} users")  # Debug logging
     return users
 
+# New endpoint to get users by role (patients only)
+@router.get("/users/patients", response_model=List[User])
+async def get_patients_by_role():
+    print("🔍 GET /users/patients endpoint hit!")  # Debug logging
+    users = []
+    for user in get_db().users.find({"role": True}):  # role=True means patient
+        user["id"] = str(user["_id"])
+        users.append(User(**user))
+    print(f"📊 Found {len(users)} patients")  
+    print(users)# Debug logging
+    return users
+
 @router.get("/users/{user_id}", response_model=User)
 async def get_user(user_id: str):
     print(f"🔍 GET /users/{user_id} endpoint hit!")  # Debug logging

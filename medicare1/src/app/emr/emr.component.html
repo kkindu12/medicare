@@ -56,7 +56,7 @@
         <p class="card-text text-muted">
           Condition: {{ record.condition }}<br>
           Doctor: {{ record.doctor }}<br>
-          Last Visit: {{ record.lastVisit }} at {{ record.lastVisitTime }}<br>
+          Last Visit: {{ record.visitDate }} at {{ record.visitTime }}<br>
           Status: <span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span>
         </p>   
         <div class="d-flex justify-content-between">
@@ -136,14 +136,20 @@
           <button type="button" class="btn-close" (click)="close()"></button>
         </div>
         <div class="modal-body">
-          <form [formGroup]="recordForm" (ngSubmit)="addRecord()">
+          <form [formGroup]="recordForm" (ngSubmit)="addRecord()">            
             <div class="mb-3">
-              <label for="patientName" class="form-label">Patient Name</label>
-              <input type="text" class="form-control" id="patientName" formControlName="patientName" required>
+              <label for="patientId" class="form-label">Patient Name</label>              
+              <select class="form-select" id="patientId" formControlName="patientId" required>
+                <option value="" disabled selected>Select a patient</option>
+                <option *ngFor="let patient of patientUsers" [value]="patient.id">
+                  {{ patient.firstName }} {{ patient.lastName }}
+                </option>
+              </select>
             </div>
             <div class="mb-3">
               <label for="condition" class="form-label">Condition</label>
               <select class="form-select" id="condition" formControlName="condition" required>
+                <option value="" disabled selected>Select a condition</option>
                 <option value="Diabetes">Diabetes</option>
                 <option value="Hypertension">Hypertension</option>
                 <option value="Asthma">Asthma</option>
@@ -151,21 +157,17 @@
             </div>
             <div class="mb-3">
               <label for="doctor" class="form-label">Doctor</label>
-              <select class="form-select" id="doctor" placeholder="Enter Doctor Name" formControlName="doctor" required>
-                <option value="Dr. Samantha Kumara">Dr. Samantha Kumara</option>
-                <option value="Dr. Piyal Kodikara">Dr. Piyal Kodikara</option>
-                <option value="Dr. Sunil Jayathilake">Dr. Sunil Jayathilake</option>
-              </select>
+              <input type="text" class="form-control" id="doctor" placeholder="Enter Doctor Name" formControlName="doctor" required>
             </div>
             <div class="mb-3">
-              <label for="lastVisit" class="form-label">Visit Date</label>
-              <input type="date" class="form-control" id="lastVisit" formControlName="lastVisit" required>
+              <label for="visitDate" class="form-label">Visit Date</label>
+              <input type="date" class="form-control" id="visitDate" formControlName="visitDate" required>
             </div>
             <div class="mb-3">
-              <label for="lastVisitTime" class="form-label">Visit Time</label>
-              <input type="time" class="form-control" id="lastVisitTime" 
-                     formControlName="lastVisitTime" required
-                     [value]="recordForm.get('lastVisitTime')?.value">
+              <label for="visitTime" class="form-label">Visit Time</label>
+              <input type="visitTime" class="form-control" id="visitTime" 
+                     formControlName="visitTime" required
+                     [value]="recordForm.get('visitTime')?.value">
             </div>
             <div class="mb-3">
               <label for="status" class="form-label">Status</label>

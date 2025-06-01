@@ -32,6 +32,7 @@ class User(UserCreate):
 class UserLoginResponse(BaseModel):
     id: str
     firstName: str
+    lastName: str
 
 class UserLogin(BaseModel):
     email: str
