@@ -1,286 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharmacy & Laboratory Management</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            color: #1976d2;
-            font-size: 32px;
-            margin: 0;
-        }
-        .buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .btn {
-            background-color: #1976d2;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .btn-outline {
-            background-color: white;
-            color: #1976d2;
-            border: 1px solid #1976d2;
-        }
-        .container {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .search-container {
-            margin-bottom: 20px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .filters {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .filter-group {
-            flex: 1;
-        }
-        .filter-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        .filter-select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: white;
-        }
-        .clear-btn {
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        .section-title {
-            margin-top: 30px;
-            margin-bottom: 20px;
-            color: #444;
-            font-size: 22px;
-        }
-        .cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .card {
-            flex: 1;
-            min-width: 300px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-        }
-        .card-title {
-            margin-top: 0;
-            margin-bottom: 5px;
-            color: #333;
-            font-size: 18px;
-        }
-        .card-subtitle {
-            color: #1976d2;
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-        .card-location {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #555;
-        }
-        .card-rating {
-            color: #f4b400;
-            margin-bottom: 10px;
-        }
-        .card-detail {
-            margin: 5px 0;
-            color: #555;
-        }
-        .tab-container {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 12px 20px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .tab.active {
-            border-bottom: 3px solid #1976d2;
-            color: #1976d2;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Pharmacy & Laboratory Management</h1>
-        <div class="buttons">
-            <button class="btn">Find Services</button>
-            <button class="btn btn-outline">My Orders</button>
-        </div>
+<div class="pharmacy-container">
+  <div class="search-container">
+    <input type="text" class="search-bar" placeholder="Search by medicine name, category, or code..." (input)="filterMedicines($event)">
+    
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="category">Category:</label>
+        <select id="category" class="filter-select" (change)="filterByCategory($event)">
+          <option value="">All Categories</option>
+          <option value="antibiotics">Antibiotics</option>
+          <option value="analgesics">Analgesics</option>
+          <option value="antidiabetics">Antidiabetics</option>
+          <option value="cardiovascular">Cardiovascular</option>
+          <option value="vitamins">Vitamins & Supplements</option>
+            <option value="antihypertensives">Antihypertensives</option>
+            <option value="antihistamines">Antihistamines</option>
+            <option value="thyroid">Thyroid Medications</option>
+            <option value="cardiovascular">Cardiovascular</option>
+            <option value=" anti-inflammatory"> Anti-inflammatory</option>
+            <option value="antacids">Antacids</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="availability">Availability:</label>
+        <select id="availability" class="filter-select" (change)="filterByAvailability($event)">
+          <option value="">All Items</option>
+          <option value="in-stock">In Stock</option>
+          <option value="low-stock">Low Stock</option>
+          <option value="out-of-stock">Out of Stock</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="manufacturer">Manufacturer:</label>
+        <select id="manufacturer" class="filter-select" (change)="filterByManufacturer($event)">
+          <option value="">All Manufacturers</option>
+          <option value="gsk">GSK</option>
+          <option value="pfizer">Pfizer</option>
+          <option value="novartis">Novartis</option>
+          <option value="bayer">Bayer</option>
+          <option value="roche">Roche</option>
+            <option value="sanofi">Sanofi</option>
+            <option value="merck">Merck</option>
+            <option value="abbvie">AbbVie</option>
+        </select>
+      </div>
     </div>
-
-    <div class="container">
-        <div class="tab-container">
-            <div class="tab active">Pharmacy</div>
-            <div class="tab">Laboratory</div>
-        </div>
-
-        <p>Search for medications or book laboratory tests today.</p>
-
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Search by medication name, lab test, or service...">
-        </div>
-
-        <div class="filters">
-            <div class="filter-group">
-                <span class="filter-label">Category:</span>
-                <select class="filter-select">
-                    <option>All Categories</option>
-                    <option>Prescription Drugs</option>
-                    <option>Over-the-Counter</option>
-                    <option>Health Supplements</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <span class="filter-label">Location:</span>
-                <select class="filter-select">
-                    <option>All Locations</option>
-                    <option>Colombo</option>
-                    <option>Kandy</option>
-                    <option>Galle</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <span class="filter-label">Availability:</span>
-                <select class="filter-select">
-                    <option>All Availability</option>
-                    <option>In Stock</option>
-                    <option>Same Day Delivery</option>
-                    <option>Next Day Delivery</option>
-                </select>
-            </div>
-        </div>
-
-        <button class="clear-btn">Clear Filters</button>
-
-        <h2 class="section-title">Available Pharmacies (4)</h2>
-
-        <div class="cards-container">
-            <div class="card">
-                <h3 class="card-title">MediCare Pharmacy</h3>
-                <p class="card-subtitle">24/7 Service</p>
-                <p class="card-location">Colombo</p>
-                <p class="card-rating">Rating: 4.8 ★</p>
-                <p class="card-detail">Delivery Time: 30 mins</p>
-                <p class="card-detail">Prescription Required: Yes</p>
-                <button class="btn">Order Now</button>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">Health First Pharmacy</h3>
-                <p class="card-subtitle">Family Pharmacy</p>
-                <p class="card-location">Kandy</p>
-                <p class="card-rating">Rating: 4.5 ★</p>
-                <p class="card-detail">Delivery Time: 1 hour</p>
-                <p class="card-detail">Prescription Required: Yes</p>
-                <button class="btn">Order Now</button>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">Union Pharmacy</h3>
-                <p class="card-subtitle">Specialty Medications</p>
-                <p class="card-location">Galle</p>
-                <p class="card-rating">Rating: 4.6 ★</p>
-                <p class="card-detail">Delivery Time: 45 mins</p>
-                <p class="card-detail">Prescription Required: Yes</p>
-                <button class="btn">Order Now</button>
-            </div>
-        </div>
-
-        <h2 class="section-title">Popular Laboratory Tests</h2>
-
-        <div class="cards-container">
-            <div class="card">
-                <h3 class="card-title">Complete Blood Count (CBC)</h3>
-                <p class="card-subtitle">General Health</p>
-                <p class="card-location">Available at: 5 labs</p>
-                <p class="card-rating">Rating: 4.7 ★</p>
-                <p class="card-detail">Results in: 24 hours</p>
-                <p class="card-detail">Price: Rs. 1,200</p>
-                <button class="btn">Book Now</button>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">Lipid Profile</h3>
-                <p class="card-subtitle">Cardiac Health</p>
-                <p class="card-location">Available at: 4 labs</p>
-                <p class="card-rating">Rating: 4.8 ★</p>
-                <p class="card-detail">Results in: 12 hours</p>
-                <p class="card-detail">Price: Rs. 1,800</p>
-                <button class="btn">Book Now</button>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">HbA1c</h3>
-                <p class="card-subtitle">Diabetes Management</p>
-                <p class="card-location">Available at: 3 labs</p>
-                <p class="card-rating">Rating: 4.9 ★</p>
-                <p class="card-detail">Results in: 48 hours</p>
-                <p class="card-detail">Price: Rs. 2,200</p>
-                <button class="btn">Book Now</button>
-            </div>
-        </div>
+    
+    <button class="clear-btn" (click)="clearFilters()">Clear Filters</button>
+  </div>
+  
+  <h2 class="section-title">Available Medicines ({{ filteredMedicines.length }})</h2>
+  
+  <div class="tabs">
+    <div class="tab" [class.active]="activeTab === 'all-medicines'" data-target="all-medicines" (click)="switchTab('all-medicines')">All Medicines</div>
+    <div class="tab" [class.active]="activeTab === 'prescriptions'" data-target="prescriptions" (click)="switchTab('prescriptions')">Prescriptions</div>
+    <div class="tab" [class.active]="activeTab === 'recent'" data-target="recent" (click)="switchTab('recent')">Recently Added</div>
+    <div class="tab" [class.active]="activeTab === 'expiring'" data-target="expiring" (click)="switchTab('expiring')">Expiring Soon</div>
+  </div>
+  
+  <div class="card-container">
+    <div class="card" *ngFor="let medicine of filteredMedicines">
+      <span class="status" [ngClass]="getStatusClass(medicine.status)">{{ medicine.status }} ({{ medicine.stock }})</span>
+      <h3>{{ medicine.name }}</h3>
+      <p>Category: {{ medicine.category }}</p>
+      <p>Manufacturer: {{ medicine.manufacturer }}</p>
+      <p>Expires: {{ medicine.expires }}</p>
+      <p>Price: ${{ medicine.price.toFixed(2) }}</p>
+      <button class="btn btn-primary" (click)="openOrderModal(medicine.name)">Order</button>
     </div>
+  </div>
+</div>
 
-    <script>
-        // Simple tab switching functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // This would change the content based on selected tab
-                if(this.textContent === 'Pharmacy') {
-                    document.querySelector('.section-title').textContent = 'Available Pharmacies (4)';
-                } else {
-                    document.querySelector('.section-title').textContent = 'Available Laboratories (3)';
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+<!-- Order Medicine Modal -->
+<div id="orderModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Order Medicine</h2>
+      <button class="close-btn" (click)="closeModal('orderModal')">&times;</button>
+    </div>
+    
+    <form (ngSubmit)="submitOrder()" #orderForm="ngForm">
+      <div class="form-group">
+        <label for="medicineName">Medicine:</label>
+        <input type="text" id="medicineName" class="form-control" [(ngModel)]="selectedOrder.medicineName" name="medicineName" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" class="form-control" min="1" [(ngModel)]="selectedOrder.quantity" name="quantity" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="patientId">Patient ID:</label>
+        <input type="text" id="patientId" class="form-control" [(ngModel)]="selectedOrder.patientId" name="patientId" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="prescriptionId">Prescription ID (if applicable):</label>
+        <input type="text" id="prescriptionId" class="form-control" [(ngModel)]="selectedOrder.prescriptionId" name="prescriptionId">
+      </div>
+
+      
+       <div class="form-group">
+        <label for="address">Curier Address:</label>
+        <textarea id="address" class="form-control" [(ngModel)]="selectedOrder.address" name="address"></textarea>
+      </div>
+
+
+      <div class="form-group">
+        <label for="notes">Notes:</label>
+        <textarea id="notes" class="form-control" [(ngModel)]="selectedOrder.notes" name="notes"></textarea>
+        </div>
+      
+      <div class="btn-group">
+        <button type="button" class="btn btn-outline" (click)="closeModal('orderModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!orderForm.form.valid">Confirm Order</button>
+      </div>
+    </form>
+  </div>
+</div>
