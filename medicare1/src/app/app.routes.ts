@@ -5,7 +5,9 @@ import { EmrComponent } from './emr/emr.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+    { path: '', redirectTo: '/signin', pathMatch: 'full' },
     { path: 'signin', component: SigninComponent },
     { path: 'signup', component: SignupComponent },
     { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
+    { path: '**', redirectTo: '/signin' }
 ];
