@@ -58,13 +58,15 @@ export class LaboratoryComponent implements OnInit {
 
   filteredTests = [...this.tests];
   activeTab = 'all-tests';
+  selectedReferralFile: File | null = null;
   
   selectedTestRequest = {
     testName: '',
     patientId: '',
     referringDoctor: '',
-    urgency: 'routine',
+    gender: '',
     collectionDate: '',
+    preferredTime: '',
     clinicalInfo: ''
   };
 
@@ -185,10 +187,24 @@ export class LaboratoryComponent implements OnInit {
     if (modal) {
       modal.style.display = 'none';
     }
+    // Reset file when closing modal
+    this.selectedReferralFile = null;
+    const fileInput = document.getElementById('doctorReferral') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   submitTestRequest(): void {
     console.log('Test Request Submitted:', this.selectedTestRequest);
+
+    // Handle file upload if a file is selected
+    if (this.selectedReferralFile) {
+      console.log('Doctor referral uploaded:', this.selectedReferralFile);
+      // Here you would typically upload the file to a server
+      // Example: this.uploadReferralFile(this.selectedReferralFile);
+    }
+    
     // Here you would typically send the data to a service
     alert('Test request submitted successfully!');
     this.closeModal('testRequestModal');
@@ -200,10 +216,55 @@ export class LaboratoryComponent implements OnInit {
       testName: '',
       patientId: '',
       referringDoctor: '',
-      urgency: 'routine',
+      gender: '',
       collectionDate: '',
+      preferredTime: '',
       clinicalInfo: ''
     };
-    this.setCurrentDate();
+    // Reset file selection
+    this.selectedReferralFile = null;
+    const fileInput = document.getElementById('doctorReferral') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }    this.setCurrentDate();
+  }
+
+  // File upload methods for doctor's referral
+  onReferralFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        event.target.value = ''; // Clear the input
+        return;
+      }
+      
+      // Check file type
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please select a valid file format (PDF, JPG, JPEG, PNG, GIF)');
+        event.target.value = ''; // Clear the input
+        return;
+      }
+      
+      this.selectedReferralFile = file;
+    }
+  }
+
+  removeReferralFile(): void {
+    this.selectedReferralFile = null;
+    const fileInput = document.getElementById('doctorReferral') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 }

@@ -181,7 +181,7 @@
   border-radius: 8px;
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 88vh;
   overflow-y: auto;
 }
 
@@ -197,8 +197,8 @@
 
 .modal-header h2 {
   margin: 0;
-  color: #333;
-  font-size: 20px;
+  color: #007bff;
+  font-size: 30px;
 }
 
 .close-btn {
@@ -206,7 +206,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
+  color: black;
   padding: 0;
   width: 30px;
   height: 30px;
@@ -237,7 +237,7 @@
 .form-control {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #007bff;
   border-radius: 4px;
   font-size: 14px;
   box-sizing: border-box;
@@ -296,4 +296,89 @@ textarea.form-control {
   .btn-group .btn {
     width: 100%;
   }
+}
+/* File upload styles for doctor's referral */
+.file-upload-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-upload-label {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1.5px dashed #007bff;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 50px;
+}
+
+.file-upload-label:hover {
+  border-color: #007bff;
+  background-color: #f0f8ff;
+}
+
+.file-upload-label:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.upload-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  color: #007bff;
+}
+
+.file-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  border-left: 4px solid #007bff;
+}
+
+.file-info small {
+  color: #495057;
+  font-weight: 500;
+}
+
+.remove-file-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.remove-file-btn:hover {
+  background: #c82333;
+}
+
+.form-text {
+  color: #6c757d;
+  margin-top: 4px;
+  font-size: 0.875rem;
 }

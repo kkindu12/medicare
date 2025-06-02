@@ -1,6 +1,6 @@
 <div class="laboratory-container">
   <div class="search-container">
-    <input type="text" class="search-bar" placeholder="Search by test name, category, or lab code..." (input)="filterTests($event)">
+    <input type="text" class="search-bar" placeholder="Search by test name, category..." (input)="filterTests($event)">
     
     <div class="filter-row">
       <div class="filter-group">
@@ -87,17 +87,45 @@
       </div>
       
       <div class="form-group">
-        <label for="urgency">Urgency:</label>
-        <select id="urgency" class="form-control" [(ngModel)]="selectedTestRequest.urgency" name="urgency">
-          <option value="routine">Routine</option>
-          <option value="urgent">Urgent</option>
-          <option value="stat">STAT</option>
+        <label for="gender">Gender:</label>
+        <select id="gender" class="form-control" [(ngModel)]="selectedTestRequest.gender" name="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
         </select>
       </div>
       
       <div class="form-group">
-        <label for="collectionDate">Collection Date:</label>
+        <label for="collectionDate">Preferred Date:</label>
         <input type="date" id="collectionDate" class="form-control" [(ngModel)]="selectedTestRequest.collectionDate" name="collectionDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="preferredTime">Preferred Time:</label>
+        <select id="preferredTime" class="form-control" [(ngModel)]="selectedTestRequest.preferredTime" name="preferredTime">
+          <option value="morning">Morning (8:00 AM - 12:00 PM)</option>
+          <option value="afternoon">Afternoon (12:00 PM - 4:00 PM)</option>
+          <option value="evening">Evening (4:00 PM - 8:00 PM)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="doctorReferral">Upload Doctor's Referral:</label>
+        <div class="file-upload-container">
+          <input type="file" id="doctorReferral" class="file-input" 
+                 accept=".pdf,.jpg,.jpeg,.png,.gif" 
+                 (change)="onReferralFileSelected($event)" 
+                 #referralFileInput>
+          <label for="doctorReferral" class="file-upload-label">
+            <i class="upload-icon">📎</i>
+            <span>{{ selectedReferralFile ? selectedReferralFile.name : 'Choose file or drag here' }}</span>
+          </label>
+          <div class="file-info" *ngIf="selectedReferralFile">
+            <small>{{ selectedReferralFile.name }} ({{ formatFileSize(selectedReferralFile.size) }})</small>
+            <button type="button" class="remove-file-btn" (click)="removeReferralFile()">&times;</button>
+          </div>
+        </div>
+        <small class="form-text">Accepted formats: PDF, JPG, JPEG, PNG, GIF (Max 5MB)</small>
       </div>
       
       <div class="form-group">
