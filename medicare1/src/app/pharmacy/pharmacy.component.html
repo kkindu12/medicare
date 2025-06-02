@@ -95,15 +95,32 @@
         <label for="patientId">Patient ID:</label>
         <input type="text" id="patientId" class="form-control" [(ngModel)]="selectedOrder.patientId" name="patientId" required>
       </div>
-      
-      <div class="form-group">
+        <div class="form-group">
         <label for="prescriptionId">Prescription ID (if applicable):</label>
         <input type="text" id="prescriptionId" class="form-control" [(ngModel)]="selectedOrder.prescriptionId" name="prescriptionId">
       </div>
 
-      
+      <div class="form-group">
+        <label for="prescriptionReceipt">Upload Prescription Receipt:</label>
+        <div class="file-upload-container">
+          <input type="file" id="prescriptionReceipt" class="file-input" 
+                 accept=".pdf,.jpg,.jpeg,.png,.gif" 
+                 (change)="onFileSelected($event)" 
+                 #fileInput>
+          <label for="prescriptionReceipt" class="file-upload-label">
+            <i class="upload-icon">📎</i>
+            <span>{{ selectedFile ? selectedFile.name : 'Choose file or drag here' }}</span>
+          </label>
+          <div class="file-info" *ngIf="selectedFile">
+            <small>{{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</small>
+            <button type="button" class="remove-file-btn" (click)="removeFile()">&times;</button>
+          </div>
+        </div>
+        <small class="form-text">Accepted formats: PDF, JPG, JPEG, PNG, GIF (Max 5MB)</small>
+      </div>
+  
        <div class="form-group">
-        <label for="address">Curier Address:</label>
+        <label for="address">Courier Address:</label>
         <textarea id="address" class="form-control" [(ngModel)]="selectedOrder.address" name="address"></textarea>
       </div>
 

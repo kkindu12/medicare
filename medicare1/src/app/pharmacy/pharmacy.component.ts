@@ -151,6 +151,7 @@ export class PharmacyComponent implements OnInit {
 
   filteredMedicines = [...this.medicines];
   activeTab = 'all-medicines';
+  selectedFile: File | null = null;
   
   selectedOrder = {
     medicineName: '',
@@ -284,10 +285,24 @@ export class PharmacyComponent implements OnInit {
     if (modal) {
       modal.style.display = 'none';
     }
+    // Reset file when closing modal
+    this.selectedFile = null;
+    const fileInput = document.getElementById('prescriptionReceipt') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   submitOrder(): void {
     console.log('Order Submitted:', this.selectedOrder);
+
+     // Handle file upload if a file is selected
+    if (this.selectedFile) {
+      console.log('Prescription receipt uploaded:', this.selectedFile);
+      // Here you would typically upload the file to a server
+      // Example: this.uploadFile(this.selectedFile);
+    }
+    
     // Here you would typically send the data to a service
     alert('Order submitted successfully!');
     this.closeModal('orderModal');
@@ -303,6 +318,12 @@ export class PharmacyComponent implements OnInit {
       address:'',
       notes: ''
     };
+        // Reset file selection
+    this.selectedFile = null;
+    const fileInput = document.getElementById('prescriptionReceipt') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   getStatusClass(status: string): string {
@@ -316,5 +337,44 @@ export class PharmacyComponent implements OnInit {
       default:
         return '';
     }
+  }
+  
+  // File upload methods
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        event.target.value = ''; // Clear the input
+        return;
+      }
+      
+      // Check file type
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please select a valid file format (PDF, JPG, JPEG, PNG, GIF)');
+        event.target.value = ''; // Clear the input
+        return;
+      }
+      
+      this.selectedFile = file;
+    }
+  }
+
+  removeFile(): void {
+    this.selectedFile = null;
+    const fileInput = document.getElementById('prescriptionReceipt') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 }
