@@ -33,6 +33,7 @@ class UserLoginResponse(BaseModel):
     id: str
     firstName: str
     lastName: str
+    role: bool
 
 class UserLogin(BaseModel):
     email: str

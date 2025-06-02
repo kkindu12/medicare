@@ -17,4 +17,5 @@ export interface SigninUserResponse{
   id: string;
   firstName: string;
   lastName: string;
+  role: boolean;
 }

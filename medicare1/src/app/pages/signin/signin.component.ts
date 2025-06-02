@@ -34,7 +34,12 @@ export class SigninComponent {
         (response) => { 
           if (response) {
             sessionStorage.setItem('user', JSON.stringify(response));
-            this.router.navigate(['/emr']);
+            if(response.role) {
+              this.router.navigate(['/emr']);
+            }
+            else {
+              this.router.navigate(['/signup']);
+            }
           } else {
             alert("Invalid email or password.");
           }
