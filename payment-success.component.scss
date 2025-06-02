@@ -1,0 +1,75 @@
+.payment-success-container {
+    
+  height: 60vh;
+  background-color: #f4f5f7;
+  padding: 3rem;
+  max-width:30%;
+  justify-content:center;
+  text-align: center;
+   margin-left:30% ;
+margin-top:5% ;
+border: 2px solid  #d4dbe4;
+align-items: center;
+ 
+
+  .checkmark-circle {
+    font-size: 9rem;
+    color:  #007bff;
+    animation: pop 0.5s ease;
+    margin-top: 10%;
+     
+
+    i {
+      animation: bounce 1s ease infinite;
+    }
+  }
+
+  h2 {
+    color:  #126bf1;
+    margin-top: 0%;
+  }
+
+  @keyframes pop {
+    0% {
+      transform: scale(0.3);
+      opacity: 0;
+       
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+       
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  .home-box {
+  border: 2px solid #959ddd;  // green border to match btn-success
+  padding: 5px;
+  width: 75%;
+  margin-top: 50px;
+  border-radius: 8px;
+  background-color: #569fec; // light greenish background
+  display: inline-block;
+    
+  
+}
+
+.go-home-btn {
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  text-align: center;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+}
+
+}
