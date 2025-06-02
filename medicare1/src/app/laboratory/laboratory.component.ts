@@ -53,6 +53,69 @@ export class LaboratoryComponent implements OnInit {
       turnaround: '24 Hours',
       location: 'Outpatient Center',
       price: 55.00
+    },
+    {
+      name: 'Vitamin D Level',
+      category: 'Blood Tests',
+      turnaround: '48 Hours',
+      location: 'Reference Lab',
+      price: 75.00
+    },
+    {
+      name: 'Basic Metabolic Panel',
+      category: 'Blood Tests',
+      turnaround: 'Same Day',
+      location: 'Main Laboratory',
+      price: 50.00
+    },
+    {
+      name: 'Liver Function Tests',
+      category: 'Blood Tests',
+      turnaround: '24 Hours',
+      location: 'Main Laboratory',
+      price: 60.00
+    },
+    {
+      name: 'Urine Culture',
+      category: 'Microbiology',
+      turnaround: '24 Hours',
+      location: 'Main Laboratory',
+      price: 70.00
+    },
+    {
+      name: 'Complete Urine Analysis',
+      category: 'Urine Tests',
+      turnaround: 'Same Day',
+      location: 'Main Laboratory',
+      price: 30.00
+    },
+    {
+      name: 'Blood Type & Crossmatch',
+      category: 'Blood Tests',
+      turnaround: '24 Hours',
+      location: 'Main Laboratory',
+      price: 120.00
+    },
+    {
+      name: 'Pregnancy Test (Urine)',
+      category: 'Urine Tests',
+      turnaround: 'Same Day',
+      location: 'Outpatient Center',
+      price: 100.00
+    },
+    {
+      name: 'Coagulation Panel (PT/INR)',
+      category: 'Blood Tests',
+      turnaround: '48 Hours',
+      location: 'Reference Lab',
+      price: 90.00
+    },
+    {
+      name: 'Strep A Rapid Test',
+      category: 'Microbiology',
+      turnaround: '48 Hours',
+      location: 'Main Laboratory',
+      price: 50.00
     }
   ];
 
@@ -104,17 +167,6 @@ export class LaboratoryComponent implements OnInit {
     }
   }
 
-  filterByTurnaround(event: any): void {
-    const turnaround = event.target.value;
-    if (turnaround === '') {
-      this.filteredTests = [...this.tests];
-    } else {
-      this.filteredTests = this.tests.filter(test => 
-        test.turnaround.toLowerCase().includes(turnaround.toLowerCase())
-      );
-    }
-  }
-
   filterByLocation(event: any): void {
     const location = event.target.value;
     if (location === '') {
@@ -130,12 +182,10 @@ export class LaboratoryComponent implements OnInit {
     this.filteredTests = [...this.tests];
     // Reset form controls
     const categorySelect = document.getElementById('test-category') as HTMLSelectElement;
-    const turnaroundSelect = document.getElementById('turnaround') as HTMLSelectElement;
     const locationSelect = document.getElementById('lab-location') as HTMLSelectElement;
     const searchInput = document.querySelector('.search-bar') as HTMLInputElement;
     
     if (categorySelect) categorySelect.value = '';
-    if (turnaroundSelect) turnaroundSelect.value = '';
     if (locationSelect) locationSelect.value = '';
     if (searchInput) searchInput.value = '';
   }
@@ -161,7 +211,7 @@ export class LaboratoryComponent implements OnInit {
         break;
       case 'special':
         this.filteredTests = this.tests.filter(test => 
-          test.category === 'Special Tests' || test.turnaround === '48 Hours'
+          test.category === 'special' || test.turnaround === '48 Hours'
         );
         break;
       case 'panels':
