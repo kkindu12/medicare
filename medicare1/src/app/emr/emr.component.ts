@@ -6,6 +6,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MedicalRecordsService } from '../services/medicalRecordService/medical-records.service'
 import { PatientService } from '../services/patientService/patient.service';
 import { UserService } from '../services/userService/user.service';
+import { AlertService } from '../shared/alert/alert.service';
 import { PatientRecordCardComponent } from './patient-record-card/patient-record-card.component';
 import { PatientHistoryModalComponent } from './patient-history-modal/patient-history-modal.component';
 import type { 
@@ -76,6 +77,7 @@ export class EmrComponent implements OnInit {
     private medicalRecordsService: MedicalRecordsService,
     private patientService: PatientService,
     private userService: UserService,
+    private alertService: AlertService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.recordForm = this.fb.group({
@@ -131,10 +133,9 @@ export class EmrComponent implements OnInit {
     this.patientService.getPatients().subscribe({
       next: (patients) => {
         this.records = patients;
-      },
-      error: (err) => {
+      },      error: (err) => {
         console.error('Error loading patients:', err);
-        alert('Failed to load patients');
+        this.alertService.showError('Load Error', 'Failed to load patients. Please try again.');
       }
     });
   }
@@ -158,10 +159,9 @@ export class EmrComponent implements OnInit {
       next: (response) => {   
         console.log('Patient records loaded:', response);
         this.patientRecords = response as PatientRecordWithUser[];
-      },
-      error: (err) => {   
+      },      error: (err) => {   
         console.error('Error loading patient records:', err);
-        alert('Failed to load patient records');
+        this.alertService.showError('Load Error', 'Failed to load patient records. Please try again.');
       }
     });
   }
@@ -238,10 +238,10 @@ export class EmrComponent implements OnInit {
         const fileInput = document.getElementById('reportFile') as HTMLInputElement;
         if (fileInput) {
           fileInput.value = '';
-        }
-        alert('Upload success');
+        }        
+        this.alertService.showSuccess('Upload Success', 'File uploaded successfully!');
       },
-      error: (err) => alert('Upload failed')
+      error: (err) => this.alertService.showError('Upload Failed', 'Failed to upload file. Please try again.')
     });
   }
 
@@ -254,13 +254,12 @@ export class EmrComponent implements OnInit {
             this.recordForm.reset({
               visitTime: this.getCurrentTime()
             });
-            this.close();
-            this.loadPatientRecords(); 
-            alert('Record updated successfully');
+            this.close();            this.loadPatientRecords(); 
+            this.alertService.showSuccess('Update Success', 'Record updated successfully!');
           },
           error: (err) => {
             console.error('Error updating patient:', err);
-            alert('Failed to update patient');
+            this.alertService.showError('Update Failed', 'Failed to update patient record. Please try again.');
           }
         });
       } else {
@@ -285,13 +284,12 @@ export class EmrComponent implements OnInit {
               visitDate: new Date().toISOString().split('T')[0],
               visitTime: this.getCurrentTime(),
               doctor: this.getDoctorName() 
-            });
-            this.loadPatientRecords();
-            alert('Record added successfully');
+            });            this.loadPatientRecords();
+            this.alertService.showSuccess('Add Success', 'Record added successfully!');
           },
           error: (err) => {
             console.error('Error adding patient:', err);
-            alert('Failed to add patient');
+            this.alertService.showError('Add Failed', 'Failed to add patient record. Please try again.');
           }
         });
       }
@@ -373,22 +371,20 @@ export class EmrComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       if (file.type === 'application/pdf') {
-        this.selectedFile = file;
-      } else {
-        alert('Please upload a PDF file');
+        this.selectedFile = file;      } else {
+        this.alertService.showWarning('Invalid File Type', 'Please upload a PDF file only.');
         input.value = '';
         this.selectedFile = null;
       }
     }
   }
-
   uploadReport() {
     if (!this.newReportName?.trim()) {
-      alert('Please enter a report name');
+      this.alertService.showWarning('Missing Information', 'Please enter a report name.');
       return;
     }
     if (!this.selectedFile) {
-      alert('Please select a file to upload');
+      this.alertService.showWarning('Missing File', 'Please select a file to upload.');
       return;
     }
     
@@ -405,13 +401,12 @@ export class EmrComponent implements OnInit {
         this.selectedPatient.reports.push(report);
         this.newReportName = '';
         this.selectedFile = null;
-        const fileInput = document.getElementById('reportFile') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
-        alert('Report uploaded successfully');
+        const fileInput = document.getElementById('reportFile') as HTMLInputElement;        if (fileInput) fileInput.value = '';
+        this.alertService.showSuccess('Upload Success', 'Report uploaded successfully!');
       },
       error: (err) => {
         console.error('Error uploading report:', err);
-        alert('Failed to upload report');
+        this.alertService.showError('Upload Failed', 'Failed to upload report. Please try again.');
       }
     });
   }

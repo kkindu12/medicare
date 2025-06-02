@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { EmrComponent } from "./emr/emr.component";
+import { AlertComponent } from "./shared/alert/alert.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, EmrComponent],
+  imports: [RouterOutlet, EmrComponent, AlertComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
