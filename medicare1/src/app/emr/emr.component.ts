@@ -22,11 +22,12 @@ import { MedicineService } from '../services/medicineService/medicine.service';
 import { LabTestService } from '../services/labTestService/lab-test.service';
 import { LabTest } from './models/LabTest';
 import { Medicine } from './models/Medicine';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-emr',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, PatientRecordCardComponent, PatientHistoryModalComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, PatientRecordCardComponent, PatientHistoryModalComponent, NgSelectModule],
   templateUrl: './emr.component.html',
   styleUrl: './emr.component.scss'
 })

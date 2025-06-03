@@ -183,17 +183,16 @@
                     </tr>
                   </tbody>
                 </table>
-              </div>            </div>
-            <div class="mb-3">
-              <label for="labTest" class="form-label">Lab Tests (Hold Ctrl/Cmd to select multiple)</label>
-              <select class="form-select" id="labTest" formControlName="labTest" multiple size="5">
-                <option *ngFor="let labtest of labTests" [value]="labtest.id">
-                  {{ labtest.reportName}}
-                </option>
-              </select>
-              <small class="form-text text-muted">
-                Selected: {{ getSelectedLabTestNames().join(', ') || 'None' }}
-              </small>
+              </div>            </div>            <div class="mb-3">
+              <label for="labTest" class="form-label">Lab Tests</label>
+              <ng-select
+                [items]="labTests"
+                bindLabel="reportName"
+                bindValue="id"
+                [multiple]="true"
+                placeholder="Select lab tests"
+                formControlName="labTest">
+              </ng-select>
             </div>
             <div class="mb-4">
               <h6 class="border-bottom pb-2">Prescription</h6>
