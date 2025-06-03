@@ -18,6 +18,10 @@ import type {
   Medication 
 } from './models';
 import { environment } from '../../environments/environment';
+import { MedicineService } from '../services/medicineService/medicine.service';
+import { LabTestService } from '../services/labTestService/lab-test.service';
+import { LabTest } from './models/LabTest';
+import { Medicine } from './models/Medicine';
 
 @Component({
   selector: 'app-emr',
@@ -46,6 +50,7 @@ export class EmrComponent implements OnInit {
   reportNames: string[] = [];
   patientUsers: User[] = [];
   monthOptions: { value: string, label: string }[] = [];
+  totalFee = 0;
 
   selectedPatient: Patient = {
     id: '',
@@ -71,6 +76,8 @@ export class EmrComponent implements OnInit {
 
   records: Patient[] = [];
   patientRecords: PatientRecordWithUser[] = [];
+  medicines: Medicine[] = [];
+  labTests: LabTest[] = [];
   previousPatientRecords: PatientRecordWithUser[] = [];  constructor(
     private fb: FormBuilder,
     private http: HttpClient,
@@ -78,6 +85,8 @@ export class EmrComponent implements OnInit {
     private patientService: PatientService,
     private userService: UserService,
     private alertService: AlertService,
+    private medicineService: MedicineService,
+    private labTestService: LabTestService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.recordForm = this.fb.group({
@@ -108,7 +117,9 @@ export class EmrComponent implements OnInit {
         document.head.appendChild(link);      }
       this.loadPatients();
       this.loadPatientUsers();
-      this.loadPatientRecords();// Load patient users for dropdown
+      this.loadPatientRecords();
+      this.loadLabTests();
+      this.loadMedicines();
     }    console.log('EMR Component initialized');
     console.log(this.medicalRecordsService.getPatientRecords());
   }
@@ -165,6 +176,28 @@ export class EmrComponent implements OnInit {
       }
     });
   }
+
+  loadMedicines() {
+    this.medicineService.getMedicines().subscribe({   
+      next: (response) => {   
+        this.medicines = response as Medicine[];
+      },      
+      error: (err) => {   
+        this.alertService.showError('Load Error', 'Failed to load medicine records. Please try again.');
+      }
+    })
+  } 
+  
+  loadLabTests() {
+    this.labTestService.getLabTests().subscribe({   
+      next: (response) => {   
+        this.labTests = response as LabTest[];
+      },      
+      error: (err) => {   
+        this.alertService.showError('Load Error', 'Failed to load Lab test records. Please try again.');
+      }
+    })
+  } 
 
   get filteredRecords() {
     return this.patientRecords.filter(record => {

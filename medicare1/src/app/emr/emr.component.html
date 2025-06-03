@@ -110,6 +110,24 @@
                 <option value="Critical">Critical</option>
               </select>
             </div>
+            <div class="mb-3">
+              <label for="medicine" class="form-label">Medicine</label>
+              <select class="form-select" id="medicine" placeholder="medicine" formControlName="medicine">
+                <option value="" disabled selected>Select the Medicine</option>
+                <option *ngFor="let medicine of medicines" [value]="medicine.id">
+                  {{ medicine.name}}
+                </option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="labTest" class="form-label">Lab Test</label>
+              <select class="form-select" id="labTest" placeholder="labTest" formControlName="labTest">
+                <option value="" disabled selected>Select the Lab Test</option>
+                <option *ngFor="let labtest of labTests" [value]="labtest.id">
+                  {{ labtest.reportName}}
+                </option>
+              </select>
+            </div>
             <div class="mb-4">
               <h6 class="border-bottom pb-2">Prescription</h6>
               <div class="mb-3">

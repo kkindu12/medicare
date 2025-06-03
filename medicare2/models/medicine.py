@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 
 class Medicine(BaseModel):
-    id: Optional[str] = Field(alias="_id")
+    id: Optional[str]
     name: str
     description: str
     dosage: str
