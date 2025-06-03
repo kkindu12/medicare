@@ -88,8 +88,7 @@ export class EmrComponent implements OnInit {
     private alertService: AlertService,
     private medicineService: MedicineService,
     private labTestService: LabTestService,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {    this.recordForm = this.fb.group({
+    @Inject(PLATFORM_ID) private platformId: Object  ) {    this.recordForm = this.fb.group({
       patientId: ['', Validators.required],
       condition: ['', Validators.required],
       doctor: ['', Validators.required], // Initialize empty, will be filled when modal opens
@@ -98,6 +97,7 @@ export class EmrComponent implements OnInit {
       status: ['', Validators.required],
       prescription: [''],
       medicine: [''], // Add medicine form control
+      labTest: [[]], // Initialize as array for multiple selection
     });
   }
 
@@ -225,16 +225,15 @@ export class EmrComponent implements OnInit {
   openAddRecordModal() {
     const now = new Date();
     const currentDate = now.toISOString().split('T')[0];
-    const currentTime = this.getCurrentTime();
-
-    this.recordForm.reset({
+    const currentTime = this.getCurrentTime();    this.recordForm.reset({
       visitDate: currentDate,
       visitTime: currentTime,
       patientId: '',
       condition: '',
       doctor: this.getDoctorName(),  
       status: '',
-      prescription: ''
+      prescription: '',
+      labTest: [] // Reset lab test selection
     });
 
     // Ensure fields are enabled in add mode
@@ -280,14 +279,7 @@ export class EmrComponent implements OnInit {
   }  addRecord() {
     if (this.recordForm.valid) {
       const formValue = this.recordForm.getRawValue();
-      
-      // Generate prescription text from selected medicines
-      const prescriptionText = this.generatePrescriptionText();
-      if (prescriptionText) {
-        formValue.prescription = prescriptionText;
-      }
-
-      // Add selected medicines data to the form
+        // Add selected medicines data to the form
       if (this.selectedMedicines.length > 0) {
         formValue.medicine = this.selectedMedicines.map(medicine => ({
           medicineId: medicine.medicineId,
@@ -298,14 +290,15 @@ export class EmrComponent implements OnInit {
         }));
       }
 
-      // Add selected lab tests (if any - you can implement lab test selection later)
-      formValue.labTest = []; // Initialize empty for now
+      // Add selected lab tests from the form
+      const selectedLabTests = this.recordForm.get('labTest')?.value || [];
+      formValue.labTest = selectedLabTests;
       
       if (this.isEditMode) {
-        this.medicalRecordsService.updatePatientRecord(this.selectedPatientRecord.id ?? '', formValue).subscribe({
-          next: () => {
+        this.medicalRecordsService.updatePatientRecord(this.selectedPatientRecord.id ?? '', formValue).subscribe({          next: () => {
             this.recordForm.reset({
-              visitTime: this.getCurrentTime()
+              visitTime: this.getCurrentTime(),
+              labTest: [] // Reset lab test selection
             });
             this.resetPrescriptionTable();
             this.close();            
@@ -319,12 +312,12 @@ export class EmrComponent implements OnInit {
         });
       } else {
         // Add new record
-        this.medicalRecordsService.addPatientRecord(formValue).subscribe({    
-          next: () => {
+        this.medicalRecordsService.addPatientRecord(formValue).subscribe({          next: () => {
             this.recordForm.reset({
               visitDate: new Date().toISOString().split('T')[0],
               visitTime: this.getCurrentTime(),
-              doctor: this.getDoctorName() 
+              doctor: this.getDoctorName(),
+              labTest: [] // Reset lab test selection
             });
             this.resetPrescriptionTable();
             this.loadPatientRecords();
@@ -351,9 +344,7 @@ export class EmrComponent implements OnInit {
     
     console.log('Editing record for patient ID:', patientId);
     console.log('Available patient users:', this.patientUsers);
-    console.log('Patient user from record:', record.user);
-
-    // Pre-fill the form with patient data
+    console.log('Patient user from record:', record.user);    // Pre-fill the form with patient data
     this.recordForm.patchValue({
       patientId: patientId,
       condition: record.condition,
@@ -361,7 +352,8 @@ export class EmrComponent implements OnInit {
       visitDate: record.visitDate,
       visitTime: record.visitTime,
       status: record.status,
-      prescription: record.prescription
+      prescription: record.prescription,
+      labTest: record.labTest || [] // Include lab test data
     });
 
     // Set edit mode flag
@@ -702,11 +694,21 @@ export class EmrComponent implements OnInit {
   resetPrescriptionTable() {
     this.selectedMedicines = [];
     this.showPrescriptionTable = false;
-  }
-  getInputValue(event: Event): string {
+  }  getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }
 
+  // Get selected lab test names for display
+  getSelectedLabTestNames(): string[] {
+    const selectedLabTestIds = this.recordForm.get('labTest')?.value || [];
+    return selectedLabTestIds.map((id: string) => {
+      const labTest = this.labTests.find(lt => lt.id === id);
+      return labTest ? labTest.reportName : '';
+    }).filter((name: string) => name);
+  }
+
+  // Note: This method generates a formatted prescription text from selected medicines
+  // It's available for display purposes but no longer automatically fills the prescription field
   generatePrescriptionText(): string {
     if (this.selectedMedicines.length === 0) {
       return '';
