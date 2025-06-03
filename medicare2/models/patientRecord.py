@@ -10,6 +10,13 @@ class Medication(BaseModel):
     startDate: str
     endDate: str
 
+class MedicineDetails(BaseModel):
+    medicineId: str
+    frequency: str
+    duration: str
+    pillsPerTime: int
+    numberOfPills: int
+
 class Report(BaseModel):
     name: str
     type: str
@@ -26,6 +33,8 @@ class PatientRecordBase(BaseModel):
     prescription: Optional[str] = None
     status: str
     medications: Optional[List[Medication]] = []
+    labTest: Optional[List[str]] = []  # List of lab test IDs
+    medicine: Optional[List[MedicineDetails]] = []  # List of medicine details
 
 class PatientRecordCreate(PatientRecordBase):
     patientId: str
@@ -43,6 +52,8 @@ class PatientRecordUpdate(BaseModel):
     status: Optional[str] = None
     patientName: Optional[str] = None
     medications: Optional[List[Medication]] = None
+    labTest: Optional[List[str]] = None
+    medicine: Optional[List[MedicineDetails]] = None
 
 class PatientRecordWithUser(BaseModel):
     id: str
@@ -54,4 +65,6 @@ class PatientRecordWithUser(BaseModel):
     prescription: Optional[str] = None
     status: str
     medications: Optional[List[Medication]] = []
+    labTest: Optional[List[str]] = []
+    medicine: Optional[List[MedicineDetails]] = []
     user: Optional[User] = None  # Include user data

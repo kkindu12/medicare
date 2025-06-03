@@ -73,12 +73,13 @@ export class EmrComponent implements OnInit {
     status: '',
     prescription: '',
   };
-
   records: Patient[] = [];
   patientRecords: PatientRecordWithUser[] = [];
   medicines: Medicine[] = [];
   labTests: LabTest[] = [];
-  previousPatientRecords: PatientRecordWithUser[] = [];  constructor(
+  selectedMedicines: any[] = [];
+  showPrescriptionTable: boolean = false;
+  previousPatientRecords: PatientRecordWithUser[] = [];constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private medicalRecordsService: MedicalRecordsService,
@@ -88,8 +89,7 @@ export class EmrComponent implements OnInit {
     private medicineService: MedicineService,
     private labTestService: LabTestService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.recordForm = this.fb.group({
+  ) {    this.recordForm = this.fb.group({
       patientId: ['', Validators.required],
       condition: ['', Validators.required],
       doctor: ['', Validators.required], // Initialize empty, will be filled when modal opens
@@ -97,6 +97,7 @@ export class EmrComponent implements OnInit {
       visitTime: [this.getCurrentTime(), Validators.required],
       status: ['', Validators.required],
       prescription: [''],
+      medicine: [''], // Add medicine form control
     });
   }
 
@@ -276,18 +277,39 @@ export class EmrComponent implements OnInit {
       },
       error: (err) => this.alertService.showError('Upload Failed', 'Failed to upload file. Please try again.')
     });
-  }
-
-  addRecord() {
+  }  addRecord() {
     if (this.recordForm.valid) {
-      const formValue = this.recordForm.getRawValue(); 
+      const formValue = this.recordForm.getRawValue();
+      
+      // Generate prescription text from selected medicines
+      const prescriptionText = this.generatePrescriptionText();
+      if (prescriptionText) {
+        formValue.prescription = prescriptionText;
+      }
+
+      // Add selected medicines data to the form
+      if (this.selectedMedicines.length > 0) {
+        formValue.medicine = this.selectedMedicines.map(medicine => ({
+          medicineId: medicine.medicineId,
+          frequency: medicine.frequency || '',
+          duration: medicine.duration || '',
+          pillsPerTime: parseInt(medicine.pillsPerTime) || 0,
+          numberOfPills: parseInt(medicine.numberOfPills) || 0
+        }));
+      }
+
+      // Add selected lab tests (if any - you can implement lab test selection later)
+      formValue.labTest = []; // Initialize empty for now
+      
       if (this.isEditMode) {
         this.medicalRecordsService.updatePatientRecord(this.selectedPatientRecord.id ?? '', formValue).subscribe({
           next: () => {
             this.recordForm.reset({
               visitTime: this.getCurrentTime()
             });
-            this.close();            this.loadPatientRecords(); 
+            this.resetPrescriptionTable();
+            this.close();            
+            this.loadPatientRecords(); 
             this.alertService.showSuccess('Update Success', 'Record updated successfully!');
           },
           error: (err) => {
@@ -297,27 +319,15 @@ export class EmrComponent implements OnInit {
         });
       } else {
         // Add new record
-        // this.patientService.addPatient(formValue).subscribe({
-        //   next: (newPatient) => {
-        //     this.records.push(newPatient);
-        //     this.recordForm.reset({
-        //       lastVisitTime: this.getCurrentTime()
-        //     });
-        //     this.close();
-        //     alert('Record added successfully');
-        //   },
-        //   error: (err) => {
-        //     console.error('Error adding patient:', err);
-        //     alert('Failed to add patient');
-        //   }
-        // });
         this.medicalRecordsService.addPatientRecord(formValue).subscribe({    
           next: () => {
             this.recordForm.reset({
               visitDate: new Date().toISOString().split('T')[0],
               visitTime: this.getCurrentTime(),
               doctor: this.getDoctorName() 
-            });            this.loadPatientRecords();
+            });
+            this.resetPrescriptionTable();
+            this.loadPatientRecords();
             this.alertService.showSuccess('Add Success', 'Record added successfully!');
           },
           error: (err) => {
@@ -600,11 +610,11 @@ export class EmrComponent implements OnInit {
       document.body.classList.remove('modal-open');
     }
   }
-
   close() {
     this.showAddRecordModal = false;
     this.showPatientModal = false;
     this.showPreviousRecords = false;
+    this.resetPrescriptionTable();
 
     ['addRecordModal', 'patientModal', 'previousRecordsModal'].forEach(id => {
       const modal = document.getElementById(id);
@@ -651,7 +661,83 @@ export class EmrComponent implements OnInit {
       error: (err) => {
         console.error('Error loading patient reports:', err);
         alert('Failed to load patient reports');
+      }    });
+  }
+
+  // Medicine selection and prescription table methods
+  onMedicineSelected() {
+    const selectedMedicineId = this.recordForm.get('medicine')?.value;
+    if (selectedMedicineId) {
+      const selectedMedicine = this.medicines.find(m => m.id === selectedMedicineId);
+      if (selectedMedicine) {
+        const newPrescription = {
+          medicineId: selectedMedicine.id,
+          medicineName: selectedMedicine.name,
+          frequency: '',
+          duration: '',
+          pillsPerTime: '',
+          numberOfPills: ''
+        };
+        this.selectedMedicines.push(newPrescription);
+        this.showPrescriptionTable = true;
+        // Reset the medicine dropdown
+        this.recordForm.get('medicine')?.setValue('');
       }
+    }
+  }
+
+  updatePrescription(index: number, field: string, value: string) {
+    if (this.selectedMedicines[index]) {
+      this.selectedMedicines[index][field] = value;
+    }
+  }
+
+  removeMedicine(index: number) {
+    this.selectedMedicines.splice(index, 1);
+    if (this.selectedMedicines.length === 0) {
+      this.showPrescriptionTable = false;
+    }
+  }
+
+  resetPrescriptionTable() {
+    this.selectedMedicines = [];
+    this.showPrescriptionTable = false;
+  }
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
+  }
+
+  generatePrescriptionText(): string {
+    if (this.selectedMedicines.length === 0) {
+      return '';
+    }
+
+    let prescriptionText = 'PRESCRIPTION:\n\n';
+    
+    this.selectedMedicines.forEach((medicine, index) => {
+      prescriptionText += `${index + 1}. ${medicine.medicineName}\n`;
+      
+      if (medicine.frequency) {
+        prescriptionText += `   Frequency: ${medicine.frequency}\n`;
+      }
+      if (medicine.duration) {
+        prescriptionText += `   Duration: ${medicine.duration}\n`;
+      }
+      if (medicine.pillsPerTime) {
+        prescriptionText += `   Pills per time: ${medicine.pillsPerTime}\n`;
+      }
+      if (medicine.numberOfPills) {
+        prescriptionText += `   Total pills: ${medicine.numberOfPills}\n`;
+      }
+      prescriptionText += '\n';
     });
+
+    // Also include any additional prescription notes from the text area
+    const additionalNotes = this.recordForm.get('prescription')?.value;
+    if (additionalNotes && additionalNotes.trim()) {
+      prescriptionText += 'ADDITIONAL NOTES:\n' + additionalNotes.trim();
+    }
+
+    return prescriptionText;
   }
 }
