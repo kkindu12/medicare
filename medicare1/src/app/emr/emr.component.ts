@@ -292,13 +292,17 @@ export class EmrComponent implements OnInit {
           pillsPerTime: parseInt(medicine.pillsPerTime) || 0,
           numberOfPills: parseInt(medicine.numberOfPills) || 0
         }));
-      }
-
-      // Add selected lab tests from the form
+      }      // Add selected lab tests from the form
       const selectedLabTests = this.recordForm.get('labTest')?.value || [];
       formValue.labTest = selectedLabTests;
       
       if (this.isEditMode) {
+        // Add edit tracking information
+        formValue.isEdited = true;
+        formValue.editedBy = this.getCurrentDoctorId();  // Get current doctor's ID
+        formValue.editedByName = this.getDoctorName();   // Get current doctor's name
+        formValue.editedAt = new Date().toISOString();   // Current timestamp
+        
         this.medicalRecordsService.updatePatientRecord(this.selectedPatientRecord.id ?? '', formValue).subscribe({          next: () => {
             this.recordForm.reset({
               visitTime: this.getCurrentTime(),
@@ -645,7 +649,6 @@ export class EmrComponent implements OnInit {
     const fullUrl = `${environment.dropboxBaseUrl}/${this.selectedPatientRecord.id}/${reportPath}?raw=1`;
     window.open(fullUrl, '_blank');
   }
-
   getDoctorName(){
     let doctorName = '';
     if (isPlatformBrowser(this.platformId)) {
@@ -659,6 +662,21 @@ export class EmrComponent implements OnInit {
       }
     }
     return doctorName;
+  }
+
+  getCurrentDoctorId(){
+    let doctorId = '';
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const userString = sessionStorage.getItem('user');
+        const user = userString ? JSON.parse(userString) : null;
+        doctorId = user ? user.id : '';
+      } catch (error) {
+        console.error('Error reading user data from sessionStorage:', error);
+        doctorId = '';
+      }
+    }
+    return doctorId;
   }
 
   getPatientRecordsByPatientId(patientId: string) {

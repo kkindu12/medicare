@@ -19,4 +19,8 @@ export interface PatientRecordWithUser {
   labTest?: string[];
   medicine?: MedicineDetails[];
   user?: User;
+  isEdited?: boolean;
+  editedBy?: string;  // Doctor ID who edited
+  editedByName?: string;  // Doctor name who edited
+  editedAt?: string;  // Timestamp of edit
 }

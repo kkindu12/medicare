@@ -35,6 +35,10 @@ class PatientRecordBase(BaseModel):
     medications: Optional[List[Medication]] = []
     labTest: Optional[List[str]] = []  # List of lab test IDs
     medicine: Optional[List[MedicineDetails]] = []  # List of medicine details
+    isEdited: Optional[bool] = False
+    editedBy: Optional[str] = None  # Doctor ID who edited
+    editedByName: Optional[str] = None  # Doctor name who edited
+    editedAt: Optional[str] = None  # Timestamp of edit
 
 class PatientRecordCreate(PatientRecordBase):
     patientId: str
@@ -54,6 +58,10 @@ class PatientRecordUpdate(BaseModel):
     medications: Optional[List[Medication]] = None
     labTest: Optional[List[str]] = None
     medicine: Optional[List[MedicineDetails]] = None
+    isEdited: Optional[bool] = None
+    editedBy: Optional[str] = None  # Doctor ID who edited
+    editedByName: Optional[str] = None  # Doctor name who edited
+    editedAt: Optional[str] = None  # Timestamp of edit
 
 class PatientRecordWithUser(BaseModel):
     id: str
@@ -68,3 +76,7 @@ class PatientRecordWithUser(BaseModel):
     labTest: Optional[List[str]] = []
     medicine: Optional[List[MedicineDetails]] = []
     user: Optional[User] = None  # Include user data
+    isEdited: Optional[bool] = False
+    editedBy: Optional[str] = None  # Doctor ID who edited
+    editedByName: Optional[str] = None  # Doctor name who edited
+    editedAt: Optional[str] = None  # Timestamp of edit

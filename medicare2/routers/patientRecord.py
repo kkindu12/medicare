@@ -52,12 +52,23 @@ async def get_patient_record(record_id: str):
 @router.put("/patientRecords/{record_id}", response_model=PatientRecord)
 async def update_patient_record(record_id: str, record_update: PatientRecordUpdate):
     update_data = {k: v for k, v in record_update.dict().items() if v is not None}
+    
+    # If this is an edit, add edit tracking fields
     if update_data:
+        # Mark as edited if not already marked
+        if 'isEdited' not in update_data:
+            update_data['isEdited'] = True
+        
+        # Set edit timestamp
+        if 'editedAt' not in update_data:
+            update_data['editedAt'] = datetime.now().isoformat()
+        
         result = get_db().patientRecords.update_one(
             {"_id": ObjectId(record_id)}, {"$set": update_data}
         )
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Patient record not found")
+    
     record = get_db().patientRecords.find_one({"_id": ObjectId(record_id)})
     record["id"] = str(record["_id"])
     record.pop("_id")

@@ -68,9 +68,10 @@
   <!-- Add New Record Modal -->
   <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true" [class.show]="showAddRecordModal" [style.display]="showAddRecordModal ? 'block' : 'none'">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addRecordModalLabel">Add New Record</h5>
+      <div class="modal-content">        <div class="modal-header">
+          <h5 class="modal-title" id="addRecordModalLabel">
+            {{ isEditMode ? 'Edit Record' : 'Add New Record' }}
+          </h5>
           <button type="button" class="btn-close" (click)="close()"></button>
         </div>
         <div class="modal-body">
