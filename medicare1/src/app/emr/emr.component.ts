@@ -237,6 +237,9 @@ export class EmrComponent implements OnInit {
       labTest: [] // Reset lab test selection
     });
 
+    // Reset prescription table for new records ed:K
+    this.resetPrescriptionTable();
+
     // Ensure fields are enabled in add mode
     this.isEditMode = false;
     this.recordForm.get('doctor')?.enable();
@@ -356,6 +359,26 @@ export class EmrComponent implements OnInit {
       prescription: record.prescription,
       labTest: record.labTest || [] // Include lab test data
     });
+
+    // Load previous medicines if they exist
+    if (record.medicine && record.medicine.length > 0) {
+      this.selectedMedicines = record.medicine.map(med => {
+        // Find the medicine name from the medicines array
+        const medicineDetails = this.medicines.find(m => m.id === med.medicineId);
+        return {
+          medicineId: med.medicineId,
+          medicineName: medicineDetails ? medicineDetails.name : 'Unknown Medicine',
+          frequency: med.frequency || '',
+          duration: med.duration || '',
+          pillsPerTime: med.pillsPerTime || '',
+          numberOfPills: med.numberOfPills || ''
+        };
+      });
+      this.showPrescriptionTable = this.selectedMedicines.length > 0;
+    } else {
+      // Reset prescription table if no medicines
+      this.resetPrescriptionTable();
+    }
 
     // Set edit mode flag
     this.isEditMode = true;
