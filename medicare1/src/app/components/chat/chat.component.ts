@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
 import { Message, MessageType } from '../models/message.model';
 import { MessageComponent } from '../message/message.component';
+import { HttpClientModule } from '@angular/common/http';
 import { ChatPageComponent } from '../chat-page/chat-page.component';
-
 @Component({
   selector: 'app-chat',
   standalone: true, 
-  imports: [CommonModule, FormsModule, MessageComponent,ChatPageComponent], 
+  imports: [CommonModule, FormsModule, MessageComponent,HttpClientModule], 
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'], 
   providers: [ChatService]

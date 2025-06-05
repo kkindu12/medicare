@@ -9,63 +9,9 @@
   <div class="specialty">General Physician</div>
   <div class="desc">Provides general medical care for adults.</div>
   <div class="button mt-2 d-flex flex-row align-items-center">
-                    <button  class="btn btn-sm btn-outline-primary w-100" (click)="changeChatPage('doctor-list')" >Chat</button>
-                     
-                    
+                    <button  class="btn btn-sm btn-outline-primary w-100" (click)="changeChatPage('doctor-list')" >Chat</button> 
                    </div>
 </div>
-    
-
-  
-
-    <!-- <div class="container mt-5 d-flex justify-content-center">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="image">
-                <img src="https://images.unsplash.com/photo-1584467735867-4297ae2ebcee?q=80&w=705&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="rounded" width="155" >
-                </div>
-                <div class="ml-3 w-100">
-                   <h4 class="mb-0 mt-0">Dr. Najak vel</h4>             
-                    <div class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats">
-                    <div class="d-flex flex-column">
-                        <span>Psychiatrist </span><br/>
-                        <h6>Manages mental health and can prescribe medications.</h6>
-                    </div>  
-                   </div>
-                  <div class="button mt-2 d-flex flex-row align-items-center">
-                    <button  class="btn btn-sm btn-outline-primary w-100" (click)="changeChatPage('doctor-list')" >Chat</button>
-                     
-                    
-                   </div>
-                 </div>
-                </div>
-            </div>
-         </div>
-
-
-          <div class="container mt-5 d-flex justify-content-center">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="image">
-                <img src="https://plus.unsplash.com/premium_photo-1661757221486-183030ef8670?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTZ8fGRvY3RvcnxlbnwwfHwwfHx8MA%3D%3D" class="rounded" width="155" >
-                </div>
-                <div class="ml-3 w-100">
-                   <h4 class="mb-0 mt-0">Dr. Vishally</h4>             
-                    <div class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats">
-                    <div class="d-flex flex-column">
-                        <span>Pediatrician </span><br/>
-                        <h6>Cares for babies, children, and teenagers.</h6>
-                    </div>  
-                   </div>
-                    <div class="button mt-2 d-flex flex-row align-items-center">
-                    <button  class="btn btn-sm btn-outline-primary w-100" (click)="changeChatPage('doctor-list')" >Chat</button>
-                     
-                    
-                   </div>
-                 </div>
-                </div>
-            </div>
-         </div> -->
   </div>
 
  
@@ -75,3 +21,45 @@
             <app-chat-page></app-chat-page>
          </div>
         </div>
+
+
+
+<!--  2nd doctor -->
+         <!-- <div class="main">
+ <div class="doctors-list">
+    
+           <div class="doctor-card">
+                 <img src="https://images.unsplash.com/photo-1584467735867-4297ae2ebcee?q=80&w=705&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="rounded" width="155" >
+  <h4>Dr. Najak vel</h4>
+  <div class="specialty">Psychiatrist</div>
+  <div class="desc">Manages mental health and can prescribe medications.
+  <div class="button mt-2 d-flex flex-row align-items-center">
+                    <button  class="btn btn-sm btn-outline-primary w-100" (click)="changeChatPage('doctor-list')" >Chat</button>  
+                   </div>
+</div>
+  </div>
+ </div>
+         
+ <div  *ngIf="currentComponent == 'doctor-list'" class="chat-container">
+            <app-chat-page></app-chat-page>
+         </div>
+         </div> -->
+       
+<!--  3rd doctor -->
+         <!-- <div class="main">
+ <div class="doctors-list">
+    
+           <div class="doctor-card">
+                <img src="https://plus.unsplash.com/premium_photo-1661757221486-183030ef8670?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTZ8fGRvY3RvcnxlbnwwfHwwfHx8MA%3D%3D" class="rounded" width="155" >
+  <h4>Dr. Vishally</h4>
+  <div class="specialty">Psychiatrist</div>
+  <div class="desc">Cares for babies, children, and teenagers.</div>
+  <div class="button mt-2 d-flex flex-row align-items-center">
+                    <button  class="btn btn-sm btn-outline-primary w-100" (click)="changeChatPage('doctor-list')" >Chat</button>                   </div>
+</div>
+  </div>
+ 
+ <div  *ngIf="currentComponent == 'doctor-list'" class="chat-container">
+            <app-chat-page></app-chat-page>
+         </div>
+         </div>          -->

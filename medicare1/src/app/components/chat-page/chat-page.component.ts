@@ -6,6 +6,9 @@ import { FormsModule } from '@angular/forms';
 
 
 
+import { Socket } from 'socket.io-client';
+import io from 'socket.io-client';
+
 @Component({
   selector: 'app-chat-page',
   imports: [CommonModule, RouterModule,FormsModule],
@@ -16,8 +19,14 @@ export class ChatPageComponent implements AfterViewChecked {
 
   messages: { text: string; from: string }[] = [];
   inputMessage = '';
-
+  isLoggedIn = false;
   @ViewChild('scrollMe') private scrollContainer!: ElementRef;
+  socket!: ReturnType<typeof io>;
+
+  constructor() {
+    // Replace 'http://localhost:3000' with your actual backend socket server URL
+    this.socket = io('http://localhost:8000');
+  }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -36,7 +45,18 @@ export class ChatPageComponent implements AfterViewChecked {
       this.inputMessage = '';
     }
   }
-
+  LogIn(){
+    this.messages.push({ text: 'You can start chatting..', from: 'system' });
+    this.scrollToBottom();
+    console.log('User logged in');
+    this.isLoggedIn=true
+  }
+sendMessageToSocket(message: string) {
+  this.socket.emit('new_message', message);
+}
+sendUser(message: string): void {
+  this.socket.emit('new_message', message);
+}
   private scrollToBottom(): void {
     try {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;

@@ -1,3 +1,5 @@
+<div *ngIf="isLoggedIn; else login">
+  <!-- Content for logged in users goes here -->
 <div class="container py-3" style="max-width: 900px;">
   <div class="card shadow-sm">
     <div class="card-header bg-primary text-white">
@@ -16,7 +18,7 @@
           </span>
         </div>
       </div>
-    </div>
+</div>
 
     <div class="card-footer d-flex">
       <input [(ngModel)]="inputMessage" class="form-control me-2" placeholder="Type a message..." (keyup.enter)="sendMessage()">
@@ -24,3 +26,23 @@
     </div>
   </div>
 </div>
+
+</div>
+ <!-- Content for non logged in users -->
+<ng-template #login >
+  <div class="container text-center mt-5">
+    <h1>Welcome to the Chat Application</h1>
+    <p>Please log in to start chatting.</p>
+    <form (ngSubmit)="LogIn()" #l="ngForm">
+      <div class="mb-3" >
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" class="form-control" ngModel name="username" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Log In</button>
+    </form>
+  </div>
+</ng-template>
+  
+  
+
+

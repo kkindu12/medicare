@@ -244,3 +244,15 @@ padding: 2px;
         padding: var(--spacing-md);
         text-align: center;
     }
+    .doctor-message {
+  background: linear-gradient(120deg, #1976d2 80%, #42a5f5 100%);
+  color: #fff;
+  border-bottom-right-radius: 8px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+}
+.patient-message {
+  background: linear-gradient(120deg, #e3f2fd 80%, #bbdefb 100%);
+  color: #222;
+  border-bottom-left-radius: 8px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+}

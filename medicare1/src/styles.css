@@ -363,6 +363,7 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom-left-radius: 8px;
   box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
 }
+
 .doctor-card img, .chat-avatar {
   border-radius: 50%;
  
