@@ -263,8 +263,7 @@ export class EmrComponent implements OnInit {
     if (this.selectedFile) {
       this.uploadFileToServer(this.selectedFile);
     }
-  }
-  uploadFileToServer(file: File) {
+  }  uploadFileToServer(file: File) {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -272,15 +271,16 @@ export class EmrComponent implements OnInit {
       next: (res) => {
         // Clear the file selection after successful upload
         this.selectedFile = null;
-        const fileInput = document.getElementById('reportFile') as HTMLInputElement;
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
         if (fileInput) {
           fileInput.value = '';
         }        
         this.alertService.showSuccess('Upload Success', 'File uploaded successfully!');
+        this.loadReportNames(); // Refresh report names after upload
       },
       error: (err) => this.alertService.showError('Upload Failed', 'Failed to upload file. Please try again.')
     });
-  }  addRecord() {
+  }addRecord() {
     if (this.recordForm.valid) {
       const formValue = this.recordForm.getRawValue();
         // Add selected medicines data to the form
@@ -404,7 +404,6 @@ export class EmrComponent implements OnInit {
       document.body.classList.add('modal-open');
     }
   }
-
   openPatientModal(record: PatientRecordWithUser) {
     this.selectedPatientRecord = record;
     this.selectedPatientPrescription = record.prescription;
@@ -412,15 +411,10 @@ export class EmrComponent implements OnInit {
     this.selectedFile = null;
     
     this.showPatientModal = true;
-    this.medicalRecordsService.getMedicalRecordPDFs(this.selectedPatientRecord.id || '')
-    .subscribe({
-      next: (data: PatientReportResponse) => {
-        this.reportNames = data.filenames; 
-      },
-      error: (err) => {
-        console.error('Failed to load report names:', err);
-      }
-    });
+    
+    // Use centralized method to load report names
+    this.loadReportNames();
+    
     const modal = document.getElementById('patientModal');
     if (modal) {
       modal.classList.add('show');
@@ -440,8 +434,7 @@ export class EmrComponent implements OnInit {
         this.selectedFile = null;
       }
     }
-  }
-  uploadReport() {
+  }  uploadReport() {
     if (!this.newReportName?.trim()) {
       this.alertService.showWarning('Missing Information', 'Please enter a report name.');
       return;
@@ -459,13 +452,17 @@ export class EmrComponent implements OnInit {
       formData.append('description', this.newReportName);
     }
     
-    this.medicalRecordsService.addPatientRecordById(this.selectedPatient.id, formData).subscribe({
-      next: (report) => {
-        this.selectedPatient.reports.push(report);
+    // Use selectedPatientRecord.id and uploadMedicalRecordPDFs method for proper backend saving
+    this.medicalRecordsService.uploadMedicalRecordPDFs(this.selectedPatientRecord.id || '', formData).subscribe({
+      next: (response) => {
         this.newReportName = '';
         this.selectedFile = null;
-        const fileInput = document.getElementById('reportFile') as HTMLInputElement;        if (fileInput) fileInput.value = '';
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
         this.alertService.showSuccess('Upload Success', 'Report uploaded successfully!');
+        
+        // Refresh the report list immediately after successful upload
+        this.loadReportNames();
       },
       error: (err) => {
         console.error('Error uploading report:', err);
@@ -783,5 +780,23 @@ export class EmrComponent implements OnInit {
     }
 
     return prescriptionText;
+  }
+
+  // Method to load report names for the selected patient record
+  loadReportNames() {
+    if (!this.selectedPatientRecord?.id) {
+      console.error('No patient record selected');
+      return;
+    }
+    
+    this.medicalRecordsService.getMedicalRecordPDFs(this.selectedPatientRecord.id)
+      .subscribe({
+        next: (data: PatientReportResponse) => {
+          this.reportNames = data.filenames;
+        },
+        error: (err) => {
+          console.error('Failed to load report names:', err);
+        }
+      });
   }
 }
