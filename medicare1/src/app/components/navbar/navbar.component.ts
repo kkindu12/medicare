@@ -1,7 +1,5 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
 
 interface Notification {
   id: number;
@@ -16,16 +14,13 @@ interface Notification {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
-  userName: string = '';
-  currentUser: any = null;
+export class NavbarComponent {
+  userName: string = 'John Doe';
   showNotifications: boolean = false;
   showUserMenu: boolean = false;
   notificationCount: number = 3;
-
-  constructor(private router: Router) {}
 
   notifications: Notification[] = [
     {
@@ -48,21 +43,8 @@ export class NavbarComponent implements OnInit {
       message: 'Time to renew your medication prescription',
       time: '1 day ago',
       read: false
-    }  ];
-
-  ngOnInit(): void {
-    // Load current user from sessionStorage
-    const userStr = sessionStorage.getItem('user');
-    if (userStr) {
-      this.currentUser = JSON.parse(userStr);
-      // Set the full name from the user data
-      if (this.currentUser?.name) {
-        this.userName = this.currentUser.name;
-      } else if (this.currentUser?.firstName && this.currentUser?.lastName) {
-        this.userName = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
-      }
     }
-  }
+  ];
 
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
@@ -97,14 +79,10 @@ export class NavbarComponent implements OnInit {
     console.log('Navigate to medical history');
     this.showUserMenu = false;
   }
+
   logout(): void {
     console.log('Logout user');
     this.showUserMenu = false;
-    
-    // Clear session storage
-    sessionStorage.removeItem('user');
-    
-    // Redirect to signin page
-    this.router.navigate(['/signin']);
+    // Add logout logic here
   }
 }

@@ -9,8 +9,9 @@
       <div class="col-12">
         <div class="card border-0 shadow-sm bg-light">
           <div class="card-body p-4">
-            <div class="row align-items-center">              <div class="col-md-8">
-                <h2 class="card-title mb-2 fw-bold text-dark">Welcome back, {{ getUserFirstName() }}!</h2>
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h2 class="card-title mb-2 fw-bold text-dark">Welcome back, John!</h2>
                 <p class="card-text text-muted mb-0">
                   <i class="bi bi-calendar-check me-2"></i>
                   Your next appointment is on June 10, 2025 at 10:00 AM with Dr. Sarah Johnson
@@ -126,54 +127,47 @@
                   </div>
                 </div>
               </div>
-            </div>            <!-- Medical Records Tab -->
+            </div>
+
+            <!-- Medical Records Tab -->
             <div *ngIf="activeTab === 'records'" class="tab-content-section">
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="mb-0 fw-bold">Medical Records</h5>
-                <button class="btn btn-primary btn-sm" (click)="loadPatientRecords()">
-                  <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                <button class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-download me-1"></i>Download All
                 </button>
               </div>
               
-              <!-- Loading State -->
-              <div *ngIf="isLoadingRecords" class="text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="text-muted mt-3">Loading medical records...</p>
-              </div>
-
-              <!-- Error State -->
-              <div *ngIf="recordsError && !isLoadingRecords" class="alert alert-danger" role="alert">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                {{ recordsError }}
-                <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadPatientRecords()">
-                  Try Again
-                </button>
-              </div>
-
-              <!-- Patient Records Grid -->
-              <div *ngIf="!isLoadingRecords && !recordsError" class="row">
-                <div *ngIf="patientRecords.length === 0" class="col-12">
-                  <div class="text-center py-5">
-                    <div class="bg-light p-4 rounded-circle d-inline-block mb-4">
-                      <i class="bi bi-file-medical text-muted" style="font-size: 3rem;"></i>
+              <div class="list-group list-group-flush">
+                <div *ngFor="let record of medicalRecords" class="list-group-item border-0 px-0 py-3">
+                  <div class="row align-items-center">
+                    <div class="col-md-8">
+                      <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-file-medical me-3 fs-5" [class]="getRecordTypeClass(record.type)"></i>
+                        <div>
+                          <h6 class="mb-0 fw-semibold">{{ record.type }}</h6>
+                          <p class="text-muted small mb-0">{{ record.description }}</p>
+                        </div>
+                      </div>
+                      <small class="text-muted">
+                        <i class="bi bi-person me-1"></i>{{ record.doctor }} • 
+                        <i class="bi bi-calendar me-1 ms-2"></i>{{ record.date }}
+                      </small>
                     </div>
-                    <h5 class="fw-bold mb-3">No Medical Records Found</h5>
-                    <p class="text-muted mb-4">You don't have any medical records yet. They will appear here once your doctor adds them.</p>
+                    <div class="col-md-4 text-md-end">
+                      <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary">
+                          <i class="bi bi-download"></i>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                  <div *ngFor="let record of patientRecords" class="col-md-6 col-lg-4 mb-4">
-                  <app-patient-record-card
-                    [record]="record"
-                    (editRecord)="onEditRecord($event)"
-                    (addReport)="onAddReport($event)"
-                    (viewHistory)="onViewHistory($event)">
-                  </app-patient-record-card>
-                </div>
               </div>
-            </div>
-            <!-- Health Assistant Tab -->
+            </div>            <!-- Health Assistant Tab -->
             <div *ngIf="activeTab === 'chatbot'" class="tab-content-section">
               <div class="text-center py-5">
                 <div class="bg-primary bg-opacity-10 p-4 rounded-circle d-inline-block mb-4">
@@ -217,14 +211,7 @@
             </div>
           </div>
         </div>
-      </div>    </div>
+      </div>
+    </div>
   </div>
 </div>
-
-<!-- Patient History Modal -->
-<app-patient-history-modal
-  [showPreviousRecords]="showPreviousRecords"
-  [selectedPatientRecord]="selectedPatientRecord"
-  [previousPatientRecords]="previousPatientRecords"
-  (closePreviousRecords)="onClosePreviousRecords()">
-</app-patient-history-modal>

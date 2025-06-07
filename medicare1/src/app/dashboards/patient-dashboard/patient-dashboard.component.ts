@@ -1,10 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { PatientRecordCardComponent } from '../../emr/patient-record-card/patient-record-card.component';
-import { PatientHistoryModalComponent } from '../../emr/patient-history-modal/patient-history-modal.component';
-import { MedicalRecordsService } from '../../services/medicalRecordService/medical-records.service';
-import type { PatientRecordWithUser } from '../../emr/models';
 
 interface Appointment {
   id: number;
@@ -13,6 +9,14 @@ interface Appointment {
   doctor: string;
   specialty: string;
   status: 'upcoming' | 'completed' | 'cancelled';
+}
+
+interface MedicalRecord {
+  id: number;
+  date: string;
+  type: string;
+  description: string;
+  doctor: string;
 }
 
 interface Payment {
@@ -27,25 +31,12 @@ interface Payment {
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, PatientRecordCardComponent, PatientHistoryModalComponent],
+  imports: [CommonModule, NavbarComponent],
   templateUrl: './patient-dashboard.component.html',
-  styleUrl: './patient-dashboard.component.scss'
+  styleUrl: './patient-dashboard.component.css'
 })
-export class PatientDashboardComponent implements OnInit {
+export class PatientDashboardComponent {
   activeTab: string = 'appointments';
-  
-  // Current User
-  currentUser: any = null;
-  
-  // Patient Records properties
-  patientRecords: PatientRecordWithUser[] = [];
-  isLoadingRecords = false;
-  recordsError: string | null = null;
-  
-  // Patient History Modal properties
-  showPreviousRecords = false;
-  selectedPatientRecord: PatientRecordWithUser | null = null;
-  previousPatientRecords: PatientRecordWithUser[] = [];
   
   appointments: Appointment[] = [
     {
@@ -74,28 +65,28 @@ export class PatientDashboardComponent implements OnInit {
     }
   ];
 
-  // medicalRecords: MedicalRecord[] = [
-  //   {
-  //     id: 1,
-  //     date: '2025-06-05',
-  //     type: 'Blood Test',
-  //     description: 'Complete Blood Count - Results Normal',
-  //     doctor: 'Dr. Emily Davis'
-  //   },
-  //   {
-  //     id: 2,
-  //     date: '2025-05-28',
-  //     type: 'X-Ray',
-  //     description: 'Chest X-Ray - No abnormalities detected',
-  //     doctor: 'Dr. Robert Wilson'
-  //   },
-  //   {
-  //     id: 3,
-  //     date: '2025-05-20',      type: 'Prescription',
-  //     description: 'Blood pressure medication - Lisinopril 10mg',
-  //     doctor: 'Dr. Sarah Johnson'
-  //   }
-  //  ];
+  medicalRecords: MedicalRecord[] = [
+    {
+      id: 1,
+      date: '2025-06-05',
+      type: 'Blood Test',
+      description: 'Complete Blood Count - Results Normal',
+      doctor: 'Dr. Emily Davis'
+    },
+    {
+      id: 2,
+      date: '2025-05-28',
+      type: 'X-Ray',
+      description: 'Chest X-Ray - No abnormalities detected',
+      doctor: 'Dr. Robert Wilson'
+    },
+    {
+      id: 3,
+      date: '2025-05-20',      type: 'Prescription',
+      description: 'Blood pressure medication - Lisinopril 10mg',
+      doctor: 'Dr. Sarah Johnson'
+    }
+  ];
 
   paymentHistory: Payment[] = [
     {
@@ -121,87 +112,27 @@ export class PatientDashboardComponent implements OnInit {
       description: 'Prescription Medication',
       method: 'Debit Card',
       status: 'pending'
-    }  ];
-
-  constructor(private medicalRecordsService: MedicalRecordsService) {}
-  ngOnInit(): void {
-    // Load current user from sessionStorage
-    const userStr = sessionStorage.getItem('user');
-    if (userStr) {
-      this.currentUser = JSON.parse(userStr);
     }
-    
-    this.loadPatientRecords();
-  }
-  
-  loadPatientRecords(): void {
-    this.isLoadingRecords = true;
-    this.recordsError = null;
-    
-    // Get patient ID from current user
-    const patientId = this.currentUser?.id?.toString();
-    
-    if (!patientId) {
-      this.recordsError = 'User not found. Please sign in again.';
-      this.isLoadingRecords = false;
-      return;
-    }
-    
-    this.medicalRecordsService.getPatientRecordsById(patientId).subscribe({
-      next: (records) => {
-        this.patientRecords = records;
-        this.isLoadingRecords = false;
-      },
-      error: (error) => {
-        console.error('Error loading patient records:', error);
-        this.recordsError = 'Failed to load medical records. Please try again.';
-        this.isLoadingRecords = false;
-      }
-    });
-  }
-
-  onEditRecord(record: PatientRecordWithUser): void {
-    // Handle edit record - could open a modal or navigate to edit page
-    console.log('Edit record:', record);
-  }
-
-  onAddReport(record: PatientRecordWithUser): void {
-    // Handle add report functionality
-    console.log('Add report for record:', record);
-  }
-  onViewHistory(record: PatientRecordWithUser): void {
-    this.selectedPatientRecord = record;
-    this.showPreviousRecords = true;
-    
-    // Load patient history using the medical records service
-    if (record.user?.id) {
-      this.medicalRecordsService.getPatientRecordsById(record.user.id.toString()).subscribe({
-        next: (records) => {
-          this.previousPatientRecords = records;
-        },
-        error: (error) => {
-          console.error('Error loading patient history:', error);
-          this.previousPatientRecords = [];
-        }
-      });
-    }
-  }
-
-  onClosePreviousRecords(): void {
-    this.showPreviousRecords = false;
-    this.selectedPatientRecord = null;
-    this.previousPatientRecords = [];
-  }
+  ];
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
   }
+
   getStatusClass(status: string): string {
     switch (status) {
       case 'upcoming': return 'badge bg-primary';
       case 'completed': return 'badge bg-success';
       case 'cancelled': return 'badge bg-danger';
       default: return 'badge bg-secondary';
+    }
+  }
+  getRecordTypeClass(type: string): string {
+    switch (type) {
+      case 'Blood Test': return 'text-danger';
+      case 'X-Ray': return 'text-info';
+      case 'Prescription': return 'text-success';
+      default: return 'text-primary';
     }
   }
 
@@ -212,21 +143,5 @@ export class PatientDashboardComponent implements OnInit {
       case 'failed': return 'badge bg-danger';
       default: return 'badge bg-secondary';
     }
-  }
-
-  // Helper method to get user's first name
-  getUserFirstName(): string {
-    if (this.currentUser?.firstName) {
-      return this.currentUser.firstName;
-    }
-    if (this.currentUser?.name) {
-      return this.currentUser.name.split(' ')[0];
-    }
-    return 'Patient';
-  }
-
-  // Helper method to get medical records count
-  getMedicalRecordsCount(): number {
-    return this.patientRecords.length;
   }
 }

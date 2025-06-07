@@ -48,7 +48,7 @@
                 (click)="toggleUserMenu()" 
                 [class.active]="showUserMenu">
           <i class="bi bi-person-circle fs-5 me-2"></i>
-          <span class="fw-semibold d-none d-md-inline">{{ currentUser }}</span>
+          <span class="fw-semibold d-none d-md-inline">{{ userName }}</span>
           <i class="bi bi-chevron-down ms-2 small"></i>
         </button>
         
@@ -57,7 +57,7 @@
              [class.show]="showUserMenu" 
              style="top: 100%; right: 0; border-radius: 12px; z-index: 1050;">
           <div class="dropdown-header bg-light">
-            <h6 class="mb-0 fw-bold">{{ currentUser }}</h6>
+            <h6 class="mb-0 fw-bold">{{ userName }}</h6>
             <small class="text-muted">Patient</small>
           </div>
           <div class="dropdown-divider m-0"></div>
