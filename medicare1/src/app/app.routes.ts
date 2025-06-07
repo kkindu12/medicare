@@ -10,7 +10,6 @@ export const routes: Routes = [
     { path: 'signin', component: SigninComponent },
     { path: 'signup', component: SignupComponent },
     { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
-    { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: '/signin' }
-    
+    { path: 'patient-dashboard', component: PatientDashboardComponent },
 ];
