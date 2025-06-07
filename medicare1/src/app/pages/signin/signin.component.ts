@@ -38,7 +38,7 @@ export class SigninComponent {
               this.router.navigate(['/emr']);
             }
             else {
-              this.router.navigate(['/signup']);
+              this.router.navigate(['/patient-dashboard']);
             }
           } else {
             alert("Invalid email or password.");
