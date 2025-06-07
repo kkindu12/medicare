@@ -28,17 +28,18 @@ export class SigninComponent {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.email)) {
       alert("Please enter a valid email address.");
       return;
-    }
-    if (this.email && this.password &&  this.email.trim() !== '' && this.password.trim() !== '') {
+    }    if (this.email && this.password &&  this.email.trim() !== '' && this.password.trim() !== '') {
       this.signinService.GetUser({ email: this.email, password: this.password }).subscribe(
         (response) => { 
           if (response) {
             sessionStorage.setItem('user', JSON.stringify(response));
             if(response.role) {
+              // role = true means doctor, redirect to EMR
               this.router.navigate(['/emr']);
             }
             else {
-              this.router.navigate(['/signup']);
+              // role = false means patient, redirect to patient dashboard
+              this.router.navigate(['/patient-dashboard']);
             }
           } else {
             alert("Invalid email or password.");
