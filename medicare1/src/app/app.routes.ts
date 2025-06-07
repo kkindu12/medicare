@@ -3,10 +3,13 @@ import { SigninComponent } from './pages/signin/signin.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { EmrComponent } from './emr/emr.component';
 import { PatientDashboardComponent } from './dashboards/patient-dashboard/patient-dashboard.component';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+    { path: '', redirectTo: '/signin', pathMatch: 'full' },
     { path: 'signin', component: SigninComponent },
     { path: 'signup', component: SignupComponent },
-    { path: 'emr', component: EmrComponent },
+    { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
+    { path: '**', redirectTo: '/signin' }
     { path: 'patient-dashboard', component: PatientDashboardComponent },
 ];

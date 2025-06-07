@@ -10,7 +10,7 @@ export interface DoctorDetails {
 }
 
 export interface User {
-  _id?: string; // Optional if you're generating it server-side
+  id?: string; // Optional if you're generating it server-side
   firstName: string;
   lastName: string;
   email: string;
@@ -26,6 +26,8 @@ export interface GetUserDTO{
 }
 
 export interface SigninUserResponse{
-  _id: string;
+  id: string;
   firstName: string;
+  lastName: string;
+  role: boolean;
 }

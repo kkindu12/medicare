@@ -34,7 +34,7 @@ class UserCreate(BaseModel):
     email: str
     phoneNumber: str
     password: str
-    role: bool = True  # Default to False for non-admin users
+    role: bool = False  # Default to False for non-admin users
     doctorDetails: Optional[DoctorDetails] = None
 
 class User(UserCreate):
@@ -43,6 +43,8 @@ class User(UserCreate):
 class UserLoginResponse(BaseModel):
     id: str
     firstName: str
+    lastName: str
+    role: bool
 
 class UserLogin(BaseModel):
     email: str
