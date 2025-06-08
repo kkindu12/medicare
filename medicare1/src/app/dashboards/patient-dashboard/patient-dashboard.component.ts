@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { PatientRecordCardComponent } from '../../emr/patient-record-card/patient-record-card.component';
+import { PatientDashboardRecordCardComponent } from './components/patient-dashboard-record-card/patient-dashboard-record-card.component';
 import { PatientHistoryModalComponent } from '../../emr/patient-history-modal/patient-history-modal.component';
 import { MedicalRecordsService } from '../../services/medicalRecordService/medical-records.service';
 import type { PatientRecordWithUser } from '../../emr/models';
@@ -27,7 +27,7 @@ interface Payment {
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, PatientRecordCardComponent, PatientHistoryModalComponent],
+  imports: [CommonModule, NavbarComponent, PatientDashboardRecordCardComponent, PatientHistoryModalComponent],
   templateUrl: './patient-dashboard.component.html',
   styleUrl: './patient-dashboard.component.scss'
 })
@@ -157,18 +157,8 @@ export class PatientDashboardComponent implements OnInit {
         this.recordsError = 'Failed to load medical records. Please try again.';
         this.isLoadingRecords = false;
       }
-    });
-  }
+    });  }
 
-  onEditRecord(record: PatientRecordWithUser): void {
-    // Handle edit record - could open a modal or navigate to edit page
-    console.log('Edit record:', record);
-  }
-
-  onAddReport(record: PatientRecordWithUser): void {
-    // Handle add report functionality
-    console.log('Add report for record:', record);
-  }
   onViewHistory(record: PatientRecordWithUser): void {
     this.selectedPatientRecord = record;
     this.showPreviousRecords = true;

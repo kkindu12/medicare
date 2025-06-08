@@ -218,11 +218,11 @@ async def get_patient_reports(patient_id: str):
             record["id"] = str(record["_id"])
             record.pop("_id")
             
-            # Get user data based on patientId
+            # Get patient user data based on patientId
             try:
                 patient_user = db.users.find_one({"_id": ObjectId(record["patientId"])})
                 if patient_user:
-                    # Add user data to the record
+                    # Add patient user data to the record
                     patient_user["id"] = str(patient_user["_id"])
                     patient_user.pop("_id")
                     record["user"] = patient_user
@@ -230,11 +230,31 @@ async def get_patient_reports(patient_id: str):
                     record["user"] = None
             except Exception as e:
                 record["user"] = None
+              # Get doctor user data by doctor name
+            try:
+                doctor_name_parts = record["doctor"].split(" ")
+                if len(doctor_name_parts) >= 2:
+                    first_name = doctor_name_parts[0]
+                    last_name = " ".join(doctor_name_parts[1:])
+                    doctor_user = db.users.find_one({
+                        "firstName": first_name,
+                        "lastName": last_name,
+                        "role": True  # true means doctor
+                    })
+                    if doctor_user:
+                        # Add doctor user data to the record
+                        doctor_user["id"] = str(doctor_user["_id"])
+                        doctor_user.pop("_id")
+                        record["doctorUser"] = doctor_user
+                    else:
+                        record["doctorUser"] = None
+            except Exception as e:
+                record["doctorUser"] = None
             
             records.append(record)
         
         return records
-    
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

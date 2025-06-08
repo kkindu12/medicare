@@ -161,14 +161,11 @@
                     <h5 class="fw-bold mb-3">No Medical Records Found</h5>
                     <p class="text-muted mb-4">You don't have any medical records yet. They will appear here once your doctor adds them.</p>
                   </div>
-                </div>
-                  <div *ngFor="let record of patientRecords" class="col-md-6 col-lg-4 mb-4">
-                  <app-patient-record-card
+                </div>                  <div *ngFor="let record of patientRecords" class="col-md-6 col-lg-4 mb-4">
+                  <app-patient-dashboard-record-card
                     [record]="record"
-                    (editRecord)="onEditRecord($event)"
-                    (addReport)="onAddReport($event)"
                     (viewHistory)="onViewHistory($event)">
-                  </app-patient-record-card>
+                  </app-patient-dashboard-record-card>
                 </div>
               </div>
             </div>
