@@ -1,0 +1,51 @@
+.container {
+  background-color: #f9f9f9;
+   
+}
+
+.content-box {
+  max-width: 800px;
+  width: 100%;
+  border: 1px solid #f9fd06;
+  border-radius: 10px;
+  background-color: #fff;
+  padding-bottom: 2%;
+  margin-top: 10%;
+    
+}
+
+.medicare-banner {
+  background-color: #007bff; // Bootstrap primary blue
+  font-size: 1.5rem;
+  font-weight: bold;
+   padding-top: 0%;
+  text-align: left;
+  padding: 10px;
+}
+
+.card {
+  border: none;
+}
+
+label {
+  font-weight: 500;
+}
+
+input.form-control,
+select.form-select {
+  margin-top: 5px;
+}
+
+@media (min-width: 992px) {
+  .content-box {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.footer{
+  
+    margin-top: 12%;
+    background-color: #007bff;
+    padding: 8px;
+}
+ 
