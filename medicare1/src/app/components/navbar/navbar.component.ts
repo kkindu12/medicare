@@ -1,14 +1,18 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { NotificationService } from '../../services/notification.service';
+import { UserNotification } from '../../models/notification.model';
+import { Subscription } from 'rxjs';
 
-interface Notification {
-  id: number;
+interface NotificationDisplay {
+  id: string;
   title: string;
   message: string;
   time: string;
   read: boolean;
+  type: string;
 }
 
 @Component({
@@ -18,38 +22,21 @@ interface Notification {
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   userName: string = '';
   currentUser: any = null;
-  userRole: string = 'Patient';
-  showNotifications: boolean = false;
+  userRole: string = 'Patient';  showNotifications: boolean = false;
   showUserMenu: boolean = false;
-  notificationCount: number = 3;
+  notificationCount: number = 0;
+  notifications: NotificationDisplay[] = [];
+  
+  private notificationsSubscription?: Subscription;
+  private unreadCountSubscription?: Subscription;
+  constructor(
+    private router: Router,
+    private notificationService: NotificationService
+  ) {}
 
-  constructor(private router: Router) {}
-
-  notifications: Notification[] = [
-    {
-      id: 1,
-      title: 'Appointment Reminder',
-      message: 'Your appointment with Dr. Smith is tomorrow at 2:00 PM',
-      time: '2 hours ago',
-      read: false
-    },
-    {
-      id: 2,
-      title: 'Lab Results Ready',
-      message: 'Your blood test results are now available',
-      time: '5 hours ago',
-      read: false
-    },
-    {
-      id: 3,
-      title: 'Prescription Renewal',
-      message: 'Time to renew your medication prescription',
-      time: '1 day ago',
-      read: false
-    }  ];
   ngOnInit(): void {
     // Load current user from sessionStorage
     const userStr = sessionStorage.getItem('user');
@@ -64,12 +51,79 @@ export class NavbarComponent implements OnInit {
       
       // Set user role based on role property (true = doctor, false = patient)
       this.userRole = this.currentUser?.role ? 'Doctor' : 'Patient';
+      
+      // Initialize notifications only for patients
+      if (!this.currentUser?.role) {
+        this.initializeNotifications();
+      }
     }
   }
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.notificationsSubscription) {
+      this.notificationsSubscription.unsubscribe();
+    }
+    if (this.unreadCountSubscription) {
+      this.unreadCountSubscription.unsubscribe();
+    }
+    
+    // Close SSE connection
+    this.notificationService.closeSSE();
+  }private initializeNotifications(): void {
+    console.log('Initializing notifications for user:', this.currentUser);
+    
+    // Subscribe to notifications
+    this.notificationsSubscription = this.notificationService.notifications$.subscribe(
+      (notifications: UserNotification[]) => {
+        console.log('Navbar received notifications:', notifications);
+        this.notifications = notifications.map(n => ({
+          id: n.id,
+          title: n.title,
+          message: n.message,
+          time: this.formatTime(n.createdAt),
+          read: n.read,
+          type: n.type || 'general'
+        }));
+        console.log('Mapped notifications for display:', this.notifications);
+      }
+    );    // Subscribe to unread count
+    this.unreadCountSubscription = this.notificationService.unreadCount$.subscribe(
+      (count: number) => {
+        console.log('Unread count updated:', count);
+        this.notificationCount = count;
+      }
+    );
 
-  toggleNotifications(): void {
+    // Initialize notifications
+    this.notificationService.initializeNotifications();
+  }
+
+  private formatTime(createdAt: string): string {
+    const now = new Date();
+    const created = new Date(createdAt);
+    const diffMs = now.getTime() - created.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) {
+      return 'Just now';
+    } else if (diffMins < 60) {
+      return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    } else if (diffHours < 24) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    } else {
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    }
+  }  toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
     this.showUserMenu = false;
+    
+    // Always refresh notifications when dropdown is opened
+    if (this.showNotifications && this.currentUser?.id) {
+      console.log('🔄 Refreshing notifications on dropdown open for user:', this.currentUser.id);
+      this.notificationService.forceRefresh();
+    }
   }
 
   toggleUserMenu(): void {
@@ -95,11 +149,45 @@ export class NavbarComponent implements OnInit {
     console.log('Navigate to settings');
     this.showUserMenu = false;
   }
-
   medicalHistory(): void {
     console.log('Navigate to medical history');
     this.showUserMenu = false;
   }
+  onNotificationClick(notification: NotificationDisplay): void {
+    // Mark notification as read if it's not already read
+    if (!notification.read) {
+      this.notificationService.markAsRead(notification.id).subscribe({
+        next: () => {
+          console.log('Notification marked as read');
+        },
+        error: (error) => {
+          console.error('Error marking notification as read:', error);
+        }
+      });
+    }
+
+    // Navigate to relevant page based on notification type
+    if (notification.type === 'medical_record') {
+      // Navigate to patient dashboard medical records section
+      this.router.navigate(['/patient-dashboard'], { fragment: 'records' });
+    }
+    
+    this.showNotifications = false;
+  }
+
+  markAllNotificationsAsRead(): void {
+    if (this.currentUser?.id) {
+      this.notificationService.markAllAsRead(this.currentUser.id).subscribe({
+        next: () => {
+          console.log('All notifications marked as read');
+        },
+        error: (error) => {
+          console.error('Error marking all notifications as read:', error);
+        }
+      });
+    }
+  }
+  
   logout(): void {
     console.log('Logout user');
     this.showUserMenu = false;
@@ -109,5 +197,44 @@ export class NavbarComponent implements OnInit {
     
     // Redirect to signin page
     this.router.navigate(['/signin']);
+  }
+
+  testNotifications(): void {
+    console.log('🔧 Testing notifications manually...');
+    console.log('Current user:', this.currentUser);
+    
+    if (this.currentUser?.id) {
+      console.log(`Calling API for user ID: ${this.currentUser.id}`);
+      this.notificationService.loadNotifications(this.currentUser.id).subscribe({
+        next: (notifications) => {
+          console.log('✅ Test successful! Received notifications:', notifications);
+          console.log(`Found ${notifications.length} notifications`);
+        },
+        error: (error) => {
+          console.error('❌ Test failed:', error);
+          console.error('Error details:', error.error);
+          console.error('Status:', error.status);
+        }
+      });
+    } else {
+      console.error('❌ No current user found');
+    }
+  }
+
+  debugUserInfo(): void {
+    console.log('🔍 Debug User Information:');
+    const userStr = sessionStorage.getItem('user');
+    console.log('Raw user string from sessionStorage:', userStr);
+    
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      console.log('Parsed user object:', user);
+      console.log('User ID:', user.id);
+      console.log('User role:', user.role);
+      console.log('User firstName:', user.firstName);
+      console.log('User lastName:', user.lastName);
+    } else {
+      console.log('❌ No user found in sessionStorage');
+    }
   }
 }

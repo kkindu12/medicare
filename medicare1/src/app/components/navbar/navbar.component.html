@@ -20,24 +20,45 @@
         <!-- Notifications Dropdown -->
         <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 position-absolute" 
              [class.show]="showNotifications" 
-             style="min-width: 320px; top: 100%; right: 0; border-radius: 12px; z-index: 1050;">
-          <div class="dropdown-header bg-light">
+             style="min-width: 320px; top: 100%; right: 0; border-radius: 12px; z-index: 1050;">          <div class="dropdown-header bg-light d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold">Notifications</h6>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-primary px-2 py-1" 
+                      (click)="testNotifications()"
+                      title="Test notifications">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <button *ngIf="notificationCount > 0" 
+                      class="btn btn-sm btn-link text-primary p-0" 
+                      (click)="markAllNotificationsAsRead()"
+                      title="Mark all as read">
+                <small>Mark all read</small>
+              </button>
+            </div>
           </div>
           <div class="dropdown-divider m-0"></div>
           <div style="max-height: 300px; overflow-y: auto;">
             <div *ngIf="notifications.length === 0" class="text-center p-4 text-muted">
               <i class="bi bi-bell-slash fs-1 mb-2 d-block"></i>
               <p class="mb-0">No new notifications</p>
-            </div>
-            <div *ngFor="let notification of notifications" 
-                 class="d-flex align-items-start p-3 border-bottom notification-item">
-              <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
-                <i class="bi bi-info-circle text-primary"></i>
+            </div>            <div *ngFor="let notification of notifications" 
+                 class="d-flex align-items-start p-3 border-bottom notification-item"
+                 [class.bg-light]="!notification.read"
+                 style="cursor: pointer;"
+                 (click)="onNotificationClick(notification)">              <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
+                <i class="bi bi-file-medical text-primary" *ngIf="notification.type === 'medical_record'"></i>
+                <i class="bi bi-calendar-event text-primary" *ngIf="notification.type === 'appointment'"></i>
+                <i class="bi bi-capsule text-primary" *ngIf="notification.type === 'prescription'"></i>
+                <i class="bi bi-clipboard-pulse text-primary" *ngIf="notification.type === 'lab_result'"></i>
+                <i class="bi bi-info-circle text-primary" *ngIf="!notification.type || !['medical_record', 'appointment', 'prescription', 'lab_result'].includes(notification.type)"></i>
               </div>
               <div class="flex-grow-1">
-                <p class="mb-1 fw-semibold small">{{ notification.title }}</p>
+                <p class="mb-1 fw-semibold small" [class.text-muted]="notification.read">{{ notification.title }}</p>
+                <p class="mb-0 text-muted small">{{ notification.message }}</p>
                 <p class="mb-0 text-muted small">{{ notification.time }}</p>
+                <div *ngIf="!notification.read" class="position-absolute" style="top: 10px; right: 10px;">
+                  <span class="badge bg-primary rounded-pill" style="width: 8px; height: 8px; padding: 0;"></span>
+                </div>
               </div>
             </div>
           </div>
