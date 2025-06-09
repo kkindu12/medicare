@@ -4,114 +4,193 @@
     50% { opacity: 0.8; transform: scale(1.1); }
     100% { opacity: 1; transform: scale(1); }
   }
+  .profile-title {
+    font-size: 1.5rem !important;
+  }
+  .profile-section-title {
+    font-size: 1.1rem !important;
+  }
+  .form-label, label.form-label {
+    font-size: 0.92rem !important;
+  }  .profile-view .bg-light, .form-control {
+    font-size: 0.97rem !important;
+  }
+  .btn, button.btn {
+    font-size: 0.97rem !important;
+  }  .form-section {
+    min-height: auto;
+    padding: 2.5rem !important;
+  }
+  .profile-info-section {
+    padding: 2rem !important;
+  }
+  @media (max-width: 768px) {
+    .profile-info-section {
+      display: none !important;
+    }
+  }
 </style>
 <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background-color: #fff;">
-  <div class="row w-100 justify-content-center">
-    <div class="col-lg-10 col-md-11 col-12">
-      <div class="d-flex flex-row rounded-4 shadow-lg overflow-hidden bg-white my-5" style="min-height: 420px; max-width: 1200px; margin-left: auto; margin-right: auto;">
-        <!-- Left: Image -->
-        <div class="col-md-4 p-0 d-none d-md-block bg-light">
-          <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=600&q=80" alt="User Profile" class="img-fluid h-100 w-100 object-fit-cover" style="object-fit: cover; height: 100%; min-height: 420px;">
-        </div>
+  <div class="row w-100 justify-content-center">    <div class="col-lg-8 col-md-10 col-12">      <div class="d-flex flex-row rounded-4 shadow-lg overflow-hidden bg-white my-5" style="min-height: 650px; max-width: 1400px; margin-left: auto; margin-right: auto;">
         
-        <!-- Middle: Profile Form -->
-        <div class="col-md-4 p-4 d-flex flex-column justify-content-center">
+        <!-- Left: Profile Form Section -->
+        <div class="col-md-7 p-5 d-flex flex-column justify-content-center form-section">
           <div class="mb-4 d-flex align-items-center justify-content-between">
-            <span class="fw-bold fs-2 text-primary">Medicare</span>
+            <span class="fw-bold text-primary profile-title">Medicare</span>
             <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">
               <i class="bi bi-arrow-left me-1"></i>Back
             </button>
           </div>
           
-          <h4 class="fw-semibold mb-2" style="color: #212529;">
+          <h4 class="fw-semibold mb-4 profile-section-title" style="color: #212529;">
             {{ isEditMode ? 'Edit Profile' : 'Your Profile' }}
-          </h4>
-          
-          <!-- View Mode -->
+          </h4>          <!-- View Mode -->
           <div *ngIf="!isEditMode" class="profile-view">
-            <div class="mb-3">
-              <label class="form-label fw-semibold text-muted small">FIRST NAME</label>
-              <div class="bg-light p-3 rounded border">{{ firstName }}</div>
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">First Name</label>
+                <div class="bg-light p-2 rounded border">{{ firstName }}</div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">Last Name</label>
+                <div class="bg-light p-2 rounded border">{{ lastName }}</div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold text-muted small">LAST NAME</label>
-              <div class="bg-light p-3 rounded border">{{ lastName }}</div>
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">Email Address</label>
+                <div class="bg-light p-2 rounded border">{{ email }}</div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">Phone Number</label>
+                <div class="bg-light p-2 rounded border">{{ phoneNumber || 'Not provided' }}</div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold text-muted small">EMAIL</label>
-              <div class="bg-light p-3 rounded border">{{ email }}</div>
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">Date of Birth</label>
+                <div class="bg-light p-2 rounded border">{{ dateOfBirth || 'Not provided' }}</div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">Gender</label>
+                <div class="bg-light p-2 rounded border">{{ gender || 'Not provided' }}</div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold text-muted small">PHONE NUMBER</label>
-              <div class="bg-light p-3 rounded border">{{ phoneNumber || 'Not provided' }}</div>
+            <div class="row">
+              <div class="col-12 mb-2">
+                <label class="form-label fw-semibold text-muted small">Address</label>
+                <div class="bg-light p-2 rounded border">{{ address || 'Not provided' }}</div>
+              </div>
             </div>
-            <button type="button" class="btn btn-primary w-100 fw-bold" (click)="toggleEditMode()">
-              <i class="bi bi-pencil me-2"></i>EDIT PROFILE
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">Emergency Contact Name</label>
+                <div class="bg-light p-2 rounded border">{{ emergencyContactName || 'Not provided' }}</div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label class="form-label fw-semibold text-muted small">Emergency Contact Phone</label>
+                <div class="bg-light p-2 rounded border">{{ emergencyContactPhone || 'Not provided' }}</div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary w-100 fw-bold mt-3" (click)="toggleEditMode()">
+              <i class="bi bi-pencil me-2"></i>Edit Profile
             </button>
-          </div>
-
-          <!-- Edit Mode -->
-          <form *ngIf="isEditMode" (ngSubmit)="onSubmit()" #profileForm="ngForm" autocomplete="off">
-            <div class="mb-3">
-              <input type="text" class="form-control bg-light border-primary" 
-                     id="firstName" name="firstName" [(ngModel)]="firstName" 
-                     required placeholder="First Name" aria-label="First Name">
-              <div *ngIf="profileForm.submitted && !firstName" class="text-danger small">First name is required.</div>
+          </div><!-- Edit Mode -->
+          <form *ngIf="isEditMode" (ngSubmit)="onSubmit()" #profileForm="ngForm" autocomplete="off">            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="firstName" class="form-label small">First Name</label>
+                <input type="text" class="form-control bg-light border-primary" 
+                       id="firstName" name="firstName" [(ngModel)]="firstName" 
+                       required placeholder="First Name" aria-label="First Name">
+                <div *ngIf="profileForm.submitted && !firstName" class="text-danger small">First name is required.</div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label for="lastName" class="form-label small">Last Name</label>
+                <input type="text" class="form-control bg-light border-primary" 
+                       id="lastName" name="lastName" [(ngModel)]="lastName" 
+                       required placeholder="Last Name" aria-label="Last Name">
+                <div *ngIf="profileForm.submitted && !lastName" class="text-danger small">Last name is required.</div>
+              </div>
+            </div>            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="email" class="form-label small">Email Address</label>
+                <input type="email" class="form-control bg-light border-primary" 
+                       id="email" name="email" [(ngModel)]="email" 
+                       required placeholder="Email address" aria-label="Email address">
+                <div *ngIf="profileForm.submitted && !email" class="text-danger small">Email is required.</div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label for="phoneNumber" class="form-label small">Phone Number</label>
+                <input type="tel" class="form-control bg-light border-primary" 
+                       id="phoneNumber" name="phoneNumber" [(ngModel)]="phoneNumber" 
+                       placeholder="Phone Number" aria-label="Phone Number">
+              </div>
+            </div>            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="dateOfBirth" class="form-label small">Date of Birth</label>
+                <input type="date" class="form-control bg-light border-primary" 
+                       id="dateOfBirth" name="dateOfBirth" [(ngModel)]="dateOfBirth" 
+                       aria-label="Date of Birth">
+              </div>
+              <div class="col-md-6 mb-2">
+                <label for="gender" class="form-label small">Gender</label>
+                <select class="form-control bg-light border-primary" 
+                        id="gender" name="gender" [(ngModel)]="gender" 
+                        aria-label="Gender">
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+            </div>            <div class="row">
+              <div class="col-12 mb-2">
+                <label for="address" class="form-label small">Address</label>
+                <textarea class="form-control bg-light border-primary" 
+                          id="address" name="address" [(ngModel)]="address" 
+                          rows="3" placeholder="Address" aria-label="Address"></textarea>
+              </div>
+            </div>            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="emergencyContactName" class="form-label small">Emergency Contact Name</label>
+                <input type="text" class="form-control bg-light border-primary" 
+                       id="emergencyContactName" name="emergencyContactName" [(ngModel)]="emergencyContactName" 
+                       placeholder="Emergency Contact Name" aria-label="Emergency Contact Name">
+              </div>
+              <div class="col-md-6 mb-2">
+                <label for="emergencyContactPhone" class="form-label small">Emergency Contact Phone</label>
+                <input type="tel" class="form-control bg-light border-primary" 
+                       id="emergencyContactPhone" name="emergencyContactPhone" [(ngModel)]="emergencyContactPhone" 
+                       placeholder="Emergency Contact Phone" aria-label="Emergency Contact Phone">
+              </div>
             </div>
-            <div class="mb-3">
-              <input type="text" class="form-control bg-light border-primary" 
-                     id="lastName" name="lastName" [(ngModel)]="lastName" 
-                     required placeholder="Last Name" aria-label="Last Name">
-              <div *ngIf="profileForm.submitted && !lastName" class="text-danger small">Last name is required.</div>
-            </div>
-            <div class="mb-3">
-              <input type="email" class="form-control bg-light border-primary" 
-                     id="email" name="email" [(ngModel)]="email" 
-                     required placeholder="Email address" aria-label="Email address">
-              <div *ngIf="profileForm.submitted && !email" class="text-danger small">Email is required.</div>
-            </div>
-            <div class="mb-3">
-              <input type="tel" class="form-control bg-light border-primary" 
-                     id="phoneNumber" name="phoneNumber" [(ngModel)]="phoneNumber" 
-                     placeholder="Phone Number" aria-label="Phone Number">
+              <div class="d-flex gap-2 mb-3 mt-4">
+              <button type="submit" class="btn btn-primary flex-fill fw-bold py-2">
+                <i class="bi bi-check-circle me-2"></i>Save Changes
+              </button>
+              <button type="button" class="btn btn-outline-secondary flex-fill fw-bold py-2" (click)="toggleEditMode()">
+                <i class="bi bi-x-circle me-2"></i>Cancel
+              </button>
             </div>
             
-            <div class="d-flex gap-2 mb-3">
-              <button type="submit" class="btn btn-primary flex-fill fw-bold">
-                <i class="bi bi-check-circle me-2"></i>SAVE CHANGES
-              </button>
-              <button type="button" class="btn btn-outline-secondary flex-fill fw-bold" (click)="toggleEditMode()">
-                <i class="bi bi-x-circle me-2"></i>CANCEL
-              </button>
-            </div>
-            
-            <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
-            <div *ngIf="success" class="alert alert-success py-2">{{ success }}</div>
-          </form>
-        </div>
-        
-        <!-- Right: Profile Information -->
-        <div class="col-md-4 p-0 d-flex flex-column bg-primary text-white d-none d-md-flex" style="position: relative; background: linear-gradient(135deg, #0d6efd, #0a4caf);">
-          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; text-align: center;">
-            <h3 class="fw-bold mb-3" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.2); letter-spacing: 0.5px;">
-              Manage Your Profile <span style="display: inline-block; animation: pulse 1.5s infinite;">✨</span>
-            </h3>
-            <h6 class="fw-semi-bold mb-4" style="text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px;">
-              Keep your information up to date
-            </h6>
-            <p class="mb-4" style="line-height: 1.6; text-shadow: 0px 1px 2px rgba(0,0,0,0.1);">
-              Update your personal information to ensure accurate communication and better healthcare services.
-            </p>
+            <div *ngIf="error" class="alert alert-danger py-2 mt-3">{{ error }}</div>
+            <div *ngIf="success" class="alert alert-success py-2 mt-3">{{ success }}</div></form>
+        </div>          <!-- Right: Profile Information -->
+        <div class="col-md-5 p-0 d-flex flex-column bg-primary text-white d-none d-md-flex profile-info-section" style="position: relative; background: linear-gradient(135deg, #0d6efd, #0a4caf);">
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; text-align: center; padding: 1rem;"><h3 class="fw-bold mb-4 profile-title" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.2); letter-spacing: 0.5px; font-size: 1.8rem;">Manage Your Profile <span style="display: inline-block; animation: pulse 1.5s infinite;">!</span></h3>
+            <h6 class="fw-semi-bold mb-4 profile-section-title" style="text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; font-size: 1rem;">keep your information updated</h6>
+            <p class="mb-4" style="line-height: 1.6; text-shadow: 0px 1px 2px rgba(0,0,0,0.1); font-size: 0.95rem;">Update your personal details, contact information, and emergency contacts to ensure we can provide you with the best care possible.</p>
             
             <div class="d-flex justify-content-center mb-4">
               <div class="mx-2 bg-white bg-opacity-25 p-2 rounded-circle">
-                <i class="bi bi-person-check" style="font-size: 1.5rem;"></i>
+                <i class="bi bi-person-check" style="font-size: 1.2rem;"></i>
               </div>
               <div class="mx-2 bg-white bg-opacity-25 p-2 rounded-circle">
-                <i class="bi bi-shield-lock" style="font-size: 1.5rem;"></i>
+                <i class="bi bi-shield-lock" style="font-size: 1.2rem;"></i>
               </div>
               <div class="mx-2 bg-white bg-opacity-25 p-2 rounded-circle">
-                <i class="bi bi-telephone" style="font-size: 1.5rem;"></i>
+                <i class="bi bi-telephone" style="font-size: 1.2rem;"></i>
               </div>
             </div>
           </div>

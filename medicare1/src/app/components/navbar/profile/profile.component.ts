@@ -17,12 +17,16 @@ export class ProfileComponent implements OnInit {
 
   // User data
   currentUser: any = null;
-  
-  // Form fields
+    // Form fields
   firstName: string = '';
   lastName: string = '';
   email: string = '';
   phoneNumber: string = '';
+  dateOfBirth: string = '';
+  gender: string = '';
+  address: string = '';
+  emergencyContactName: string = '';
+  emergencyContactPhone: string = '';
     // Form state
   isLoading: boolean = false;
   error: string = '';
@@ -37,7 +41,6 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.loadUserData();
   }
-
   private loadUserData(): void {
     if (isPlatformBrowser(this.platformId)) {
       const userStr = sessionStorage.getItem('user');
@@ -47,6 +50,11 @@ export class ProfileComponent implements OnInit {
         this.lastName = this.currentUser.lastName || '';
         this.email = this.currentUser.email || '';
         this.phoneNumber = this.currentUser.phoneNumber || '';
+        this.dateOfBirth = this.currentUser.dateOfBirth || '';
+        this.gender = this.currentUser.gender || '';
+        this.address = this.currentUser.address || '';
+        this.emergencyContactName = this.currentUser.emergencyContactName || '';
+        this.emergencyContactPhone = this.currentUser.emergencyContactPhone || '';
       } else {
         // If no user data, redirect to signin
         this.router.navigate(['/signin']);
@@ -78,16 +86,19 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-
-    const updateData = {
+    this.isLoading = true;    const updateData = {
       firstName: this.firstName.trim(),
       lastName: this.lastName.trim(),
       email: this.email.trim(),
-      phoneNumber: this.phoneNumber.trim()
+      phoneNumber: this.phoneNumber.trim(),
+      dateOfBirth: this.dateOfBirth.trim(),
+      gender: this.gender.trim(),
+      address: this.address.trim(),
+      emergencyContactName: this.emergencyContactName.trim(),
+      emergencyContactPhone: this.emergencyContactPhone.trim()
     };
 
-    this.http.put(`http://localhost:8000/users/${this.currentUser.id}`, updateData)
+    this.http.put(`http://localhost:8000/api/users/${this.currentUser.id}`, updateData)
       .subscribe({
         next: (response: any) => {
           // Update session storage with new data
