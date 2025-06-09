@@ -63,10 +63,9 @@ export class SettingsComponent implements OnInit {
   }
   onSecuritySettingsSubmit(): void {
     this.saveSettings('Security settings updated successfully');
-  }
-  changePassword(): void {
-    // This would typically open a modal or navigate to a password change page
-    alert('Password change functionality would be implemented here');
+  }  changePassword(): void {
+    // Navigate to change password component
+    this.router.navigate(['/change-password']);
   }
 
   deleteAccount(): void {
