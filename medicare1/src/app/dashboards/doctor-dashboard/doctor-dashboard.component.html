@@ -74,27 +74,38 @@
     <div class="row">
       <div class="col-12">
         <div class="card border-0 shadow-sm">
-          <div class="card-header bg-white border-bottom">
-            <ul class="nav nav-tabs card-header-tabs" id="dashboardTabs" role="tablist">              <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" 
-                        type="button" role="tab" aria-controls="appointments" aria-selected="true">
+          <div class="card-header bg-white border-bottom">            <ul class="nav nav-tabs card-header-tabs" id="dashboardTabs" role="tablist">              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="appointments-tab" 
+                        [class.active]="activeTab === 'appointments'"
+                        (click)="setActiveTab('appointments')"
+                        type="button" role="tab" aria-controls="appointments" 
+                        [attr.aria-selected]="activeTab === 'appointments'">
                   <i class="bi bi-calendar-event me-2"></i>Appointments
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="lab-reports-tab" data-bs-toggle="tab" data-bs-target="#lab-reports" 
-                        type="button" role="tab" aria-controls="lab-reports" aria-selected="false">
+                <button class="nav-link" id="lab-reports-tab" 
+                        [class.active]="activeTab === 'lab-reports'"
+                        (click)="setActiveTab('lab-reports')"
+                        type="button" role="tab" aria-controls="lab-reports" 
+                        [attr.aria-selected]="activeTab === 'lab-reports'">
                   <i class="bi bi-file-medical me-2"></i>Lab Reports
                 </button>
               </li>              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="patient-records-tab" data-bs-toggle="tab" data-bs-target="#patient-records" 
-                        type="button" role="tab" aria-controls="patient-records" aria-selected="false">
+                <button class="nav-link" id="patient-records-tab" 
+                        [class.active]="activeTab === 'patient-records'"
+                        (click)="setActiveTab('patient-records')"
+                        type="button" role="tab" aria-controls="patient-records" 
+                        [attr.aria-selected]="activeTab === 'patient-records'">
                   <i class="bi bi-person-lines-fill me-2"></i>Patient Records
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="add-patient-record-tab" data-bs-toggle="tab" data-bs-target="#add-patient-record" 
-                        type="button" role="tab" aria-controls="add-patient-record" aria-selected="false">
+                <button class="nav-link" id="add-patient-record-tab" 
+                        [class.active]="activeTab === 'add-patient-record'"
+                        (click)="setActiveTab('add-patient-record')"
+                        type="button" role="tab" aria-controls="add-patient-record" 
+                        [attr.aria-selected]="activeTab === 'add-patient-record'">
                   <i class="bi bi-person-plus me-2"></i>Add Patient Record
                 </button>
               </li>
@@ -102,10 +113,9 @@
           </div>
           <div class="card-body">
             <div class="tab-content" id="dashboardTabContent">
-              
-              <!-- Appointments Tab -->
-              <div class="tab-pane fade show active tab-content-section" id="appointments" role="tabpanel" 
-                   aria-labelledby="appointments-tab">                <div class="row mb-3">
+                <!-- Appointments Tab -->
+              <div class="tab-content-section" id="appointments" role="tabpanel" 
+                   aria-labelledby="appointments-tab" *ngIf="activeTab === 'appointments'"><div class="row mb-3">
                   <div class="col-md-8">
                     <h5 class="mb-0">Appointment Requests</h5>
                     <small class="text-muted">Review and approve patient appointment requests</small>
@@ -204,8 +214,8 @@
                   </div>
                 </div>
               </div>              <!-- Lab Reports Tab -->
-              <div class="tab-pane fade tab-content-section" id="lab-reports" role="tabpanel" 
-                   aria-labelledby="lab-reports-tab">
+              <div class="tab-content-section" id="lab-reports" role="tabpanel" 
+                   aria-labelledby="lab-reports-tab" *ngIf="activeTab === 'lab-reports'">
                 <div class="row mb-3">
                   <div class="col-md-8">
                     <h5 class="mb-0">Lab Reports</h5>
@@ -291,70 +301,86 @@
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Patient Records Tab -->
-              <div class="tab-pane fade tab-content-section" id="patient-records" role="tabpanel" 
-                   aria-labelledby="patient-records-tab">
-                <div class="row mb-3">
-                  <div class="col-md-8">
+              </div>              <!-- Patient Records Tab -->
+              <div class="tab-content-section" id="patient-records" role="tabpanel" 
+                   aria-labelledby="patient-records-tab" *ngIf="activeTab === 'patient-records'">                <div class="row mb-3">
+                  <div class="col-md-6">
                     <h5 class="mb-0">Patient Medical Records</h5>
+                    <small class="text-muted">View and manage all patient medical records</small>
                   </div>
-                  <div class="col-md-4">
-                    <div class="input-group input-group-sm">
-                      <input type="text" class="form-control" placeholder="Search patients..." 
-                             [(ngModel)]="patientSearchTerm" (input)="searchPatients()">
-                      <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i>
+                  <div class="col-md-6">                    <div class="d-flex gap-2 justify-content-end">
+                      <button class="btn btn-outline-primary btn-sm" (click)="loadPatientRecords()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                       </button>
+                      <button class="btn btn-outline-info btn-sm" (click)="debugPatientRecords()">
+                        <i class="bi bi-bug me-1"></i>Debug
+                      </button>
+                      <div class="input-group input-group-sm" style="max-width: 250px;">
+                        <input type="text" class="form-control" placeholder="Search patients..." 
+                               [(ngModel)]="patientSearchTerm" (input)="searchPatients()">
+                        <button class="btn btn-outline-secondary" type="button">
+                          <i class="bi bi-search"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-                
-                <div class="row">
+                  <div class="row">
                   <div class="col-12">
-                    <div *ngFor="let record of filteredPatientRecords" 
-                         class="card patient-record-card mb-3">
-                      <div class="card-body">
-                        <div class="row align-items-center">
-                          <div class="col-md-8">
-                            <h6 class="card-title mb-1 fw-bold">
-                              {{ record.user?.firstName }} {{ record.user?.lastName }}
-                            </h6>
-                            <p class="card-text small text-muted mb-2">
-                              <i class="bi bi-envelope me-1"></i>{{ record.user?.email }}
-                              <i class="bi bi-telephone ms-3 me-1"></i>{{ record.user?.phoneNumber }}
-                            </p>                            <div class="row">
-                              <div class="col-md-6">
-                                <small><strong>Visit Date:</strong> {{ formatDate(record.visitDate) }}</small>
-                              </div>
-                              <div class="col-md-6">
-                                <small><strong>Doctor:</strong> {{ record.doctor }}</small>
-                              </div>
-                            </div>
-                            <div *ngIf="record.condition" class="mt-2">
-                              <small class="text-muted">
-                                <strong>Condition:</strong> {{ record.condition }}
-                              </small>
-                            </div>
-                          </div>
-                          <div class="col-md-4 text-end">
-                            <div class="btn-group btn-group-sm">
-                              <button class="btn btn-primary btn-sm" 
-                                      (click)="openMedicalRecordModal(record)">
-                                <i class="bi bi-eye me-1"></i>View Full Record
-                              </button>                              <button class="btn btn-outline-secondary btn-sm" 
-                                      (click)="downloadMedicalRecord(record)">
-                                <i class="bi bi-download"></i>
-                              </button>
-                            </div>                    </div>
+                    <!-- Loading State -->
+                    <div *ngIf="isLoading" class="text-center py-5">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-3 text-muted">Loading patient records...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div *ngIf="error && !isLoading" class="alert alert-danger" role="alert">
+                      <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+                      <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadPatientRecords()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Retry
+                      </button>
+                    </div>                    <!-- Empty Search Results -->
+                    <div *ngIf="!isLoading && !error && filteredPatientRecords.length === 0 && patientSearchTerm.trim().length > 0" class="text-center py-5">
+                      <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                           style="width: 80px; height: 80px;">
+                        <i class="bi bi-search text-muted fs-1"></i>
+                      </div>
+                      <h5 class="text-muted mb-2">No Results Found</h5>
+                      <p class="text-muted">No patient records match your search for "{{ patientSearchTerm }}"</p>
+                      <button class="btn btn-outline-secondary" (click)="patientSearchTerm = ''; searchPatients()">
+                        <i class="bi bi-x-lg me-2"></i>Clear Search
+                      </button>
+                    </div>
+
+                    <!-- Empty State (when no search term) -->
+                    <div *ngIf="!isLoading && !error && filteredPatientRecords.length === 0 && patientSearchTerm.trim().length === 0" class="text-center py-5">
+                      <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                           style="width: 80px; height: 80px;">
+                        <i class="bi bi-inbox text-muted fs-1"></i>
+                      </div>
+                      <h5 class="text-muted mb-2">No Patient Records Found</h5>
+                      <p class="text-muted">No patient records are available at the moment.</p>
+                      <button class="btn btn-primary" (click)="setActiveTab('add-patient-record')">
+                        <i class="bi bi-plus-lg me-2"></i>Add New Patient Record
+                      </button>
+                    </div>                    <!-- Patient Records List using PatientRecordCardComponent -->
+                    <div class="row">
+                      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let record of filteredPatientRecords">
+                        <app-patient-record-card 
+                          [record]="record"
+                          (editRecord)="editMedicalRecord($event)"
+                          (addReport)="addReportForRecord($event)"
+                          (viewHistory)="viewRecordHistory($event)">
+                        </app-patient-record-card>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Add Patient Record Tab -->
-              <div class="tab-pane fade tab-content-section" id="add-patient-record" role="tabpanel" 
-                   aria-labelledby="add-patient-record-tab">
+              </div><!-- Add Patient Record Tab -->
+              <div class="tab-content-section" id="add-patient-record" role="tabpanel" 
+                   aria-labelledby="add-patient-record-tab" *ngIf="activeTab === 'add-patient-record'">
                 <div class="row mb-3">
                   <div class="col-md-8">
                     <h5 class="mb-0">Add New Patient Record</h5>
@@ -476,15 +502,11 @@
                             </button>
                           </div>
                         </div>
-                      </div>
-                    </form>
+                      </div>                    </form>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
           </div>
         </div>
       </div>

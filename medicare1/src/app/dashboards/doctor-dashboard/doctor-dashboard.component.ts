@@ -2,9 +2,11 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { PatientRecordCardComponent } from '../../emr/patient-record-card/patient-record-card.component';
 import { MedicalRecordsService } from '../../services/medicalRecordService/medical-records.service';
 import { UserService } from '../../services/userService/user.service';
 import { NotificationService } from '../../services/notification.service';
+import { environment } from '../../../environments/environment';
 import type { PatientRecordWithUser, User } from '../../emr/models';
 
 interface Appointment {
@@ -33,13 +35,15 @@ interface LabReport {
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, PatientRecordCardComponent],
   templateUrl: './doctor-dashboard.component.html',
   styleUrls: ['./doctor-dashboard.component.scss']
 })
 export class DoctorDashboardComponent implements OnInit {
-  activeTab: string = 'appointments';
+  activeTab: 'appointments' | 'lab-reports' | 'patient-records' | 'add-patient-record' = 'appointments';
   
+  
+
   // Current Doctor User
   currentUser: any = null;
   
@@ -218,34 +222,43 @@ export class DoctorDashboardComponent implements OnInit {
         this.error = 'Failed to load patients';
       }
     });
-  }
-
-  loadPatientRecords(): void {
+  }  loadPatientRecords(): void {
+    console.log('Loading patient records from API...');
+    this.isLoading = true;
+    this.error = null; // Clear any previous errors
+    
     this.medicalRecordsService.getPatientRecords().subscribe({
       next: (records: any) => {
+        console.log('Patient records loaded successfully:', records);
+        console.log('Number of records received:', Array.isArray(records) ? records.length : 'Not an array');
+        
         this.patientRecords = records as PatientRecordWithUser[];
         this.filteredPatientRecords = this.patientRecords;
         this.isLoading = false;
+        
+        console.log('Patient records assigned to component:', this.patientRecords.length);
+        console.log('Filtered patient records:', this.filteredPatientRecords.length);
       },
       error: (error: any) => {
         console.error('Error loading patient records:', error);
-        this.error = 'Failed to load patient records';
+        console.error('Error details:', {
+          status: error.status,
+          message: error.message,
+          url: error.url
+        });
+        
+        this.error = `Failed to load patient records: ${error.status ? `HTTP ${error.status}` : error.message}`;
         this.isLoading = false;
+        this.patientRecords = [];
+        this.filteredPatientRecords = [];
       }
     });
-  }
-  setActiveTab(tab: string): void {
+  }setActiveTab(tab: 'appointments' | 'lab-reports' | 'patient-records' | 'add-patient-record'): void {
     this.activeTab = tab;
     
-    // Programmatically trigger Bootstrap tab switching
-    if (isPlatformBrowser(this.platformId)) {
-      // Use setTimeout to ensure DOM is ready
-      setTimeout(() => {
-        const tabElement = document.querySelector(`#${tab}-tab`) as HTMLButtonElement;
-        if (tabElement) {
-          tabElement.click();
-        }
-      }, 100);
+    // Load data when specific tabs are activated
+    if (tab === 'patient-records' && this.patientRecords.length === 0) {
+      this.loadPatientRecords();
     }
   }
 
@@ -429,11 +442,43 @@ export class DoctorDashboardComponent implements OnInit {
     this.showRecordModal = true;
   }
 
-  editMedicalRecord(): void {
-    if (this.selectedMedicalRecord) {
-      // Implementation for editing medical record
-      console.log('Editing medical record:', this.selectedMedicalRecord);
-      // In a real app, this might open an edit form or modal
+  // Event handlers for PatientRecordCardComponent
+  editMedicalRecord(record?: PatientRecordWithUser): void {
+    if (record) {
+      this.selectedMedicalRecord = record;
+      // Open the existing medical record modal
+      this.openMedicalRecordModal(record);
+    } else if (this.selectedMedicalRecord) {
+      // This is called from the modal button without parameters
+      console.log('Edit functionality for:', this.selectedMedicalRecord.user?.firstName, this.selectedMedicalRecord.user?.lastName);
+      // In a real app, this would open an edit form or modal
+      alert(`Edit functionality for ${this.selectedMedicalRecord.user?.firstName} ${this.selectedMedicalRecord.user?.lastName} would be implemented here.`);
+    }
+  }
+
+  addReportForRecord(record: PatientRecordWithUser): void {
+    // Implementation for adding reports to a patient record
+    console.log('Adding report for record:', record);
+    // You could open a modal for file upload or navigate to report upload page
+    alert(`Add report functionality for ${record.user?.firstName} ${record.user?.lastName} would be implemented here.`);
+  }
+
+  viewRecordHistory(record: PatientRecordWithUser): void {
+    // Implementation for viewing patient record history
+    console.log('Viewing history for record:', record);
+    if (record.user?.id) {
+      // Load historical records for this patient
+      this.medicalRecordsService.getPatientRecordsById(record.user.id).subscribe({
+        next: (records) => {
+          console.log('Patient history records:', records);
+          // You could open a modal showing historical records
+          alert(`View history functionality for ${record.user?.firstName} ${record.user?.lastName} would show ${records.length} historical records.`);
+        },
+        error: (error) => {
+          console.error('Error loading patient history:', error);
+          alert('Error loading patient history. Please try again.');
+        }
+      });
     }
   }
 
@@ -623,5 +668,21 @@ export class DoctorDashboardComponent implements OnInit {
     };
     this.labTestsText = '';
     this.medicationsText = '';
+  }
+
+  // Debug method to check component state
+  debugPatientRecords(): void {
+    console.log('=== Patient Records Debug Info ===');
+    console.log('Active Tab:', this.activeTab);
+    console.log('Is Loading:', this.isLoading);
+    console.log('Error:', this.error);
+    console.log('Patient Records Array:', this.patientRecords);
+    console.log('Patient Records Length:', this.patientRecords.length);
+    console.log('Filtered Patient Records:', this.filteredPatientRecords);
+    console.log('Filtered Length:', this.filteredPatientRecords.length);
+    console.log('Search Term:', this.patientSearchTerm);
+    console.log('Medical Records Service:', this.medicalRecordsService);
+    console.log('Environment API URL:', environment.apiUrl);
+    console.log('================================');
   }
 }
