@@ -44,6 +44,8 @@ class UserLoginResponse(BaseModel):
     id: str
     firstName: str
     lastName: str
+    email: str
+    phoneNumber: str
     role: bool
 
 class UserLogin(BaseModel):

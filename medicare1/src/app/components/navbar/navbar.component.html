@@ -80,15 +80,12 @@
             <h6 class="mb-0 fw-bold">{{ userName }}</h6>
             <small class="text-muted">{{ userRole }}</small>
           </div>
-          <div class="dropdown-divider m-0"></div>
-          <a class="dropdown-item d-flex align-items-center py-2" href="#" (click)="viewProfile()">
+          <div class="dropdown-divider m-0"></div>          
+          <a class="dropdown-item d-flex align-items-center py-2" (click)="viewProfile()">
             <i class="bi bi-person me-3"></i>Profile
           </a>
-          <a class="dropdown-item d-flex align-items-center py-2" href="#" (click)="settings()">
+          <a class="dropdown-item d-flex align-items-center py-2"  (click)="settings()">
             <i class="bi bi-gear me-3"></i>Settings
-          </a>
-          <a class="dropdown-item d-flex align-items-center py-2" href="#" (click)="medicalHistory()">
-            <i class="bi bi-file-medical me-3"></i>Medical History
           </a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item d-flex align-items-center py-2 text-danger" href="#" (click)="logout()">

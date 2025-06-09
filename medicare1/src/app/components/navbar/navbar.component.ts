@@ -139,18 +139,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.showUserMenu = false;
     }
   }
-
   viewProfile(): void {
     console.log('Navigate to profile');
     this.showUserMenu = false;
+    this.router.navigate(['/profile']);
   }
-
   settings(): void {
     console.log('Navigate to settings');
-    this.showUserMenu = false;
-  }
-  medicalHistory(): void {
-    console.log('Navigate to medical history');
     this.showUserMenu = false;
   }
   onNotificationClick(notification: NotificationDisplay): void {
