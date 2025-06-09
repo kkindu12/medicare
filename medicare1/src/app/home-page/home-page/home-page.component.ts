@@ -14,4 +14,8 @@ export class HomePageComponent {
   goToSignIn() {
     this.router.navigate(['/signin']);
   }
+
+  goToAppointment() {
+    this.router.navigate(['/appointment-booking']);
+  }
 }
