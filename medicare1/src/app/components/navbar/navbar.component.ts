@@ -1,5 +1,5 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, HostListener, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
@@ -18,7 +18,7 @@ interface NotificationDisplay {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
@@ -31,30 +31,31 @@ export class NavbarComponent implements OnInit, OnDestroy {
   notifications: NotificationDisplay[] = [];
   
   private notificationsSubscription?: Subscription;
-  private unreadCountSubscription?: Subscription;
-  constructor(
+  private unreadCountSubscription?: Subscription;  constructor(
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  ngOnInit(): void {
-    // Load current user from sessionStorage
-    const userStr = sessionStorage.getItem('user');
-    if (userStr) {
-      this.currentUser = JSON.parse(userStr);
-      // Set the full name from the user data
-      if (this.currentUser?.name) {
-        this.userName = this.currentUser.name;
-      } else if (this.currentUser?.firstName && this.currentUser?.lastName) {
-        this.userName = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
-      }
-      
-      // Set user role based on role property (true = doctor, false = patient)
-      this.userRole = this.currentUser?.role ? 'Doctor' : 'Patient';
-      
-      // Initialize notifications only for patients
-      if (!this.currentUser?.role) {
-        this.initializeNotifications();
+  ngOnInit(): void {    // Load current user from sessionStorage (only in browser)
+    if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
+      const userStr = sessionStorage.getItem('user');
+      if (userStr) {
+        this.currentUser = JSON.parse(userStr);
+        // Set the full name from the user data
+        if (this.currentUser?.name) {
+          this.userName = this.currentUser.name;
+        } else if (this.currentUser?.firstName && this.currentUser?.lastName) {
+          this.userName = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+        }
+        
+        // Set user role based on role property (true = doctor, false = patient)
+        this.userRole = this.currentUser?.role ? 'Doctor' : 'Patient';
+        
+        // Initialize notifications only for patients
+        if (!this.currentUser?.role) {
+          this.initializeNotifications();
+        }
       }
     }
   }
@@ -159,12 +160,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
           console.error('Error marking notification as read:', error);
         }
       });
-    }
-
-    // Navigate to relevant page based on notification type
+    }    // Navigate to relevant page based on notification type
     if (notification.type === 'medical_record') {
-      // Navigate to patient dashboard medical records section
-      this.router.navigate(['/patient-dashboard'], { fragment: 'records' });
+      // Navigate to appropriate dashboard based on user role
+      if (this.currentUser?.role) {
+        // Doctor - navigate to doctor dashboard
+        this.router.navigate(['/doctor-dashboard'], { fragment: 'patient-records' });
+      } else {
+        // Patient - navigate to patient dashboard
+        this.router.navigate(['/patient-dashboard'], { fragment: 'records' });
+      }
     }
     
     this.showNotifications = false;
@@ -182,13 +187,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
     }
   }
-  
-  logout(): void {
+    logout(): void {
     console.log('Logout user');
     this.showUserMenu = false;
     
-    // Clear session storage
-    sessionStorage.removeItem('user');
+    // Clear session storage (only in browser)
+    if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('user');
+    }
     
     // Redirect to signin page
     this.router.navigate(['/signin']);
@@ -215,21 +221,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
       console.error('❌ No current user found');
     }
   }
-
   debugUserInfo(): void {
     console.log('🔍 Debug User Information:');
-    const userStr = sessionStorage.getItem('user');
-    console.log('Raw user string from sessionStorage:', userStr);
-    
-    if (userStr) {
-      const user = JSON.parse(userStr);
-      console.log('Parsed user object:', user);
-      console.log('User ID:', user.id);
-      console.log('User role:', user.role);
-      console.log('User firstName:', user.firstName);
-      console.log('User lastName:', user.lastName);
+    if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
+      const userStr = sessionStorage.getItem('user');
+      console.log('Raw user string from sessionStorage:', userStr);
+      
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        console.log('Parsed user object:', user);
+        console.log('User ID:', user.id);
+        console.log('User role:', user.role);
+        console.log('User firstName:', user.firstName);
+        console.log('User lastName:', user.lastName);
+      } else {
+        console.log('❌ No user found in sessionStorage');
+      }
     } else {
-      console.log('❌ No user found in sessionStorage');
+      console.log('❌ sessionStorage not available (likely server-side rendering)');
     }
   }
 }

@@ -126,8 +126,14 @@ export class SettingsComponent implements OnInit {
       sessionTimeout: this.sessionTimeout
     };
   }
-
   goBack(): void {
-    this.router.navigate(['/patient-dashboard']);
+    // Navigate to appropriate dashboard based on user role
+    if (this.currentUser?.role) {
+      // User role is true for doctors
+      this.router.navigate(['/doctor-dashboard']);
+    } else {
+      // User role is false for patients
+      this.router.navigate(['/patient-dashboard']);
+    }
   }
 }

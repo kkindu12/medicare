@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { PatientDashboardRecordCardComponent } from './components/patient-dashboard-record-card/patient-dashboard-record-card.component';
 import { PatientHistoryModalComponent } from '../../emr/patient-history-modal/patient-history-modal.component';
@@ -123,12 +123,16 @@ export class PatientDashboardComponent implements OnInit {
       status: 'pending'
     }  ];
 
-  constructor(private medicalRecordsService: MedicalRecordsService) {}
-  ngOnInit(): void {
-    // Load current user from sessionStorage
-    const userStr = sessionStorage.getItem('user');
-    if (userStr) {
-      this.currentUser = JSON.parse(userStr);
+  constructor(
+    private medicalRecordsService: MedicalRecordsService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}  ngOnInit(): void {
+    // Load current user from sessionStorage (only in browser)
+    if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
+      const userStr = sessionStorage.getItem('user');
+      if (userStr) {
+        this.currentUser = JSON.parse(userStr);
+      }
     }
     
     this.loadPatientRecords();

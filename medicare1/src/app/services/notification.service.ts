@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, interval } from 'rxjs';
 import { UserNotification, CreateNotificationRequest } from '../models/notification.model';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -13,37 +14,47 @@ export class NotificationService {
   private eventSource: EventSource | null = null;
 
   public notifications$ = this.notificationsSubject.asObservable();
-  public unreadCount$ = this.unreadCountSubject.asObservable();constructor(private http: HttpClient) {
-    // Immediately check for notifications on service initialization
-    this.initializeNotifications();    // Poll for new notifications every 2 seconds for near real-time updates
+  public unreadCount$ = this.unreadCountSubject.asObservable();  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
+    // Only initialize notifications if we're in the browser
+    if (isPlatformBrowser(this.platformId)) {
+      this.initializeNotifications();
+    }
+
+    // Poll for new notifications every 2 seconds for near real-time updates
     interval(2000).subscribe(() => {
-      const currentUser = this.getCurrentUser();
-      if (currentUser && !currentUser.role) { // Only for patients
+      if (isPlatformBrowser(this.platformId)) {
+        const currentUser = this.getCurrentUser();
+        if (currentUser && !currentUser.role) { // Only for patients
         this.loadNotifications(currentUser.id).subscribe({
           error: (error) => console.error('Error polling notifications:', error)
         });
       }
-    });
-
-    // Add window focus event listener for immediate refresh when user returns to tab
-    window.addEventListener('focus', () => {
-      console.log('🔄 Window focused - refreshing notifications');
-      this.forceRefresh();
-    });
+    }
+    });    // Add window focus event listener for immediate refresh when user returns to tab
+    if (isPlatformBrowser(this.platformId) && typeof window !== 'undefined') {
+      window.addEventListener('focus', () => {
+        console.log('🔄 Window focused - refreshing notifications');
+        this.forceRefresh();
+      });
+    }
 
     // Add visibility change event listener for when tab becomes visible
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        console.log('🔄 Tab became visible - refreshing notifications');
-        this.forceRefresh();
-      }
-    });
+    if (isPlatformBrowser(this.platformId) && typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          console.log('🔄 Tab became visible - refreshing notifications');
+          this.forceRefresh();
+        }
+      });
+    }
   }
-
   private getCurrentUser(): any {
-    const userStr = sessionStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
-  }  // Load notifications for a specific user
+    if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
+      const userStr = sessionStorage.getItem('user');
+      return userStr ? JSON.parse(userStr) : null;
+    }
+    return null;
+  }// Load notifications for a specific user
   loadNotifications(userId: string): Observable<UserNotification[]> {
     console.log(`Loading notifications for user: ${userId}`);
     return new Observable(observer => {
@@ -139,9 +150,12 @@ export class NotificationService {
         }
       });
     });
-  }
-  // Initialize notifications for current user
+  }  // Initialize notifications for current user
   initializeNotifications(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return; // Don't initialize on server side
+    }
+    
     const currentUser = this.getCurrentUser();
     if (currentUser && !currentUser.role) { // Only for patients
       this.loadNotifications(currentUser.id);
@@ -157,9 +171,12 @@ export class NotificationService {
   // Get current unread count (synchronous)
   getCurrentUnreadCount(): number {
     return this.unreadCountSubject.value;
-  }
-  // Force immediate refresh of notifications (can be called from any component)
+  }  // Force immediate refresh of notifications (can be called from any component)
   forceRefresh(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return; // Don't execute on server side
+    }
+    
     const currentUser = this.getCurrentUser();
     if (currentUser && !currentUser.role) { // Only for patients
       console.log('🔄 Force refreshing notifications...');
@@ -173,9 +190,12 @@ export class NotificationService {
       });
     }
   }
-
   // Initialize real-time SSE connection
   initializeSSE(userId: string): void {
+    if (!isPlatformBrowser(this.platformId) || typeof EventSource === 'undefined') {
+      return; // Don't initialize SSE on server side or if EventSource is not available
+    }
+    
     // Close existing connection if any
     this.closeSSE();
 

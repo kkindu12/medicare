@@ -132,12 +132,18 @@ export class ProfileComponent implements OnInit {
       return `${this.currentUser.firstName} ${this.currentUser.lastName}`;
     }
     return this.currentUser?.email || 'User';
-  }
-  getUserRole(): string {
+  }  getUserRole(): string {
     return this.currentUser?.role ? 'Doctor' : 'Patient';
   }
 
   goBack(): void {
-    this.router.navigate(['/patient-dashboard']);
+    // Navigate to appropriate dashboard based on user role
+    if (this.currentUser?.role) {
+      // User role is true for doctors
+      this.router.navigate(['/doctor-dashboard']);
+    } else {
+      // User role is false for patients
+      this.router.navigate(['/patient-dashboard']);
+    }
   }
 }

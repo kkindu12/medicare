@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SigninService } from '../../services/signinService/signin.service';
@@ -17,7 +17,11 @@ export class SigninComponent {
   password: string = '';
   error: string = '';
 
-  constructor(private router: Router, private signinService : SigninService) {}
+  constructor(
+    private router: Router, 
+    private signinService: SigninService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   onSubmit() {
     this.error = '';    if (!this.email || !this.password) {
@@ -27,12 +31,14 @@ export class SigninComponent {
       this.error = "Please enter a valid email address.";
       return;
     }if (this.email && this.password &&  this.email.trim() !== '' && this.password.trim() !== '') {
-      this.signinService.GetUser({ email: this.email, password: this.password }).subscribe({
-        next: (response) => { 
-          if (response) {            sessionStorage.setItem('user', JSON.stringify(response));
-            if(response.role) {
-              // role = true means doctor, redirect to EMR
-              this.router.navigate(['/emr']);
+      this.signinService.GetUser({ email: this.email, password: this.password }).subscribe({        next: (response) => { 
+          if (response) {
+            // Store user data in sessionStorage (only in browser)
+            if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
+              sessionStorage.setItem('user', JSON.stringify(response));
+            }            if(response.role) {
+              // role = true means doctor, redirect to doctor dashboard
+              this.router.navigate(['/doctor-dashboard']);
             }
             else {
               // role = false means patient, redirect to patient dashboard
