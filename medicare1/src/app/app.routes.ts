@@ -4,6 +4,7 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { EmrComponent } from './emr/emr.component';
 import { PatientDashboardComponent } from './dashboards/patient-dashboard/patient-dashboard.component';
 import { ProfileComponent } from './components/navbar/profile/profile.component';
+import { SettingsComponent } from './components/navbar/settings/settings.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -11,6 +12,7 @@ export const routes: Routes = [
     { path: 'signin', component: SigninComponent },
     { path: 'signup', component: SignupComponent },
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+    { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
     { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
     { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: '/signin' }

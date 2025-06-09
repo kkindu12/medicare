@@ -143,10 +143,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     console.log('Navigate to profile');
     this.showUserMenu = false;
     this.router.navigate(['/profile']);
-  }
-  settings(): void {
+  }  settings(): void {
     console.log('Navigate to settings');
     this.showUserMenu = false;
+    this.router.navigate(['/settings']);
   }
   onNotificationClick(notification: NotificationDisplay): void {
     // Mark notification as read if it's not already read
