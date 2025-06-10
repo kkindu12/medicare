@@ -31,11 +31,9 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Quick Stats Cards -->
+    </div>    <!-- Quick Stats Cards -->
     <div class="row mb-4">
-      <div class="col-lg-3 col-md-6 mb-3">
+      <div class="col-lg-6 col-md-6 mb-3">
         <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
           <div class="card-body text-center">
             <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
@@ -46,29 +44,16 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-3 col-md-6 mb-3">
+      <div class="col-lg-6 col-md-6 mb-3">
         <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
           <div class="card-body text-center">
             <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
               <i class="bi bi-file-medical text-success fs-3"></i>
-            </div>
-            <h4 class="card-title fw-bold mb-1">{{ getUnreviewedReportsCount() }}</h4>
-            <p class="card-text text-muted small mb-0">Unreviewed Reports</p>
+            </div>            <h4 class="card-title fw-bold mb-1">{{ getRecordsAddedCount() }}</h4>
+            <p class="card-text text-muted small mb-0">Records Added</p>
           </div>
         </div>
-      </div>
-      <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
-          <div class="card-body text-center">
-            <div class="bg-danger bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
-              <i class="bi bi-exclamation-triangle text-danger fs-3"></i>
-            </div>
-            <h4 class="card-title fw-bold mb-1">{{ getCriticalReportsCount() }}</h4>
-            <p class="card-text text-muted small mb-0">Critical Reports</p>
-          </div>
-        </div>
-      </div>
-    </div>
+      </div>    </div>
 
     <!-- Main Content Tabs -->
     <div class="row">
@@ -172,8 +157,7 @@
                                         (click)="approveAppointment(appointment.id)"
                                         title="Approve appointment">
                                   <i class="bi bi-check-lg"></i> Approve
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm" 
+                                </button>                                <button class="btn btn-danger btn-sm" 
                                         (click)="rejectAppointment(appointment.id)"
                                         title="Reject appointment">
                                   <i class="bi bi-x-lg"></i> Reject
@@ -271,8 +255,7 @@
                             </div>
                           </div>
                           <div class="col-md-4 text-end">
-                            <div class="btn-group btn-group-sm">
-                              <button class="btn btn-outline-primary btn-sm" 
+                            <div class="btn-group btn-group-sm">                              <button class="btn btn-primary btn-sm" 
                                       (click)="viewLabReport(report)">
                                 <i class="bi bi-eye me-1"></i>View
                               </button>
@@ -281,7 +264,7 @@
                                       (click)="markAsReviewed(report.id)">
                                 <i class="bi bi-check-lg me-1"></i>Mark Reviewed
                               </button>
-                              <button class="btn btn-outline-secondary btn-sm" 
+                              <button class="btn btn-outline-primary btn-sm" 
                                       (click)="downloadReport(report.id)">
                                 <i class="bi bi-download"></i>
                               </button>

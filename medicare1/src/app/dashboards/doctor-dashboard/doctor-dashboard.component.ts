@@ -538,6 +538,39 @@ export class DoctorDashboardComponent implements OnInit {
     const today = new Date().toISOString().split('T')[0];
     return this.appointments.filter(apt => apt.date === today).length;
   }
+  getRecordsAddedCount(): number {
+    const currentDoctorId = this.getCurrentDoctorId();
+    if (!currentDoctorId) {
+      return 0;
+    }
+    
+    // Count patient records that were added by the current doctor
+    // We'll use the doctorUser.id field or compare doctor names as fallback
+    return this.patientRecords.filter(record => {
+      // First try to match by doctor user ID
+      if (record.doctorUser?.id) {
+        return record.doctorUser.id === currentDoctorId;
+      }
+      
+      // Fallback: match by doctor name (less reliable but covers older records)
+      const currentDoctorName = this.getDoctorName();
+      return record.doctor === currentDoctorName;
+    }).length;
+  }
+
+  getCurrentDoctorId(): string {
+    if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
+      try {
+        const userString = sessionStorage.getItem('user');
+        const user = userString ? JSON.parse(userString) : null;
+        return user ? user.id : '';
+      } catch (error) {
+        console.error('Error reading user data from sessionStorage:', error);
+        return '';
+      }
+    }
+    return '';
+  }
 
   getUnreviewedReportsCount(): number {
     return this.labReports.filter(report => !report.reviewed).length;
