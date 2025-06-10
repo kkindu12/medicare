@@ -17,7 +17,7 @@ export class ProfileComponent implements OnInit {
 
   // User data
   currentUser: any = null;
-    // Form fields
+  // Form fields
   firstName: string = '';
   lastName: string = '';
   email: string = '';
@@ -27,6 +27,16 @@ export class ProfileComponent implements OnInit {
   address: string = '';
   emergencyContactName: string = '';
   emergencyContactPhone: string = '';
+  
+  // Doctor-specific fields
+  usualStartingTime: string = '';
+  usualEndingTime: string = '';
+  experience: number = 0;
+  highestQualifications: string = '';
+  registrationNumber: string = '';
+  registrationAuthority: string = '';
+  registrationDate: string = '';
+  feeForAppointment: number = 0;
     // Form state
   isLoading: boolean = false;
   error: string = '';
@@ -40,21 +50,37 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserData();
-  }
-  private loadUserData(): void {
+  }  private loadUserData(): void {
     if (isPlatformBrowser(this.platformId)) {
       const userStr = sessionStorage.getItem('user');
       if (userStr) {
         this.currentUser = JSON.parse(userStr);
+        console.log('Profile - Current user data:', this.currentUser); // Debug log
+        console.log('Profile - Doctor details:', this.currentUser.doctorDetails); // Debug log
+        
         this.firstName = this.currentUser.firstName || '';
         this.lastName = this.currentUser.lastName || '';
         this.email = this.currentUser.email || '';
         this.phoneNumber = this.currentUser.phoneNumber || '';
         this.dateOfBirth = this.currentUser.dateOfBirth || '';
-        this.gender = this.currentUser.gender || '';
-        this.address = this.currentUser.address || '';
+        this.gender = this.currentUser.gender || '';        this.address = this.currentUser.address || '';
         this.emergencyContactName = this.currentUser.emergencyContactName || '';
         this.emergencyContactPhone = this.currentUser.emergencyContactPhone || '';
+        
+        // Load doctor-specific fields if user is a doctor
+        if (this.currentUser.role && this.currentUser.doctorDetails) {
+          console.log('Loading doctor details...', this.currentUser.doctorDetails); // Debug log
+          this.usualStartingTime = this.currentUser.doctorDetails.usualStartingTime || '';
+          this.usualEndingTime = this.currentUser.doctorDetails.usualEndingTime || '';
+          this.experience = this.currentUser.doctorDetails.experience || 0;
+          this.highestQualifications = this.currentUser.doctorDetails.highestQualifications || '';
+          this.registrationNumber = this.currentUser.doctorDetails.registrationNumber || '';
+          this.registrationAuthority = this.currentUser.doctorDetails.registrationAuthority || '';
+          this.registrationDate = this.currentUser.doctorDetails.registrationDate || '';
+          this.feeForAppointment = this.currentUser.doctorDetails.feeForAppointment || 0;
+        } else {
+          console.log('No doctor details found or user is not a doctor'); // Debug log
+        }
       } else {
         // If no user data, redirect to signin
         this.router.navigate(['/signin']);
@@ -95,7 +121,19 @@ export class ProfileComponent implements OnInit {
       gender: this.gender.trim(),
       address: this.address.trim(),
       emergencyContactName: this.emergencyContactName.trim(),
-      emergencyContactPhone: this.emergencyContactPhone.trim()
+      emergencyContactPhone: this.emergencyContactPhone.trim(),
+      ...(this.currentUser.role && {
+        doctorDetails: {
+          usualStartingTime: this.usualStartingTime.trim(),
+          usualEndingTime: this.usualEndingTime.trim(),
+          experience: this.experience,
+          highestQualifications: this.highestQualifications.trim(),
+          registrationNumber: this.registrationNumber.trim(),
+          registrationAuthority: this.registrationAuthority.trim(),
+          registrationDate: this.registrationDate.trim(),
+          feeForAppointment: this.feeForAppointment
+        }
+      })
     };
 
     this.http.put(`http://localhost:8000/api/users/${this.currentUser.id}`, updateData)
@@ -134,6 +172,10 @@ export class ProfileComponent implements OnInit {
     return this.currentUser?.email || 'User';
   }  getUserRole(): string {
     return this.currentUser?.role ? 'Doctor' : 'Patient';
+  }
+
+  isDoctor(): boolean {
+    return this.currentUser?.role === true;
   }
 
   goBack(): void {

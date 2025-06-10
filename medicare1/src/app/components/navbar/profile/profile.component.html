@@ -81,8 +81,7 @@
                 <label class="form-label fw-semibold text-muted small">Address</label>
                 <div class="bg-light p-2 rounded border">{{ address || 'Not provided' }}</div>
               </div>
-            </div>
-            <div class="row">
+            </div>            <div class="row">
               <div class="col-md-6 mb-2">
                 <label class="form-label fw-semibold text-muted small">Emergency Contact Name</label>
                 <div class="bg-light p-2 rounded border">{{ emergencyContactName || 'Not provided' }}</div>
@@ -90,6 +89,53 @@
               <div class="col-md-6 mb-2">
                 <label class="form-label fw-semibold text-muted small">Emergency Contact Phone</label>
                 <div class="bg-light p-2 rounded border">{{ emergencyContactPhone || 'Not provided' }}</div>
+              </div>
+            </div>
+            
+            <!-- Doctor-specific fields in view mode -->
+            <div *ngIf="isDoctor()" class="mt-4">
+              <h5 class="fw-semibold mb-3 text-primary">Doctor Information</h5>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Working Hours Start</label>
+                  <div class="bg-light p-2 rounded border">{{ usualStartingTime || 'Not provided' }}</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Working Hours End</label>
+                  <div class="bg-light p-2 rounded border">{{ usualEndingTime || 'Not provided' }}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Years of Experience</label>
+                  <div class="bg-light p-2 rounded border">{{ experience || 'Not provided' }}</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Fee for Appointment</label>
+                  <div class="bg-light p-2 rounded border">${{ feeForAppointment || 'Not provided' }}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Highest Qualifications</label>
+                  <div class="bg-light p-2 rounded border">{{ highestQualifications || 'Not provided' }}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Registration Number</label>
+                  <div class="bg-light p-2 rounded border">{{ registrationNumber || 'Not provided' }}</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Registration Authority</label>
+                  <div class="bg-light p-2 rounded border">{{ registrationAuthority || 'Not provided' }}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label fw-semibold text-muted small">Registration Date</label>
+                  <div class="bg-light p-2 rounded border">{{ registrationDate || 'Not provided' }}</div>
+                </div>
               </div>
             </div>
             <button type="button" class="btn btn-primary w-100 fw-bold mt-3" (click)="toggleEditMode()">
@@ -163,6 +209,69 @@
                 <input type="tel" class="form-control bg-light border-primary" 
                        id="emergencyContactPhone" name="emergencyContactPhone" [(ngModel)]="emergencyContactPhone" 
                        placeholder="Emergency Contact Phone" aria-label="Emergency Contact Phone">
+              </div>
+            </div>
+            
+            <!-- Doctor-specific fields in edit mode -->
+            <div *ngIf="isDoctor()" class="mt-4">
+              <h5 class="fw-semibold mb-3 text-primary">Doctor Information</h5>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label for="usualStartingTime" class="form-label small">Working Hours Start</label>
+                  <input type="time" class="form-control bg-light border-primary" 
+                         id="usualStartingTime" name="usualStartingTime" [(ngModel)]="usualStartingTime" 
+                         placeholder="09:00" aria-label="Working Hours Start">
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label for="usualEndingTime" class="form-label small">Working Hours End</label>
+                  <input type="time" class="form-control bg-light border-primary" 
+                         id="usualEndingTime" name="usualEndingTime" [(ngModel)]="usualEndingTime" 
+                         placeholder="17:00" aria-label="Working Hours End">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label for="experience" class="form-label small">Years of Experience</label>
+                  <input type="number" class="form-control bg-light border-primary" 
+                         id="experience" name="experience" [(ngModel)]="experience" 
+                         min="0" placeholder="Years of Experience" aria-label="Years of Experience">
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label for="feeForAppointment" class="form-label small">Fee for Appointment ($)</label>
+                  <input type="number" class="form-control bg-light border-primary" 
+                         id="feeForAppointment" name="feeForAppointment" [(ngModel)]="feeForAppointment" 
+                         min="0" step="0.01" placeholder="Fee for Appointment" aria-label="Fee for Appointment">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 mb-2">
+                  <label for="highestQualifications" class="form-label small">Highest Qualifications</label>
+                  <textarea class="form-control bg-light border-primary" 
+                            id="highestQualifications" name="highestQualifications" [(ngModel)]="highestQualifications" 
+                            rows="2" placeholder="e.g., MD, PhD, Specialist certifications" aria-label="Highest Qualifications"></textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label for="registrationNumber" class="form-label small">Registration Number</label>
+                  <input type="text" class="form-control bg-light border-primary" 
+                         id="registrationNumber" name="registrationNumber" [(ngModel)]="registrationNumber" 
+                         placeholder="Medical Registration Number" aria-label="Registration Number">
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label for="registrationAuthority" class="form-label small">Registration Authority</label>
+                  <input type="text" class="form-control bg-light border-primary" 
+                         id="registrationAuthority" name="registrationAuthority" [(ngModel)]="registrationAuthority" 
+                         placeholder="e.g., Medical Council" aria-label="Registration Authority">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label for="registrationDate" class="form-label small">Registration Date</label>
+                  <input type="date" class="form-control bg-light border-primary" 
+                         id="registrationDate" name="registrationDate" [(ngModel)]="registrationDate" 
+                         aria-label="Registration Date">
+                </div>
               </div>
             </div>
               <div class="d-flex gap-2 mb-3 mt-4">

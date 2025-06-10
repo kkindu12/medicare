@@ -57,6 +57,7 @@ class UserLoginResponse(BaseModel):
     emergencyContactName: Optional[str] = None
     emergencyContactPhone: Optional[str] = None
     role: bool
+    doctorDetails: Optional[DoctorDetails] = None
 
 class UserLogin(BaseModel):
     email: str
