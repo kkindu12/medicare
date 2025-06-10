@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { PatientRecordCardComponent } from '../../emr/patient-record-card/patient-record-card.component';
+import { EmrComponent } from '../../emr/emr.component';
 import { MedicalRecordsService } from '../../services/medicalRecordService/medical-records.service';
 import { UserService } from '../../services/userService/user.service';
 import { NotificationService } from '../../services/notification.service';
@@ -35,12 +35,12 @@ interface LabReport {
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, PatientRecordCardComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, EmrComponent],
   templateUrl: './doctor-dashboard.component.html',
   styleUrls: ['./doctor-dashboard.component.scss']
 })
 export class DoctorDashboardComponent implements OnInit {
-  activeTab: 'appointments' | 'lab-reports' | 'patient-records' | 'add-patient-record' = 'appointments';
+  activeTab: 'appointments' | 'lab-reports' | 'patient-records' = 'appointments';
   
   
 
@@ -247,19 +247,14 @@ export class DoctorDashboardComponent implements OnInit {
           url: error.url
         });
         
-        this.error = `Failed to load patient records: ${error.status ? `HTTP ${error.status}` : error.message}`;
-        this.isLoading = false;
+        this.error = `Failed to load patient records: ${error.status ? `HTTP ${error.status}` : error.message}`;        this.isLoading = false;
         this.patientRecords = [];
         this.filteredPatientRecords = [];
       }
     });
-  }setActiveTab(tab: 'appointments' | 'lab-reports' | 'patient-records' | 'add-patient-record'): void {
+  }
+  setActiveTab(tab: 'appointments' | 'lab-reports' | 'patient-records'): void {
     this.activeTab = tab;
-    
-    // Load data when specific tabs are activated
-    if (tab === 'patient-records' && this.patientRecords.length === 0) {
-      this.loadPatientRecords();
-    }
   }
 
   // Appointment Management
