@@ -1,6 +1,7 @@
   import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-payment',
@@ -12,7 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class PaymentComponent {
   paymentForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.paymentForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       cardNumber: ['', [Validators.required, Validators.pattern(/^\d{4}\s\d{4}\s\d{4}\s\d{4}$/)]],
@@ -25,10 +26,11 @@ export class PaymentComponent {
   }
 
   onSubmit() {
-    if (this.paymentForm.valid) {
-      console.log('Payment form submitted:', this.paymentForm.value);
-    } else {
-      console.log('Form invalid.');
-    }
+      if (this.paymentForm.valid) {
+    // Simulate payment processing...
+    this.router.navigate(['/payment-success']);
+  } else {
+    alert('Please fill in all required fields.');
+  }
   }
 }

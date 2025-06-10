@@ -88,8 +88,8 @@ export class CreateBillComponent implements OnInit {
     billItems: this.billItems,
     totalAmount: this.totalAmount
   };
-
-  // Open new window
+ 
+// Open new window
   const newWindow = window.open('', '_blank');
 
   // Build HTML receipt content

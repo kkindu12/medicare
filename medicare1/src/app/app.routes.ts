@@ -5,12 +5,9 @@ import { PaymentSuccessComponent } from './payment-success/payment-success.compo
 import { PaymentComponent } from './payment/payment.component';
 
 export const routes: Routes = [
-      
-     { path: '', redirectTo: 'credit-bill', pathMatch: 'full' },
-    { path: 'create-bill', component: CreateBillComponent },
-     { path: 'create-bill', component: CreateBillComponent },
+  { path: '', redirectTo: 'create-bill', pathMatch: 'full' },
+  { path: 'create-bill', component: CreateBillComponent },
   { path: 'bill-receipt', component: BillReceiptComponent },
-  { path: 'payment success', component: PaymentSuccessComponent },
-   { path: 'payment', component: PaymentComponent },
-   
+  { path: 'payment-success', component: PaymentSuccessComponent },
+  { path: 'payment', component: PaymentComponent },
 ];

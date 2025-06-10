@@ -4,13 +4,14 @@
 }
 
 .content-box {
-  max-width: 800px;
+  max-width: 500px;
   width: 100%;
-  border: 1px solid #f9fd06;
+  border: 1px solid #838fff;
   border-radius: 10px;
   background-color: #fff;
   padding-bottom: 2%;
   margin-top: 10%;
+
     
 }
 
@@ -25,10 +26,12 @@
 
 .card {
   border: none;
+    
 }
 
 label {
   font-weight: 500;
+  margin-left: 20%;
 }
 
 input.form-control,
