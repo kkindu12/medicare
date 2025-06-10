@@ -1,8 +1,8 @@
 /* Doctor Dashboard Styles */
 
-/* Welcome Section Gradient */
+/* Welcome Section Background */
 .bg-gradient-primary {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background-color: #007bff;
 }
 
 /* Dashboard Card Hover Effects */
@@ -68,7 +68,7 @@
   transition: all 0.3s ease;
   border-radius: 12px;
   border: 1px solid #e9ecef;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background-color: #f8f9fa;
 }
 
 .prescription-card:hover {
@@ -92,19 +92,19 @@
 .lab-report-card.border-danger {
   border-left-color: #dc3545 !important;
   border-left-width: 5px !important;
-  background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+  background-color: #fff5f5;
 }
 
 .lab-report-card.border-warning {
   border-left-color: #ffc107 !important;
   border-left-width: 5px !important;
-  background: linear-gradient(135deg, #ffffff 0%, #fffbf0 100%);
+  background-color: #fffbf0;
 }
 
 .lab-report-card.border-success {
   border-left-color: #28a745 !important;
   border-left-width: 5px !important;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fff8 100%);
+  background-color: #f8fff8;
 }
 
 /* Patient Record Card Styles */
@@ -112,7 +112,7 @@
   transition: all 0.3s ease;
   border-radius: 12px;
   border: 1px solid #e9ecef;
-  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+  background-color: #f0f8ff;
 }
 
 .patient-record-card:hover {
@@ -185,45 +185,45 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background-color: #007bff;
   border: none;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  background-color: #0056b3;
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+  background-color: #28a745;
   border: none;
 }
 
 .btn-success:hover {
-  background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+  background-color: #1e7e34;
 }
 
 .btn-warning {
-  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  background-color: #ffc107;
   border: none;
   color: #212529;
 }
 
 .btn-warning:hover {
-  background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+  background-color: #e0a800;
   color: #212529;
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background-color: #dc3545;
   border: none;
 }
 
 .btn-danger:hover {
-  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+  background-color: #c82333;
 }
 
 .btn-outline-primary:hover {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background-color: #007bff;
   border-color: #007bff;
 }
 
@@ -237,7 +237,7 @@
 }
 
 .btn-group .btn.active {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background-color: #007bff;
   border-color: #007bff;
   color: white;
   transform: translateY(-1px);
@@ -266,7 +266,7 @@
 }
 
 .modal-header {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background-color: #007bff;
   color: white;
   border-radius: 15px 15px 0 0;
   border-bottom: none;
