@@ -7,6 +7,7 @@ import { AppointmentService } from '../services/appointment.service';
 import { DoctorService, Doctor } from '../services/doctorService/doctor.service';
 import { AuthService } from '../services/auth.service';
 import { AlertService } from '../shared/alert/alert.service';
+import { NotificationService } from '../services/notification.service';
 
 interface Booking {
   doctor: string;
@@ -42,8 +43,9 @@ export class BookingComponent implements OnInit {
     private appointmentService: AppointmentService,
     private doctorService: DoctorService,
     private authService: AuthService,
-    private alertService: AlertService
-  ) {}  ngOnInit(): void {
+    private alertService: AlertService,
+    private notificationService: NotificationService
+  ) {}ngOnInit(): void {
     // Check if user is logged in
     if (!this.authService.isLoggedIn()) {
       this.alertService.showWarning('Authentication Required', 'Please log in to book an appointment');
@@ -112,6 +114,28 @@ export class BookingComponent implements OnInit {
 
     // Show loading state
     this.isLoading = true;    this.appointmentService.addAppointment(newAppointment).subscribe({      next: (createdAppointment) => {
+        // Create notification for the doctor about the new appointment
+        const notificationRequest = {
+          userId: selectedDoctor.id, // Doctor will receive the notification
+          title: 'New Appointment Request',
+          message: `${currentUser.firstName} ${currentUser.lastName} has booked an appointment for ${this.booking.date} at ${this.booking.time}`,
+          type: 'appointment' as const,
+          relatedRecordId: createdAppointment.id,
+          createdBy: currentUser.id,
+          createdByName: `${currentUser.firstName} ${currentUser.lastName}`
+        };
+
+        // Send notification to doctor
+        this.notificationService.createNotification(notificationRequest).subscribe({
+          next: (notification) => {
+            console.log('✅ Notification sent to doctor:', notification);
+          },
+          error: (notificationError) => {
+            console.error('❌ Failed to send notification to doctor:', notificationError);
+            // Don't show error to user as appointment was successful
+          }
+        });
+
         this.isLoading = false;
         this.alertService.showSuccess('Appointment Booked', 'Your appointment has been booked successfully!');
         // Navigate to patient dashboard appointments tab

@@ -48,14 +48,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
         } else if (this.currentUser?.firstName && this.currentUser?.lastName) {
           this.userName = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
         }
-        
-        // Set user role based on role property (true = doctor, false = patient)
+          // Set user role based on role property (true = doctor, false = patient)
         this.userRole = this.currentUser?.role ? 'Doctor' : 'Patient';
         
-        // Initialize notifications only for patients
-        if (!this.currentUser?.role) {
-          this.initializeNotifications();
-        }
+        // Initialize notifications for both patients and doctors
+        this.initializeNotifications();
       }
     }
   }
@@ -148,8 +145,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     console.log('Navigate to settings');
     this.showUserMenu = false;
     this.router.navigate(['/settings']);
-  }
-  onNotificationClick(notification: NotificationDisplay): void {
+  }  onNotificationClick(notification: NotificationDisplay): void {
     // Mark notification as read if it's not already read
     if (!notification.read) {
       this.notificationService.markAsRead(notification.id).subscribe({
@@ -169,6 +165,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
       } else {
         // Patient - navigate to patient dashboard
         this.router.navigate(['/patient-dashboard'], { fragment: 'records' });
+      }
+    } else if (notification.type === 'appointment') {
+      // Navigate to appropriate appointment section based on user role
+      if (this.currentUser?.role) {
+        // Doctor - navigate to doctor dashboard appointments tab
+        this.router.navigate(['/doctor-dashboard']);
+      } else {
+        // Patient - navigate to patient dashboard appointments tab
+        this.router.navigate(['/patient-dashboard'], { queryParams: { tab: 'appointments' } });
       }
     }
     

@@ -18,19 +18,17 @@ export class NotificationService {
     // Only initialize notifications if we're in the browser
     if (isPlatformBrowser(this.platformId)) {
       this.initializeNotifications();
-    }
-
-    // Poll for new notifications every 2 seconds for near real-time updates
+    }    // Poll for new notifications every 2 seconds for near real-time updates
     interval(2000).subscribe(() => {
       if (isPlatformBrowser(this.platformId)) {
         const currentUser = this.getCurrentUser();
-        if (currentUser && !currentUser.role) { // Only for patients
-        this.loadNotifications(currentUser.id).subscribe({
-          error: (error) => console.error('Error polling notifications:', error)
-        });
+        if (currentUser && currentUser.id) { // For both patients and doctors
+          this.loadNotifications(currentUser.id).subscribe({
+            error: (error) => console.error('Error polling notifications:', error)
+          });
+        }
       }
-    }
-    });    // Add window focus event listener for immediate refresh when user returns to tab
+    });// Add window focus event listener for immediate refresh when user returns to tab
     if (isPlatformBrowser(this.platformId) && typeof window !== 'undefined') {
       window.addEventListener('focus', () => {
         console.log('🔄 Window focused - refreshing notifications');
