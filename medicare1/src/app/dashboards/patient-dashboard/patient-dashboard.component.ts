@@ -249,10 +249,14 @@ export class PatientDashboardComponent implements OnInit {
     }
     return 'Patient';
   }
-
   // Helper method to get medical records count
   getMedicalRecordsCount(): number {
     return this.patientRecords.length;
+  }
+
+  // Helper method to get appointments count
+  getAppointmentsCount(): number {
+    return this.appointments.length;
   }
 
   // Navigation methods
