@@ -2,41 +2,137 @@
   background-color: #f9f9f9;
    
 }
-
-.content-box {
-  max-width: 500px;
-  width: 100%;
-  border: 1px solid #838fff;
-  border-radius: 10px;
-  background-color: #fff;
-  padding-bottom: 2%;
-  margin-top: 10%;
-
-    
-}
-
 .medicare-banner {
-  background-color: #007bff; // Bootstrap primary blue
-  font-size: 1.5rem;
-  font-weight: bold;
+  background-color: #007bff;  
+  font-size: 1rem;
+  color: white;
    padding-top: 0%;
   text-align: left;
   padding: 10px;
+  
 }
 
-.card {
-  border: none;
-    
+ .content-box {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 450px;
+  margin: auto;
+  border: 1px solid #ddd;
+  margin-top: 1%;
 }
-
+.content-box h4{
+    font-size: large;
+    color: #007bff;
+    margin-top: 2%;
+}
+// Labels
 label {
-  font-weight: 500;
-  margin-left: 20%;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display:block;  
+  color: #3d3c3c;
 }
 
 input.form-control,
 select.form-select {
-  margin-top: 5px;
+  width: 90%;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
+
+  &::placeholder {
+    color: #aaa;
+  }
+
+  margin-bottom: 15px;
+}
+
+
+// Buttons
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 6px;
+  padding-inline: 190px;
+  margin-top: 10px;
+   
+
+  &:hover {
+    background-color: #5797f0;
+  }
+  margin-bottom: 2%;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: #218838;
+  }
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #c82333;
+  }
+}
+
+// Table
+table {
+  font-size: 0.95rem;
+  border-radius: 8px;
+  overflow: hidden;
+
+  thead {
+    background-color: #f0f4ff;
+
+    th {
+      font-weight: 600;
+      text-align: center;
+      padding: 12px;
+    }
+  }
+
+  td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  th, td {
+    border: 1px solid #dee2e6;
+  }
+
+  tr:hover {
+    background-color: #f9fbff;
+  }
 }
 
 @media (min-width: 992px) {
@@ -47,7 +143,7 @@ select.form-select {
 }
 .footer{
   
-    margin-top: 12%;
+    margin-top: 1%;
     background-color: #007bff;
     padding: 8px;
 }
