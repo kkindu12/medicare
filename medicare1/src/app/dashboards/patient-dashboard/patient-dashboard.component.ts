@@ -1,18 +1,27 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { PatientDashboardRecordCardComponent } from './components/patient-dashboard-record-card/patient-dashboard-record-card.component';
+import { AppointmentCardComponent, AppointmentCard } from './components/appointment-card/appointment-card.component';
 import { PatientHistoryModalComponent } from '../../emr/patient-history-modal/patient-history-modal.component';
 import { MedicalRecordsService } from '../../services/medicalRecordService/medical-records.service';
+import { AppointmentService, Appointment } from '../../services/appointment.service';
+import { AuthService } from '../../services/auth.service';
 import type { PatientRecordWithUser } from '../../emr/models';
 
-interface Appointment {
-  id: number;
-  date: string;
-  time: string;
-  doctor: string;
-  specialty: string;
-  status: 'upcoming' | 'completed' | 'cancelled';
+interface DashboardAppointment {
+  id?: string;
+  doctor_id?: string;
+  doctor_name: string;
+  doctor_specialty: string;
+  patient_id?: string;
+  patient_name?: string;
+  appointment_date: string;
+  appointment_time: string;
+  reason?: string;
+  status: string;
+  created_at?: string;
 }
 
 interface Payment {
@@ -27,7 +36,7 @@ interface Payment {
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, PatientDashboardRecordCardComponent, PatientHistoryModalComponent],
+  imports: [CommonModule, NavbarComponent, PatientDashboardRecordCardComponent, AppointmentCardComponent, PatientHistoryModalComponent],
   templateUrl: './patient-dashboard.component.html',
   styleUrl: './patient-dashboard.component.scss'
 })
@@ -46,33 +55,8 @@ export class PatientDashboardComponent implements OnInit {
   showPreviousRecords = false;
   selectedPatientRecord: PatientRecordWithUser | null = null;
   previousPatientRecords: PatientRecordWithUser[] = [];
-  
-  appointments: Appointment[] = [
-    {
-      id: 1,
-      date: '2025-06-10',
-      time: '10:00 AM',
-      doctor: 'Dr. Sarah Johnson',
-      specialty: 'Cardiology',
-      status: 'upcoming'
-    },
-    {
-      id: 2,
-      date: '2025-06-15',
-      time: '2:30 PM',
-      doctor: 'Dr. Michael Chen',
-      specialty: 'Dermatology',
-      status: 'upcoming'
-    },
-    {
-      id: 3,
-      date: '2025-06-05',
-      time: '9:00 AM',
-      doctor: 'Dr. Emily Davis',
-      specialty: 'General Medicine',
-      status: 'completed'
-    }
-  ];
+    appointments: DashboardAppointment[] = [];
+  isLoadingAppointments = false;
 
   // medicalRecords: MedicalRecord[] = [
   //   {
@@ -95,7 +79,7 @@ export class PatientDashboardComponent implements OnInit {
   //     description: 'Blood pressure medication - Lisinopril 10mg',
   //     doctor: 'Dr. Sarah Johnson'
   //   }
-  //  ];
+  // ];
 
   paymentHistory: Payment[] = [
     {
@@ -121,10 +105,12 @@ export class PatientDashboardComponent implements OnInit {
       description: 'Prescription Medication',
       method: 'Debit Card',
       status: 'pending'
-    }  ];
-
-  constructor(
+    }  ];  constructor(
     private medicalRecordsService: MedicalRecordsService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private appointmentService: AppointmentService,
+    private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}  ngOnInit(): void {
     // Load current user from sessionStorage (only in browser)
@@ -135,7 +121,15 @@ export class PatientDashboardComponent implements OnInit {
       }
     }
     
+    // Check for query parameters to set active tab
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        this.activeTab = params['tab'];
+      }
+    });
+    
     this.loadPatientRecords();
+    this.loadAppointments();
   }
   
   loadPatientRecords(): void {
@@ -162,6 +156,37 @@ export class PatientDashboardComponent implements OnInit {
         this.isLoadingRecords = false;
       }
     });  }
+
+  loadAppointments(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+      return;
+    }
+
+    this.isLoadingAppointments = true;
+    this.appointmentService.getPatientAppointments(currentUser.id).subscribe({
+      next: (appointments) => {
+        this.appointments = appointments.map(app => ({
+          id: app.id,
+          doctor_id: app.doctor_id,
+          doctor_name: app.doctor_name,
+          doctor_specialty: app.doctor_specialty,
+          patient_id: app.patient_id,
+          patient_name: app.patient_name,
+          appointment_date: app.appointment_date,
+          appointment_time: app.appointment_time,
+          reason: app.reason,
+          status: app.status,
+          created_at: app.created_at
+        }));
+        this.isLoadingAppointments = false;
+      },
+      error: (error) => {
+        console.error('Error loading appointments:', error);
+        this.isLoadingAppointments = false;
+      }
+    });
+  }
 
   onViewHistory(record: PatientRecordWithUser): void {
     this.selectedPatientRecord = record;
@@ -191,11 +216,17 @@ export class PatientDashboardComponent implements OnInit {
     this.activeTab = tab;
   }
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'upcoming': return 'badge bg-primary';
-      case 'completed': return 'badge bg-success';
-      case 'cancelled': return 'badge bg-danger';
-      default: return 'badge bg-secondary';
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return 'badge bg-warning text-dark';
+      case 'confirmed':
+        return 'badge bg-success';
+      case 'completed':
+        return 'badge bg-primary';
+      case 'cancelled':
+        return 'badge bg-danger';
+      default:
+        return 'badge bg-secondary';
     }
   }
 
@@ -222,5 +253,39 @@ export class PatientDashboardComponent implements OnInit {
   // Helper method to get medical records count
   getMedicalRecordsCount(): number {
     return this.patientRecords.length;
+  }
+
+  // Navigation methods
+  goToBooking(): void {
+    this.router.navigate(['/booking']);
+  }
+
+  rescheduleAppointment(appointment: DashboardAppointment): void {
+    // Here you would typically open a rescheduling modal or navigate to a rescheduling page
+    console.log('Rescheduling appointment:', appointment);
+    alert('Rescheduling functionality will be implemented soon!');
+  }
+
+  cancelAppointment(appointment: DashboardAppointment): void {
+    if (confirm('Are you sure you want to cancel this appointment?')) {
+      if (appointment.id) {
+        this.appointmentService.cancelAppointment(appointment.id).subscribe({
+          next: () => {
+            alert('Appointment cancelled successfully!');
+            this.loadAppointments(); // Reload appointments
+          },
+          error: (error) => {
+            console.error('Error cancelling appointment:', error);
+            alert('Failed to cancel appointment. Please try again.');
+          }
+        });
+      }
+    }
+  }
+
+  viewAppointmentDetails(appointment: DashboardAppointment): void {
+    // Here you could open a modal or navigate to appointment details
+    console.log('Viewing appointment details:', appointment);
+    alert(`Appointment Details:\n\nDoctor: ${appointment.doctor_name}\nSpecialty: ${appointment.doctor_specialty}\nDate: ${appointment.appointment_date}\nTime: ${appointment.appointment_time}\nReason: ${appointment.reason || 'Not specified'}\nStatus: ${appointment.status}`);
   }
 }

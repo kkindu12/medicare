@@ -2,13 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { AppointmentService } from '../services/appointment.service';
-
-interface Doctor {
-  id: number;
-  name: string;
-  specialty: string;
-}
+import { DoctorService, Doctor } from '../services/doctorService/doctor.service';
+import { AuthService } from '../services/auth.service';
 
 interface Booking {
   doctor: string;
@@ -22,15 +19,12 @@ interface Booking {
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, HttpClientModule]
 })
 export class BookingComponent implements OnInit {
-  doctors: Doctor[] = [
-    { id: 1, name: 'John Smith', specialty: 'Cardiology' },
-    { id: 2, name: 'Sarah Johnson', specialty: 'Pediatrics' },
-    { id: 3, name: 'Michael Brown', specialty: 'Dermatology' },
-    { id: 4, name: 'Emily Davis', specialty: 'Neurology' }
-  ];
+  doctors: Doctor[] = [];
+  isLoading = false;
+  error: string | null = null;
 
   availableTimes: string[] = [
     '09:00 AM', '10:00 AM', '11:00 AM',
@@ -42,42 +36,95 @@ export class BookingComponent implements OnInit {
     date: '',
     time: '',
     reason: ''
-  };
-
-  constructor(
+  };  constructor(
     private router: Router,
-    private appointmentService: AppointmentService
-  ) {}
+    private appointmentService: AppointmentService,
+    private doctorService: DoctorService,
+    private authService: AuthService
+  ) {}  ngOnInit(): void {
+    // Check if user is logged in
+    if (!this.authService.isLoggedIn()) {
+      alert('Please log in to book an appointment');
+      this.router.navigate(['/signin']);
+      return;
+    }
 
-  ngOnInit(): void {
+    // Check if user is a patient
+    if (!this.authService.isPatient()) {
+      alert('Only patients can book appointments');
+      this.router.navigate(['/doctor-dashboard']);
+      return;
+    }
+
     // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
     const dateInput = document.getElementById('date') as HTMLInputElement;
     if (dateInput) {
       dateInput.min = today;
     }
+    
+    // Load doctors from backend
+    this.loadDoctors();
   }
 
-  onSubmit(): void {
-    const selectedDoctor = this.doctors.find(d => d.id.toString() === this.booking.doctor);
+  loadDoctors(): void {
+    this.isLoading = true;
+    this.error = null;
+    
+    this.doctorService.getDoctors().subscribe({
+      next: (doctors) => {
+        this.doctors = doctors;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading doctors:', error);
+        this.error = 'Failed to load doctors. Please try again.';
+        this.isLoading = false;
+      }
+    });
+  }  onSubmit(): void {
+    const selectedDoctor = this.doctors.find(d => d.id === this.booking.doctor);
     
     if (!selectedDoctor) {
       alert('Please select a doctor');
       return;
     }
 
-    const newAppointment = {
-      doctorName: selectedDoctor.name,
-      doctorSpecialty: selectedDoctor.specialty,
-      date: this.booking.date,
-      time: this.booking.time,
-      reason: this.booking.reason,
-      status: 'scheduled' as const
-    };
+    // Get current user from auth service
+    const currentUser = this.authService.getCurrentUser();
+    
+    if (!currentUser || !currentUser.id) {
+      alert('Please log in to book an appointment');
+      this.router.navigate(['/signin']);
+      return;
+    }
 
-    this.appointmentService.addAppointment(newAppointment);
-    alert('Appointment booked successfully!');
-    this.router.navigate(['/my-appointments']);
+    const newAppointment = {
+      doctor_id: selectedDoctor.id,
+      doctor_name: `${selectedDoctor.firstName} ${selectedDoctor.lastName}`,
+      doctor_specialty: selectedDoctor.doctorDetails?.highestQualifications || 'General Practice',
+      patient_id: currentUser.id,
+      patient_name: `${currentUser.firstName} ${currentUser.lastName}`,
+      appointment_date: this.booking.date,
+      appointment_time: this.booking.time,
+      reason: this.booking.reason    };
+
+    // Show loading state
+    this.isLoading = true;    this.appointmentService.addAppointment(newAppointment).subscribe({
+      next: (createdAppointment) => {
+        this.isLoading = false;
+        alert('Appointment booked successfully!');
+        // Navigate to patient dashboard appointments tab
+        this.router.navigate(['/patient-dashboard'], { 
+          queryParams: { tab: 'appointments' } 
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error booking appointment:', error);
+        alert('Failed to book appointment. Please try again.');
+      }
+    });
   }
 
   goBack(): void {
@@ -87,4 +134,4 @@ export class BookingComponent implements OnInit {
   goToMyAppointments(): void {
     this.router.navigate(['/my-appointments']);
   }
-} 
+}
