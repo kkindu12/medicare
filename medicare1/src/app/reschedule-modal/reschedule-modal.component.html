@@ -1,0 +1,64 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Reschedule Appointment</h3>
+      <button class="close-button" (click)="close()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="current-appointment">
+        <h4>Current Appointment</h4>
+        <p><strong>Doctor:</strong> Dr. {{appointment.doctorName}} - {{appointment.doctorSpecialty}}</p>
+        <p><strong>Date:</strong> {{appointment.date}}</p>
+        <p><strong>Time:</strong> {{appointment.time}}</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #rescheduleForm="ngForm">
+        <div class="form-group">
+          <label for="newDate">New Date</label>
+          <input 
+            type="date" 
+            id="newDate" 
+            name="newDate" 
+            [(ngModel)]="rescheduleData.date" 
+            required
+            [min]="minDate">
+        </div>
+
+        <div class="form-group">
+          <label for="newTime">New Time</label>
+          <select 
+            id="newTime" 
+            name="newTime" 
+            [(ngModel)]="rescheduleData.time" 
+            required>
+            <option value="">Select a time...</option>
+            <option *ngFor="let time of availableTimes" [value]="time">
+              {{time}}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reason">Reason for Rescheduling</label>
+          <textarea 
+            id="reason" 
+            name="reason" 
+            [(ngModel)]="rescheduleData.reason" 
+            rows="3" 
+            required></textarea>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="button button-secondary" (click)="close()">Cancel</button>
+          <button 
+            type="submit" 
+            class="button button-primary" 
+            [disabled]="!rescheduleForm.form.valid">
+            Confirm Reschedule
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

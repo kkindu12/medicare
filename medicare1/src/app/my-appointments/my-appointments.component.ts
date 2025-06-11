@@ -3,17 +3,20 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AppointmentService, Appointment } from '../services/appointment.service';
 import { Subscription } from 'rxjs';
+import { RescheduleModalComponent } from '../reschedule-modal/reschedule-modal.component';
 
 @Component({
   selector: 'app-my-appointments',
   templateUrl: './my-appointments.component.html',
   styleUrls: ['./my-appointments.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, RescheduleModalComponent]
 })
 export class MyAppointmentsComponent implements OnInit, OnDestroy {
   appointments: Appointment[] = [];
   private subscription: Subscription;
+  showRescheduleModal = false;
+  selectedAppointment: Appointment | null = null;
 
   constructor(
     private router: Router,
@@ -35,9 +38,25 @@ export class MyAppointmentsComponent implements OnInit, OnDestroy {
   }
 
   rescheduleAppointment(appointment: Appointment): void {
-    // Here you would typically open a rescheduling modal or navigate to a rescheduling page
-    console.log('Rescheduling appointment:', appointment);
-    alert('Rescheduling functionality will be implemented soon!');
+    this.selectedAppointment = appointment;
+    this.showRescheduleModal = true;
+  }
+
+  handleReschedule(data: { id: number; date: string; time: string; reason: string }): void {
+    this.appointmentService.rescheduleAppointment(
+      data.id,
+      data.date,
+      data.time,
+      data.reason
+    );
+    this.showRescheduleModal = false;
+    this.selectedAppointment = null;
+    alert('Appointment rescheduled successfully!');
+  }
+
+  closeRescheduleModal(): void {
+    this.showRescheduleModal = false;
+    this.selectedAppointment = null;
   }
 
   cancelAppointment(appointment: Appointment): void {

@@ -70,4 +70,17 @@ export class AppointmentService {
     );
     this.appointments.next(updatedAppointments);
   }
+
+  rescheduleAppointment(id: number, newDate: string, newTime: string, reason: string): void {
+    const currentAppointments = this.appointments.value;
+    const updatedAppointments = currentAppointments.map(app => 
+      app.id === id ? { 
+        ...app, 
+        date: newDate,
+        time: newTime,
+        reason: reason
+      } : app
+    );
+    this.appointments.next(updatedAppointments);
+  }
 } 
