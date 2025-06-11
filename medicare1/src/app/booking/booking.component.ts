@@ -126,9 +126,8 @@ export class BookingComponent implements OnInit {
       }
     });
   }
-
   goBack(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/patient-dashboard']);
   }
 
   goToMyAppointments(): void {
