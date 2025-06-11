@@ -8,6 +8,7 @@ import { PatientHistoryModalComponent } from '../../emr/patient-history-modal/pa
 import { MedicalRecordsService } from '../../services/medicalRecordService/medical-records.service';
 import { AppointmentService, Appointment } from '../../services/appointment.service';
 import { AuthService } from '../../services/auth.service';
+import { AlertService } from '../../shared/alert/alert.service';
 import type { PatientRecordWithUser } from '../../emr/models';
 
 interface DashboardAppointment {
@@ -111,8 +112,9 @@ export class PatientDashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private appointmentService: AppointmentService,
     private authService: AuthService,
+    private alertService: AlertService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}  ngOnInit(): void {
+  ) {}ngOnInit(): void {
     // Load current user from sessionStorage (only in browser)
     if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
       const userStr = sessionStorage.getItem('user');
@@ -263,33 +265,36 @@ export class PatientDashboardComponent implements OnInit {
   goToBooking(): void {
     this.router.navigate(['/booking']);
   }
-
   rescheduleAppointment(appointment: DashboardAppointment): void {
     // Here you would typically open a rescheduling modal or navigate to a rescheduling page
     console.log('Rescheduling appointment:', appointment);
-    alert('Rescheduling functionality will be implemented soon!');
+    this.alertService.showInfo('Coming Soon', 'Rescheduling functionality will be implemented soon!');
   }
-
-  cancelAppointment(appointment: DashboardAppointment): void {
-    if (confirm('Are you sure you want to cancel this appointment?')) {
-      if (appointment.id) {
-        this.appointmentService.cancelAppointment(appointment.id).subscribe({
-          next: () => {
-            alert('Appointment cancelled successfully!');
-            this.loadAppointments(); // Reload appointments
-          },
-          error: (error) => {
-            console.error('Error cancelling appointment:', error);
-            alert('Failed to cancel appointment. Please try again.');
-          }
-        });
-      }
+  async cancelAppointment(appointment: DashboardAppointment): Promise<void> {
+    const confirmed = await this.alertService.showConfirm(
+      'Cancel Appointment', 
+      'Are you sure you want to cancel this appointment?',
+      'Yes, Cancel',
+      'Keep Appointment'
+    );
+    
+    if (confirmed && appointment.id) {
+      this.appointmentService.cancelAppointment(appointment.id).subscribe({
+        next: () => {
+          this.alertService.showSuccess('Appointment Cancelled', 'Your appointment has been cancelled successfully!');
+          this.loadAppointments(); // Reload appointments
+        },
+        error: (error) => {
+          console.error('Error cancelling appointment:', error);
+          this.alertService.showError('Cancellation Failed', 'Failed to cancel appointment. Please try again.');
+        }
+      });
     }
   }
-
   viewAppointmentDetails(appointment: DashboardAppointment): void {
     // Here you could open a modal or navigate to appointment details
     console.log('Viewing appointment details:', appointment);
-    alert(`Appointment Details:\n\nDoctor: ${appointment.doctor_name}\nSpecialty: ${appointment.doctor_specialty}\nDate: ${appointment.appointment_date}\nTime: ${appointment.appointment_time}\nReason: ${appointment.reason || 'Not specified'}\nStatus: ${appointment.status}`);
+    const details = `Doctor: ${appointment.doctor_name}\nSpecialty: ${appointment.doctor_specialty}\nDate: ${appointment.appointment_date}\nTime: ${appointment.appointment_time}\nReason: ${appointment.reason || 'Not specified'}\nStatus: ${appointment.status}`;
+    this.alertService.showInfo('Appointment Details', details);
   }
 }

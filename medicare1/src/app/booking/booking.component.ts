@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppointmentService } from '../services/appointment.service';
 import { DoctorService, Doctor } from '../services/doctorService/doctor.service';
 import { AuthService } from '../services/auth.service';
+import { AlertService } from '../shared/alert/alert.service';
 
 interface Booking {
   doctor: string;
@@ -40,18 +41,19 @@ export class BookingComponent implements OnInit {
     private router: Router,
     private appointmentService: AppointmentService,
     private doctorService: DoctorService,
-    private authService: AuthService
+    private authService: AuthService,
+    private alertService: AlertService
   ) {}  ngOnInit(): void {
     // Check if user is logged in
     if (!this.authService.isLoggedIn()) {
-      alert('Please log in to book an appointment');
+      this.alertService.showWarning('Authentication Required', 'Please log in to book an appointment');
       this.router.navigate(['/signin']);
       return;
     }
 
     // Check if user is a patient
     if (!this.authService.isPatient()) {
-      alert('Only patients can book appointments');
+      this.alertService.showWarning('Access Denied', 'Only patients can book appointments');
       this.router.navigate(['/doctor-dashboard']);
       return;
     }
@@ -84,9 +86,8 @@ export class BookingComponent implements OnInit {
     });
   }  onSubmit(): void {
     const selectedDoctor = this.doctors.find(d => d.id === this.booking.doctor);
-    
-    if (!selectedDoctor) {
-      alert('Please select a doctor');
+      if (!selectedDoctor) {
+      this.alertService.showWarning('Missing Information', 'Please select a doctor');
       return;
     }
 
@@ -94,7 +95,7 @@ export class BookingComponent implements OnInit {
     const currentUser = this.authService.getCurrentUser();
     
     if (!currentUser || !currentUser.id) {
-      alert('Please log in to book an appointment');
+      this.alertService.showWarning('Authentication Required', 'Please log in to book an appointment');
       this.router.navigate(['/signin']);
       return;
     }
@@ -110,10 +111,9 @@ export class BookingComponent implements OnInit {
       reason: this.booking.reason    };
 
     // Show loading state
-    this.isLoading = true;    this.appointmentService.addAppointment(newAppointment).subscribe({
-      next: (createdAppointment) => {
+    this.isLoading = true;    this.appointmentService.addAppointment(newAppointment).subscribe({      next: (createdAppointment) => {
         this.isLoading = false;
-        alert('Appointment booked successfully!');
+        this.alertService.showSuccess('Appointment Booked', 'Your appointment has been booked successfully!');
         // Navigate to patient dashboard appointments tab
         this.router.navigate(['/patient-dashboard'], { 
           queryParams: { tab: 'appointments' } 
@@ -122,7 +122,7 @@ export class BookingComponent implements OnInit {
       error: (error) => {
         this.isLoading = false;
         console.error('Error booking appointment:', error);
-        alert('Failed to book appointment. Please try again.');
+        this.alertService.showError('Booking Failed', 'Failed to book appointment. Please try again.');
       }
     });
   }

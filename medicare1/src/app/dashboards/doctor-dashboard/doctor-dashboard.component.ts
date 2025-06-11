@@ -6,6 +6,7 @@ import { EmrComponent } from '../../emr/emr.component';
 import { MedicalRecordsService } from '../../services/medicalRecordService/medical-records.service';
 import { UserService } from '../../services/userService/user.service';
 import { NotificationService } from '../../services/notification.service';
+import { AlertService } from '../../shared/alert/alert.service';
 import { environment } from '../../../environments/environment';
 import type { PatientRecordWithUser, User } from '../../emr/models';
 
@@ -88,10 +89,10 @@ export class DoctorDashboardComponent implements OnInit {
   // Form helper properties
   labTestsText: string = '';
   medicationsText: string = '';
-
   constructor(
     private medicalRecordsService: MedicalRecordsService,
     private userService: UserService,
+    private alertService: AlertService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
   ngOnInit(): void {
@@ -274,22 +275,22 @@ export class DoctorDashboardComponent implements OnInit {
         return this.appointments;
     }
   }
-
   // New appointment approval methods
   approveAppointment(appointmentId: number): void {
     const appointment = this.appointments.find(a => a.id === appointmentId);
     if (appointment) {
       appointment.status = 'approved';
       console.log(`Appointment ${appointmentId} approved for ${appointment.patientName}`);
+      this.alertService.showSuccess('Appointment Approved', `Appointment for ${appointment.patientName} has been approved successfully.`);
       // In a real app, this would make an API call to update the status
     }
   }
-
   rejectAppointment(appointmentId: number): void {
     const appointment = this.appointments.find(a => a.id === appointmentId);
     if (appointment) {
       appointment.status = 'rejected';
       console.log(`Appointment ${appointmentId} rejected for ${appointment.patientName}`);
+      this.alertService.showWarning('Appointment Rejected', `Appointment for ${appointment.patientName} has been rejected.`);
       // In a real app, this would make an API call to update the status
     }
   }
@@ -324,16 +325,17 @@ export class DoctorDashboardComponent implements OnInit {
     this.isEditingAppointment = true;
     // Bootstrap modal would be opened here
   }
-
   saveAppointment(): void {
     if (this.isEditingAppointment && this.selectedAppointment.id) {
       const index = this.appointments.findIndex(apt => apt.id === this.selectedAppointment.id);
       if (index !== -1) {
         this.appointments[index] = { ...this.selectedAppointment };
+        this.alertService.showSuccess('Appointment Updated', 'Appointment has been updated successfully.');
       }
     } else {
       this.selectedAppointment.id = this.appointments.length + 1;
       this.appointments.push({ ...this.selectedAppointment });
+      this.alertService.showSuccess('Appointment Created', 'New appointment has been created successfully.');
     }
     this.closeAppointmentModal();
   }
