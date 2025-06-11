@@ -1,0 +1,190 @@
+.appointments-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.appointments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+
+  h2 {
+    color: #0d6efd;
+    font-size: 2em;
+    margin: 0;
+  }
+}
+
+.appointments-list {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+.appointment-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+
+  .doctor-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    i {
+      font-size: 2em;
+      color: #0d6efd;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #212529;
+    }
+
+    .specialty {
+      margin: 5px 0 0;
+      color: #6c757d;
+      font-size: 0.9em;
+    }
+  }
+
+  .status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+
+    &.scheduled {
+      background: #e3f2fd;
+      color: #0d6efd;
+    }
+
+    &.completed {
+      background: #e8f5e9;
+      color: #28a745;
+    }
+
+    &.cancelled {
+      background: #fbe9e7;
+      color: #dc3545;
+    }
+  }
+}
+
+.appointment-details {
+  margin-bottom: 20px;
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #495057;
+
+    i {
+      width: 20px;
+      color: #6c757d;
+    }
+  }
+}
+
+.appointment-actions {
+  display: flex;
+  gap: 10px;
+
+  .button {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .button-danger {
+    background: #dc3545;
+    color: white;
+
+    &:hover {
+      background: #c82333;
+    }
+  }
+}
+
+.no-appointments {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+  i {
+    font-size: 4em;
+    color: #6c757d;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    color: #212529;
+    margin: 0 0 10px;
+  }
+
+  p {
+    color: #6c757d;
+    margin: 0 0 20px;
+  }
+}
+
+.button {
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    font-size: 1.1em;
+  }
+}
+
+.button-primary {
+  background: #0d6efd;
+  color: white;
+
+  &:hover {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+  }
+}
+
+.button-secondary {
+  background: #6c757d;
+  color: white;
+
+  &:hover {
+    background: #5c636a;
+    transform: translateY(-2px);
+  }
+} 
