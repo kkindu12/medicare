@@ -9,7 +9,8 @@ import { SettingsComponent } from './components/navbar/settings/settings.compone
 import { ChangePasswordComponent } from './components/navbar/settings/change-password/change-password.component';
 import { AuthGuard } from './guards/auth.guard';
 import { HomePageComponent } from './home-page/home-page/home-page.component';
-
+import { BookingComponent } from './booking/booking.component';
+import { MyAppointmentsComponent } from './my-appointments/my-appointments.component';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
@@ -19,6 +20,8 @@ export const routes: Routes = [
     { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
     { path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard] },    
     { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
+    { path: 'booking', component: BookingComponent },
+    { path: 'my-appointments', component: MyAppointmentsComponent },
     { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
     { path: 'doctor-dashboard', component: DoctorDashboardComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: '' }

@@ -1,0 +1,48 @@
+<div class="booking-container">
+  <div class="booking-header">
+    <h2>Book an Appointment</h2>
+    <button class="button button-secondary" (click)="goToMyAppointments()">
+      <i class="fas fa-calendar-check"></i> My Appointments
+    </button>
+  </div>
+  <div class="booking-card">
+    <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
+      <div class="form-group">
+        <label for="doctor">Select Doctor</label>
+        <select id="doctor" name="doctor" [(ngModel)]="booking.doctor" required>
+          <option value="">Choose a doctor...</option>
+          <option *ngFor="let doctor of doctors" [value]="doctor.id">
+            Dr. {{doctor.name}} - {{doctor.specialty}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="date">Select Date</label>
+        <input type="date" id="date" name="date" [(ngModel)]="booking.date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="time">Select Time</label>
+        <select id="time" name="time" [(ngModel)]="booking.time" required>
+          <option value="">Choose a time...</option>
+          <option *ngFor="let time of availableTimes" [value]="time">
+            {{time}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="reason">Reason for Visit</label>
+        <textarea id="reason" name="reason" [(ngModel)]="booking.reason" rows="3" required></textarea>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="button button-secondary" (click)="goBack()">Cancel</button>
+        <button type="submit" class="button button-primary" [disabled]="!bookingForm.form.valid">
+          Book Appointment
+        </button>
+      </div>
+    </form>
+  </div>
+</div> 
