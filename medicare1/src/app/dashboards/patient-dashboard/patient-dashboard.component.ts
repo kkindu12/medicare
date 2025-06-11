@@ -291,10 +291,4 @@ export class PatientDashboardComponent implements OnInit {
       });
     }
   }
-  viewAppointmentDetails(appointment: DashboardAppointment): void {
-    // Here you could open a modal or navigate to appointment details
-    console.log('Viewing appointment details:', appointment);
-    const details = `Doctor: ${appointment.doctor_name}\nSpecialty: ${appointment.doctor_specialty}\nDate: ${appointment.appointment_date}\nTime: ${appointment.appointment_time}\nReason: ${appointment.reason || 'Not specified'}\nStatus: ${appointment.status}`;
-    this.alertService.showInfo('Appointment Details', details);
-  }
 }

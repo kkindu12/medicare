@@ -26,7 +26,6 @@ export class AppointmentCardComponent {
   @Input() appointment!: AppointmentCard;
   @Output() reschedule = new EventEmitter<AppointmentCard>();
   @Output() cancel = new EventEmitter<AppointmentCard>();
-  @Output() viewDetails = new EventEmitter<AppointmentCard>();
 
   onReschedule() {
     this.reschedule.emit(this.appointment);
@@ -34,10 +33,6 @@ export class AppointmentCardComponent {
 
   onCancel() {
     this.cancel.emit(this.appointment);
-  }
-
-  onViewDetails() {
-    this.viewDetails.emit(this.appointment);
   }
 
   getStatusClass(status: string): string {

@@ -121,13 +121,11 @@
                 </button>
               </div>
                 <!-- Appointments List using Appointment Cards -->
-              <div *ngIf="!isLoadingAppointments && appointments.length > 0" class="row">
-                <div *ngFor="let appointment of appointments" class="col-md-6 col-lg-4 mb-3">
+              <div *ngIf="!isLoadingAppointments && appointments.length > 0" class="row">                <div *ngFor="let appointment of appointments" class="col-md-6 col-lg-4 mb-3">
                   <app-appointment-card
                     [appointment]="appointment"
                     (reschedule)="rescheduleAppointment($event)"
-                    (cancel)="cancelAppointment($event)"
-                    (viewDetails)="viewAppointmentDetails($event)">
+                    (cancel)="cancelAppointment($event)">
                   </app-appointment-card>
                 </div>
               </div>
