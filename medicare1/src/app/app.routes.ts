@@ -8,9 +8,11 @@ import { ProfileComponent } from './components/navbar/profile/profile.component'
 import { SettingsComponent } from './components/navbar/settings/settings.component';
 import { ChangePasswordComponent } from './components/navbar/settings/change-password/change-password.component';
 import { AuthGuard } from './guards/auth.guard';
+import { HomePageComponent } from './home-page/home-page/home-page.component';
+
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/signin', pathMatch: 'full' },
+    { path: '', component: HomePageComponent },
     { path: 'signin', component: SigninComponent },
     { path: 'signup', component: SignupComponent },
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
@@ -19,5 +21,5 @@ export const routes: Routes = [
     { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
     { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
     { path: 'doctor-dashboard', component: DoctorDashboardComponent, canActivate: [AuthGuard] },
-    { path: '**', redirectTo: '/signin' }
+    { path: '**', redirectTo: '' }
 ];
