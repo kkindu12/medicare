@@ -8,7 +8,6 @@ import { BookingAppointment } from './bam/booking-appointment/booking-appointmen
 import { BookingComponent } from './booking/booking.component';
 import { MyAppointmentsComponent } from './my-appointments/my-appointments.component';
 
-
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
     { path: 'signin', component: SigninComponent },
