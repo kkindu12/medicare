@@ -123,53 +123,53 @@ export class DoctorDashboardComponent implements OnInit {
       {
         id: 1,
         patientId: '1',
-        patientName: 'John Doe',
-        date: '2025-06-10',
+        patientName: 'Akhila Induwara',
+        date: '2025-06-11',
         time: '09:00',
         type: 'consultation',
         status: 'pending',
         notes: 'Follow-up for diabetes management'
       },
-      {
-        id: 2,
-        patientId: '2',
-        patientName: 'Jane Smith',
-        date: '2025-06-10',
-        time: '10:30',
-        type: 'follow-up',
-        status: 'approved',
-        notes: 'Post-surgery check-up'
-      },
-      {
-        id: 3,
-        patientId: '3',
-        patientName: 'Robert Johnson',
-        date: '2025-06-10',
-        time: '14:00',
-        type: 'consultation',
-        status: 'pending',
-        notes: 'New patient consultation'
-      },
-      {
-        id: 4,
-        patientId: '4',
-        patientName: 'Emily Davis',
-        date: '2025-06-11',
-        time: '11:00',
-        type: 'emergency',
-        status: 'pending',
-        notes: 'Urgent care needed'
-      },
-      {
-        id: 5,
-        patientId: '5',
-        patientName: 'Michael Brown',
-        date: '2025-06-11',
-        time: '15:00',
-        type: 'consultation',
-        status: 'approved',
-        notes: 'Annual check-up'
-      }
+      // {
+      //   id: 2,
+      //   patientId: '2',
+      //   patientName: 'Jane Smith',
+      //   date: '2025-06-10',
+      //   time: '10:30',
+      //   type: 'follow-up',
+      //   status: 'approved',
+      //   notes: 'Post-surgery check-up'
+      // },
+      // {
+      //   id: 3,
+      //   patientId: '3',
+      //   patientName: 'Robert Johnson',
+      //   date: '2025-06-10',
+      //   time: '14:00',
+      //   type: 'consultation',
+      //   status: 'pending',
+      //   notes: 'New patient consultation'
+      // },
+      // {
+      //   id: 4,
+      //   patientId: '4',
+      //   patientName: 'Emily Davis',
+      //   date: '2025-06-11',
+      //   time: '11:00',
+      //   type: 'emergency',
+      //   status: 'pending',
+      //   notes: 'Urgent care needed'
+      // },
+      // {
+      //   id: 5,
+      //   patientId: '5',
+      //   patientName: 'Michael Brown',
+      //   date: '2025-06-11',
+      //   time: '15:00',
+      //   type: 'consultation',
+      //   status: 'approved',
+      //   notes: 'Annual check-up'
+      // }
     ];
   }
 
