@@ -10,6 +10,13 @@ class Medication(BaseModel):
     startDate: str
     endDate: str
 
+class MedicineDetails(BaseModel):
+    medicineId: str
+    frequency: str
+    duration: str
+    pillsPerTime: int
+    numberOfPills: int
+
 class Report(BaseModel):
     name: str
     type: str
@@ -26,6 +33,12 @@ class PatientRecordBase(BaseModel):
     prescription: Optional[str] = None
     status: str
     medications: Optional[List[Medication]] = []
+    labTest: Optional[List[str]] = []  # List of lab test IDs
+    medicine: Optional[List[MedicineDetails]] = []  # List of medicine details
+    isEdited: Optional[bool] = False
+    editedBy: Optional[str] = None  # Doctor ID who edited
+    editedByName: Optional[str] = None  # Doctor name who edited
+    editedAt: Optional[str] = None  # Timestamp of edit
 
 class PatientRecordCreate(PatientRecordBase):
     patientId: str
@@ -43,6 +56,12 @@ class PatientRecordUpdate(BaseModel):
     status: Optional[str] = None
     patientName: Optional[str] = None
     medications: Optional[List[Medication]] = None
+    labTest: Optional[List[str]] = None
+    medicine: Optional[List[MedicineDetails]] = None
+    isEdited: Optional[bool] = None
+    editedBy: Optional[str] = None  # Doctor ID who edited
+    editedByName: Optional[str] = None  # Doctor name who edited
+    editedAt: Optional[str] = None  # Timestamp of edit
 
 class PatientRecordWithUser(BaseModel):
     id: str
@@ -54,4 +73,10 @@ class PatientRecordWithUser(BaseModel):
     prescription: Optional[str] = None
     status: str
     medications: Optional[List[Medication]] = []
+    labTest: Optional[List[str]] = []
+    medicine: Optional[List[MedicineDetails]] = []
     user: Optional[User] = None  # Include user data
+    isEdited: Optional[bool] = False
+    editedBy: Optional[str] = None  # Doctor ID who edited
+    editedByName: Optional[str] = None  # Doctor name who edited
+    editedAt: Optional[str] = None  # Timestamp of edit
