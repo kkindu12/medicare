@@ -106,10 +106,13 @@
                       <button type="button" class="btn btn-outline-primary" 
                               [class.active]="selectedDate === 'pending'" (click)="filterAppointmentsByDate('pending')">
                         Pending
-                      </button>
-                      <button type="button" class="btn btn-outline-primary" 
+                      </button>                      <button type="button" class="btn btn-outline-primary" 
                               [class.active]="selectedDate === 'approved'" (click)="filterAppointmentsByDate('approved')">
                         Approved
+                      </button>
+                      <button type="button" class="btn btn-outline-primary" 
+                              [class.active]="selectedDate === 'rejected'" (click)="filterAppointmentsByDate('rejected')">
+                        Rejected
                       </button>
                       <button type="button" class="btn btn-outline-primary" 
                               [class.active]="selectedDate === 'all'" (click)="filterAppointmentsByDate('all')">
@@ -121,17 +124,15 @@
                 
                 <div class="row">
                   <div class="col-12">
-                    <div class="appointments-list">
-                      <div *ngFor="let appointment of getFilteredAppointments()" 
+                    <div class="appointments-list">                      <div *ngFor="let appointment of getFilteredAppointments()" 
                            class="card appointment-card mb-3 border-start border-4"
                            [ngClass]="{
                              'border-success': appointment.status === 'completed',
                              'border-primary': appointment.status === 'scheduled',
-                             'border-danger': appointment.status === 'cancelled'
+                             'border-danger': appointment.status === 'cancelled' || appointment.status === 'rejected'
                            }">
                         <div class="card-body">
-                          <div class="row align-items-center">
-                            <div class="col-md-6">                              <h6 class="card-title mb-1 fw-bold">{{ appointment.patient_name }}</h6>
+                          <div class="row align-items-center">                            <div class="col-md-6">                              <h6 class="card-title mb-1 fw-bold">{{ appointment.patient_name }}</h6>
                               <p class="card-text small text-muted mb-2">
                                 <i class="bi bi-calendar me-1"></i>{{ formatDate(appointment.appointment_date) }}
                                 <i class="bi bi-clock ms-3 me-1"></i>{{ appointment.appointment_time }}
@@ -144,7 +145,14 @@
                                     }">
                                 {{ appointment.reason | titlecase }}
                               </span>
-                            </div>                            <div class="col-md-3">
+                              <!-- Display rejection reason if it exists -->
+                              <div *ngIf="appointment.rejection_reason && appointment.status === 'rejected'" class="mt-2">
+                                <small class="text-danger">
+                                  <i class="bi bi-exclamation-circle me-1"></i>
+                                  Rejection reason: {{ appointment.rejection_reason }}
+                                </small>
+                              </div>
+                            </div><div class="col-md-3">
                               <span class="badge fs-6" 
                                     [ngClass]="{
                                       'bg-warning': appointment.status === 'pending',
@@ -426,11 +434,10 @@
           <small class="text-muted">This reason will be shown to the patient.</small>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">Cancel</button>
+      <div class="modal-footer">        <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">Cancel</button>
         <button type="button" class="btn btn-danger" 
                 (click)="confirmRejectAppointment()"
-                [disabled]="!rejectionReason?.trim()">
+                [disabled]="!rejectionReason.trim()">
           <i class="bi bi-x-lg me-1"></i>Reject Appointment
         </button>
       </div>

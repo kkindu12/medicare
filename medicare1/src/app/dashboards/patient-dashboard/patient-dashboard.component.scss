@@ -21,6 +21,17 @@
   border-left-color: #0d6efd;
 }
 
+/* Auto-refresh spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s infinite linear;
+  display: inline-block;
+}
+
 /* Payment Card Styles */
 .payment-card {
   transition: all 0.3s ease;

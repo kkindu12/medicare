@@ -153,8 +153,9 @@ export class BookingComponent implements OnInit {
   goBack(): void {
     this.router.navigate(['/patient-dashboard']);
   }
-
   goToMyAppointments(): void {
-    this.router.navigate(['/my-appointments']);
+    this.router.navigate(['/patient-dashboard'], { 
+      queryParams: { tab: 'appointments' } 
+    });
   }
 }

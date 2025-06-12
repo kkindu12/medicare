@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -10,6 +10,7 @@ import { AppointmentService, Appointment } from '../../services/appointment.serv
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../shared/alert/alert.service';
 import type { PatientRecordWithUser } from '../../emr/models';
+import { interval, Subscription } from 'rxjs';
 
 interface DashboardAppointment {
   id?: string;
@@ -41,7 +42,7 @@ interface Payment {
   templateUrl: './patient-dashboard.component.html',
   styleUrl: './patient-dashboard.component.scss'
 })
-export class PatientDashboardComponent implements OnInit {
+export class PatientDashboardComponent implements OnInit, OnDestroy {
   activeTab: string = 'appointments';
   
   // Current User
@@ -56,8 +57,13 @@ export class PatientDashboardComponent implements OnInit {
   showPreviousRecords = false;
   selectedPatientRecord: PatientRecordWithUser | null = null;
   previousPatientRecords: PatientRecordWithUser[] = [];
-    appointments: DashboardAppointment[] = [];
+  appointments: DashboardAppointment[] = [];
   isLoadingAppointments = false;
+  isAutoRefreshing = false;
+  
+  // Real-time polling
+  private appointmentPollingSubscription?: Subscription;
+  private readonly POLLING_INTERVAL = 10000; // Poll every 10 seconds
 
   // medicalRecords: MedicalRecord[] = [
   //   {
@@ -132,8 +138,27 @@ export class PatientDashboardComponent implements OnInit {
     
     this.loadPatientRecords();
     this.loadAppointments();
+    this.startAppointmentPolling(); // Start auto-refreshing appointments
   }
   
+  ngOnDestroy(): void {
+    // Clean up polling subscription
+    if (this.appointmentPollingSubscription) {
+      this.appointmentPollingSubscription.unsubscribe();
+    }
+  }
+
+  startAppointmentPolling(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.appointmentPollingSubscription = interval(this.POLLING_INTERVAL).subscribe(() => {
+      if (this.activeTab === 'appointments') {
+        this.isAutoRefreshing = true;
+        this.loadAppointments();
+        setTimeout(() => this.isAutoRefreshing = false, 1000); // Hide indicator after 1s
+      }
+    });
+  }
+
   loadPatientRecords(): void {
     this.isLoadingRecords = true;
     this.recordsError = null;

@@ -185,13 +185,14 @@ export class DoctorDashboardComponent implements OnInit, OnDestroy {
   filterAppointmentsByDate(period: string): void {
     this.selectedDate = period;
   }
-
   getFilteredAppointments(): Appointment[] {
     switch (this.selectedDate) {
       case 'pending':
         return this.appointments.filter(apt => apt.status === 'pending');
       case 'approved':
         return this.appointments.filter(apt => apt.status === 'approved');
+      case 'rejected':
+        return this.appointments.filter(apt => apt.status === 'rejected');
       case 'all':
         return this.appointments;
       default:
@@ -250,20 +251,26 @@ export class DoctorDashboardComponent implements OnInit, OnDestroy {
       }
     }
   }
-
   confirmRejectAppointment(): void {
     if (!this.selectedAppointment?.id || !this.rejectionReason.trim()) {
       this.alertService.showWarning('Invalid Input', 'Please provide a reason for rejection');
       return;
     }
 
+    console.log('Rejecting appointment:', this.selectedAppointment);
+    
     this.appointmentService.rejectAppointment(this.selectedAppointment.id, this.rejectionReason).subscribe({
-      next: (updatedAppointment) => {
-        // Update the local appointment list
+      next: (updatedAppointment) => {        // Update the local appointment list
         const index = this.appointments.findIndex(a => a.id === this.selectedAppointment?.id);
         if (index !== -1) {
           this.appointments[index] = updatedAppointment;
+          console.log('Updated appointment in local array:', this.appointments[index]);
         }
+        
+        // Change filter to show rejected appointments so user can see the change
+        this.selectedDate = 'rejected';
+        console.log('Filter changed to show rejected appointments');
+        
         this.alertService.showWarning('Appointment Rejected', `Appointment for ${updatedAppointment.patient_name} has been rejected.`);
         this.closeRejectModal();
       },
