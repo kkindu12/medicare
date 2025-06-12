@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from models.appointment import Appointment, AppointmentCreate, AppointmentUpdate
 from services.database import get_db
 from bson import ObjectId
@@ -65,3 +65,78 @@ async def delete_appointment(appointment_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Appointment not found")
     return {"message": "Appointment deleted"}
+
+# Doctor-specific endpoints
+@router.get("/appointments/doctor/{doctor_id}", response_model=List[Appointment])
+async def get_doctor_appointments(doctor_id: str, status: str = Query(None)):
+    """Get appointments for a specific doctor, optionally filtered by status"""
+    query = {"doctor_id": doctor_id}
+    if status:
+        query["status"] = status
+    
+    appointments = []
+    for appointment in get_db().appointments.find(query):
+        appointment["id"] = str(appointment["_id"])
+        appointment.pop("_id")
+        appointments.append(Appointment(**appointment))
+    return appointments
+
+@router.put("/appointments/{appointment_id}/approve", response_model=Appointment)
+async def approve_appointment(appointment_id: str):
+    """Approve an appointment and notify the patient"""
+    # Update appointment status to approved
+    result = get_db().appointments.update_one(
+        {"_id": ObjectId(appointment_id)}, 
+        {"$set": {"status": "approved"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    # Get updated appointment
+    appointment = get_db().appointments.find_one({"_id": ObjectId(appointment_id)})
+    appointment["id"] = str(appointment["_id"])
+    appointment.pop("_id")
+    
+    # Create notification for patient
+    notification_data = {
+        "user_id": appointment["patient_id"],
+        "message": f"Your appointment with Dr. {appointment['doctor_name']} on {appointment['appointment_date']} at {appointment['appointment_time']} has been approved.",
+        "type": "appointment_approved",
+        "related_id": appointment_id,
+        "is_read": False,
+        "created_at": datetime.now().isoformat()
+    }
+    get_db().notifications.insert_one(notification_data)
+    
+    return Appointment(**appointment)
+
+@router.put("/appointments/{appointment_id}/reject", response_model=Appointment)
+async def reject_appointment(appointment_id: str, rejection_data: dict):
+    """Reject an appointment with a reason and notify the patient"""
+    rejection_reason = rejection_data.get("rejection_reason", "No reason provided")
+    
+    # Update appointment status to rejected with reason
+    result = get_db().appointments.update_one(
+        {"_id": ObjectId(appointment_id)}, 
+        {"$set": {"status": "rejected", "rejection_reason": rejection_reason}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    # Get updated appointment
+    appointment = get_db().appointments.find_one({"_id": ObjectId(appointment_id)})
+    appointment["id"] = str(appointment["_id"])
+    appointment.pop("_id")
+    
+    # Create notification for patient
+    notification_data = {
+        "user_id": appointment["patient_id"],
+        "message": f"Your appointment with Dr. {appointment['doctor_name']} on {appointment['appointment_date']} at {appointment['appointment_time']} has been rejected. Reason: {rejection_reason}",
+        "type": "appointment_rejected",
+        "related_id": appointment_id,
+        "is_read": False,
+        "created_at": datetime.now().isoformat()
+    }
+    get_db().notifications.insert_one(notification_data)
+    
+    return Appointment(**appointment)

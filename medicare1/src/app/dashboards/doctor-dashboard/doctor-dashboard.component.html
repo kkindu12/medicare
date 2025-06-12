@@ -9,13 +9,17 @@
       <div class="col-12">        <div class="card border-0 shadow-sm bg-light">
           <div class="card-body p-4">
             <div class="row align-items-center">
-              <div class="col-md-8">
-                <h2 class="card-title mb-2 fw-bold text-dark">Welcome back, Dr. {{ getDoctorName() }}!</h2>
+              <div class="col-md-8">                <h2 class="card-title mb-2 fw-bold text-dark">Welcome back, Dr. {{ getDoctorName() }}!</h2>
                 <p class="card-text mb-0 text-muted">
                   <i class="bi bi-calendar-check me-2"></i>
                   You have {{ getTodayAppointmentsCount() }} appointments today
                   <span class="ms-3">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <i class="bi bi-file-medical me-2"></i>
+                    {{ getRecordsAddedCount() }} patient records added
+                  </span>
+                  <br>
+                  <span *ngIf="getCriticalReportsCount() > 0" class="mt-1 d-inline-block">
+                    <i class="bi bi-exclamation-triangle me-2 text-warning"></i>
                     {{ getCriticalReportsCount() }} critical lab reports need review
                   </span>
                 </p>
@@ -127,19 +131,18 @@
                            }">
                         <div class="card-body">
                           <div class="row align-items-center">
-                            <div class="col-md-6">
-                              <h6 class="card-title mb-1 fw-bold">{{ appointment.patientName }}</h6>
+                            <div class="col-md-6">                              <h6 class="card-title mb-1 fw-bold">{{ appointment.patient_name }}</h6>
                               <p class="card-text small text-muted mb-2">
-                                <i class="bi bi-calendar me-1"></i>{{ formatDate(appointment.date) }}
-                                <i class="bi bi-clock ms-3 me-1"></i>{{ appointment.time }}
+                                <i class="bi bi-calendar me-1"></i>{{ formatDate(appointment.appointment_date) }}
+                                <i class="bi bi-clock ms-3 me-1"></i>{{ appointment.appointment_time }}
                               </p>
                               <span class="badge" 
                                     [ngClass]="{
-                                      'bg-primary': appointment.type === 'consultation',
-                                      'bg-info': appointment.type === 'follow-up',
-                                      'bg-danger': appointment.type === 'emergency'
+                                      'bg-primary': appointment.reason === 'consultation',
+                                      'bg-info': appointment.reason === 'follow-up',
+                                      'bg-danger': appointment.reason === 'emergency'
                                     }">
-                                {{ appointment.type | titlecase }}
+                                {{ appointment.reason | titlecase }}
                               </span>
                             </div>                            <div class="col-md-3">
                               <span class="badge fs-6" 
@@ -152,14 +155,16 @@
                                 {{ appointment.status | titlecase }}
                               </span>
                             </div>
-                            <div class="col-md-3 text-end">
-                              <div class="btn-group btn-group-sm" *ngIf="appointment.status === 'pending'">
+                            <div class="col-md-3 text-end">                              <div class="btn-group btn-group-sm" *ngIf="appointment.status === 'pending'">
                                 <button class="btn btn-success btn-sm" 
-                                        (click)="approveAppointment(appointment.id)"
+                                        (click)="appointment.id && approveAppointment(appointment.id)"
+                                        [disabled]="!appointment.id"
                                         title="Approve appointment">
                                   <i class="bi bi-check-lg"></i> Approve
-                                </button>                                <button class="btn btn-danger btn-sm" 
-                                        (click)="rejectAppointment(appointment.id)"
+                                </button>
+                                <button class="btn btn-danger btn-sm" 
+                                        (click)="appointment.id && openRejectModal(appointment)"
+                                        [disabled]="!appointment.id"
                                         title="Reject appointment">
                                   <i class="bi bi-x-lg"></i> Reject
                                 </button>
@@ -176,20 +181,14 @@
                                         *ngIf="appointment.status === 'approved'">
                                   <i class="bi bi-calendar-event"></i>
                                 </button>
-                              </div>
-                            </div>
-                          </div>
-                          <div *ngIf="appointment.notes" class="mt-2">
-                            <small class="text-muted">
-                              <strong>Notes:</strong> {{ appointment.notes }}
-                            </small>
+                              </div>                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>              <!-- Lab Reports Tab -->
+              </div><!-- Lab Reports Tab -->
               <div class="tab-content-section" id="lab-reports" role="tabpanel" 
                    aria-labelledby="lab-reports-tab" *ngIf="activeTab === 'lab-reports'">
                 <div class="row mb-3">
@@ -302,37 +301,30 @@
       <div class="modal-body">
         <form>
           <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="patientName" class="form-label">Patient Name</label>
-              <input type="text" class="form-control" id="patientName" 
-                     [(ngModel)]="selectedAppointment.patientName" name="patientName">
+            <div class="col-md-6 mb-3">              <label for="patientName" class="form-label">Patient Name</label>              <input type="text" class="form-control" id="patientName" 
+                     [(ngModel)]="selectedAppointment!.patient_name" name="patientName"
+                     *ngIf="selectedAppointment">
             </div>
             <div class="col-md-6 mb-3">
-              <label for="appointmentDate" class="form-label">Date</label>
-              <input type="date" class="form-control" id="appointmentDate" 
-                     [(ngModel)]="selectedAppointment.date" name="appointmentDate">
+              <label for="appointmentDate" class="form-label">Date</label>              <input type="date" class="form-control" id="appointmentDate" 
+                     [(ngModel)]="selectedAppointment!.appointment_date" name="appointmentDate"
+                     *ngIf="selectedAppointment">
             </div>
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="appointmentTime" class="form-label">Time</label>
-              <input type="time" class="form-control" id="appointmentTime" 
-                     [(ngModel)]="selectedAppointment.time" name="appointmentTime">
+              <label for="appointmentTime" class="form-label">Time</label>              <input type="time" class="form-control" id="appointmentTime" 
+                     [(ngModel)]="selectedAppointment!.appointment_time" name="appointmentTime"
+                     *ngIf="selectedAppointment">
             </div>
             <div class="col-md-6 mb-3">
-              <label for="appointmentType" class="form-label">Type</label>
-              <select class="form-select" id="appointmentType" 
-                      [(ngModel)]="selectedAppointment.type" name="appointmentType">
-                <option value="consultation">Consultation</option>
-                <option value="follow-up">Follow-up</option>
+              <label for="appointmentReason" class="form-label">Reason</label>              <select class="form-select" id="appointmentReason" 
+                      [(ngModel)]="selectedAppointment!.reason" name="appointmentReason"
+                      *ngIf="selectedAppointment">
+                <option value="consultation">Consultation</option>                <option value="follow-up">Follow-up</option>
                 <option value="emergency">Emergency</option>
               </select>
             </div>
-          </div>
-          <div class="mb-3">
-            <label for="appointmentNotes" class="form-label">Notes</label>
-            <textarea class="form-control" id="appointmentNotes" rows="3" 
-                      [(ngModel)]="selectedAppointment.notes" name="appointmentNotes"></textarea>
           </div>
         </form>
       </div>
@@ -399,12 +391,48 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <div class="modal-footer">        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-outline-primary" (click)="editMedicalRecord()">
           <i class="bi bi-pencil me-1"></i>Edit Record
-        </button>        <button type="button" class="btn btn-primary" (click)="downloadMedicalRecord(selectedMedicalRecord)">
+        </button>
+        <button type="button" class="btn btn-primary" 
+                (click)="selectedMedicalRecord && downloadMedicalRecord(selectedMedicalRecord)"
+                [disabled]="!selectedMedicalRecord">
           <i class="bi bi-download me-1"></i>Download
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Rejection Reason Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rejectModalLabel">Reject Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedAppointment" class="mb-3">
+          <p><strong>Patient:</strong> {{ selectedAppointment.patient_name }}</p>
+          <p><strong>Date:</strong> {{ formatDate(selectedAppointment.appointment_date) }}</p>
+          <p><strong>Time:</strong> {{ selectedAppointment.appointment_time }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="rejectionReason" class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+          <textarea class="form-control" id="rejectionReason" rows="3" 
+                    [(ngModel)]="rejectionReason" 
+                    placeholder="Please provide a reason for rejecting this appointment...">
+          </textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeRejectModal()">Cancel</button>
+        <button type="button" class="btn btn-danger" 
+                (click)="confirmRejectAppointment()"
+                [disabled]="!rejectionReason.trim()">
+          <i class="bi bi-x-lg me-1"></i>Reject Appointment
         </button>
       </div>
     </div>

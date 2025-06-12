@@ -13,6 +13,7 @@ class Appointment(BaseModel):
     appointment_time: str
     reason: str
     status: str = "pending"
+    rejection_reason: Optional[str] = None
     created_at: Optional[str] = None
 
 class AppointmentCreate(BaseModel):
@@ -29,3 +30,4 @@ class AppointmentCreate(BaseModel):
 class AppointmentUpdate(BaseModel):
     status: Optional[str] = None
     reason: Optional[str] = None
+    rejection_reason: Optional[str] = None

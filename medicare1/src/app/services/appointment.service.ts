@@ -14,6 +14,7 @@ export interface Appointment {
   appointment_time: string;
   reason: string;
   status: string;
+  rejection_reason?: string;
   created_at?: string;
 }
 
@@ -66,8 +67,23 @@ export class AppointmentService {
 
   cancelAppointment(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/api/appointments/${id}`);
-  }
-  updateAppointmentStatus(id: string, status: string): Observable<Appointment> {
+  }  updateAppointmentStatus(id: string, status: string): Observable<Appointment> {
     return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${id}`, { status });
+  }
+
+  // Doctor-specific methods
+  getDoctorAppointments(doctorId: string, status?: string): Observable<Appointment[]> {
+    const params = status ? `?status=${status}` : '';
+    return this.http.get<Appointment[]>(`${this.apiUrl}/api/appointments/doctor/${doctorId}${params}`);
+  }
+
+  approveAppointment(appointmentId: string): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/approve`, {});
+  }
+
+  rejectAppointment(appointmentId: string, rejectionReason: string): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reject`, {
+      rejection_reason: rejectionReason
+    });
   }
 }
