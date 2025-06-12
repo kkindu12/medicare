@@ -165,8 +165,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
       } else {
         // Patient - navigate to patient dashboard
         this.router.navigate(['/patient-dashboard'], { fragment: 'records' });
-      }
-    } else if (notification.type === 'appointment') {
+      }    } else if (notification.type === 'appointment' || 
+               notification.type === 'appointment_approved' || 
+               notification.type === 'appointment_rejected') {
       // Navigate to appropriate appointment section based on user role
       if (this.currentUser?.role) {
         // Doctor - navigate to doctor dashboard appointments tab

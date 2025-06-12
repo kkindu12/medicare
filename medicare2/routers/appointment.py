@@ -96,15 +96,15 @@ async def approve_appointment(appointment_id: str):
     appointment = get_db().appointments.find_one({"_id": ObjectId(appointment_id)})
     appointment["id"] = str(appointment["_id"])
     appointment.pop("_id")
-    
-    # Create notification for patient
+      # Create notification for patient
     notification_data = {
-        "user_id": appointment["patient_id"],
+        "userId": appointment["patient_id"],
+        "title": "Appointment Approved",
         "message": f"Your appointment with Dr. {appointment['doctor_name']} on {appointment['appointment_date']} at {appointment['appointment_time']} has been approved.",
         "type": "appointment_approved",
-        "related_id": appointment_id,
-        "is_read": False,
-        "created_at": datetime.now().isoformat()
+        "relatedRecordId": appointment_id,
+        "read": False,
+        "createdAt": datetime.now().isoformat()
     }
     get_db().notifications.insert_one(notification_data)
     
@@ -127,15 +127,15 @@ async def reject_appointment(appointment_id: str, rejection_data: dict):
     appointment = get_db().appointments.find_one({"_id": ObjectId(appointment_id)})
     appointment["id"] = str(appointment["_id"])
     appointment.pop("_id")
-    
-    # Create notification for patient
+      # Create notification for patient
     notification_data = {
-        "user_id": appointment["patient_id"],
+        "userId": appointment["patient_id"],
+        "title": "Appointment Rejected",
         "message": f"Your appointment with Dr. {appointment['doctor_name']} on {appointment['appointment_date']} at {appointment['appointment_time']} has been rejected. Reason: {rejection_reason}",
         "type": "appointment_rejected",
-        "related_id": appointment_id,
-        "is_read": False,
-        "created_at": datetime.now().isoformat()
+        "relatedRecordId": appointment_id,
+        "read": False,
+        "createdAt": datetime.now().isoformat()
     }
     get_db().notifications.insert_one(notification_data)
     

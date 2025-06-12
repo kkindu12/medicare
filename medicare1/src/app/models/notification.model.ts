@@ -1,4 +1,4 @@
-export type NotificationType = 'medical_record' | 'appointment' | 'prescription' | 'lab_result' | 'general';
+export type NotificationType = 'medical_record' | 'appointment' | 'appointment_approved' | 'appointment_rejected' | 'prescription' | 'lab_result' | 'general';
 
 export interface UserNotification {
   id: string;
