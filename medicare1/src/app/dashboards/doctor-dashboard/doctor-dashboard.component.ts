@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -10,6 +10,7 @@ import { AppointmentService, Appointment } from '../../services/appointment.serv
 import { EmrComponent } from '../../emr/emr.component';
 import { environment } from '../../../environments/environment';
 import type { PatientRecordWithUser, User } from '../../emr/models';
+import { interval, Subscription } from 'rxjs';
 
 interface LabReport {
   id: number;
@@ -30,7 +31,7 @@ interface LabReport {
   templateUrl: './doctor-dashboard.component.html',
   styleUrls: ['./doctor-dashboard.component.scss']
 })
-export class DoctorDashboardComponent implements OnInit {
+export class DoctorDashboardComponent implements OnInit, OnDestroy {
   activeTab: 'appointments' | 'lab-reports' | 'patient-records' = 'appointments';
   
   // Current Doctor User
@@ -46,6 +47,11 @@ export class DoctorDashboardComponent implements OnInit {
   // UI State
   isLoading = false;
   error: string | null = null;
+  isAutoRefreshing = false;
+  
+  // Real-time polling
+  private appointmentPollingSubscription?: Subscription;
+  private readonly POLLING_INTERVAL = 10000; // Poll every 10 seconds
   
   // Filter States
   selectedDate: string = 'all';
@@ -70,10 +76,28 @@ export class DoctorDashboardComponent implements OnInit {
     private appointmentService: AppointmentService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
-
   ngOnInit(): void {
     this.loadUserData();
     this.loadDashboardData();
+    this.startAppointmentPolling();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up polling subscription
+    if (this.appointmentPollingSubscription) {
+      this.appointmentPollingSubscription.unsubscribe();
+    }
+  }
+
+  startAppointmentPolling(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.appointmentPollingSubscription = interval(this.POLLING_INTERVAL).subscribe(() => {
+      if (this.activeTab === 'appointments') {
+        this.isAutoRefreshing = true;
+        this.loadAppointments();
+        setTimeout(() => this.isAutoRefreshing = false, 1000); // Hide indicator after 1s
+      }
+    });
   }
 
   loadUserData(): void {
@@ -194,16 +218,35 @@ export class DoctorDashboardComponent implements OnInit {
       }
     });
   }
-
   openRejectModal(appointment: Appointment): void {
+    console.log('Opening rejection modal for appointment:', appointment);
     this.selectedAppointment = appointment;
     this.rejectionReason = '';
+    
     // Open the rejection modal (will be handled by Bootstrap modal)
-    if (typeof window !== 'undefined' && (window as any).bootstrap) {
+    if (typeof window !== 'undefined') {
       const modalElement = document.getElementById('rejectModal');
-      if (modalElement) {
-        const modal = new (window as any).bootstrap.Modal(modalElement);
-        modal.show();
+      
+      if (!modalElement) {
+        console.error('Modal element not found in the DOM');
+        this.alertService.showError('UI Error', 'Cannot open rejection modal. Please refresh the page and try again.');
+        return;
+      }
+      
+      try {
+        if ((window as any).bootstrap && (window as any).bootstrap.Modal) {
+          const modal = new (window as any).bootstrap.Modal(modalElement);
+          modal.show();
+          console.log('Modal shown successfully');
+        } else {
+          console.error('Bootstrap Modal not found - falling back to manual display');
+          this.alertService.showWarning('UI Warning', 'Using fallback modal display method');
+          modalElement.classList.add('show');
+          modalElement.style.display = 'block';
+        }
+      } catch (e) {
+        console.error('Error showing modal:', e);
+        this.alertService.showError('UI Error', 'Failed to show rejection modal. Please refresh and try again.');
       }
     }
   }
@@ -226,22 +269,47 @@ export class DoctorDashboardComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error rejecting appointment:', error);
-        this.alertService.showError('Error', 'Failed to reject appointment');
+        if (error && error.error && error.error.detail) {
+          this.alertService.showError('Rejection Failed', error.error.detail);
+        } else if (error && error.message) {
+          this.alertService.showError('Rejection Failed', error.message);
+        } else {
+          this.alertService.showError('Error', 'Failed to reject appointment. Please try again or contact support.');
+        }
       }
     });
   }
-
   closeRejectModal(): void {
+    console.log('Closing rejection modal');
     this.selectedAppointment = null;
     this.rejectionReason = '';
+    
     // Close the modal
-    if (typeof window !== 'undefined' && (window as any).bootstrap) {
+    if (typeof window !== 'undefined') {
       const modalElement = document.getElementById('rejectModal');
-      if (modalElement) {
-        const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
-        if (modal) {
-          modal.hide();
+      if (!modalElement) {
+        console.error('Modal element not found when closing');
+        return;
+      }
+      
+      try {
+        if ((window as any).bootstrap && (window as any).bootstrap.Modal) {
+          const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+            console.log('Modal hidden successfully');
+          } else {
+            console.warn('No modal instance found, trying manual close');
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+          }
+        } else {
+          console.warn('Bootstrap not found, using manual close');
+          modalElement.classList.remove('show');
+          modalElement.style.display = 'none';
         }
+      } catch (e) {
+        console.error('Error closing modal:', e);
       }
     }
   }

@@ -161,10 +161,9 @@
                                         [disabled]="!appointment.id"
                                         title="Approve appointment">
                                   <i class="bi bi-check-lg"></i> Approve
-                                </button>
-                                <button class="btn btn-danger btn-sm" 
+                                </button>                                <button class="btn btn-danger btn-sm" 
                                         (click)="appointment.id && openRejectModal(appointment)"
-                                        [disabled]="!appointment.id"
+                                        [disabled]="!appointment.id" 
                                         title="Reject appointment">
                                   <i class="bi bi-x-lg"></i> Reject
                                 </button>
@@ -406,12 +405,12 @@
 </div>
 
 <!-- Rejection Reason Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true" role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="rejectModalLabel">Reject Appointment</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeRejectModal()"></button>
       </div>
       <div class="modal-body">
         <div *ngIf="selectedAppointment" class="mb-3">
@@ -423,15 +422,15 @@
           <label for="rejectionReason" class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
           <textarea class="form-control" id="rejectionReason" rows="3" 
                     [(ngModel)]="rejectionReason" 
-                    placeholder="Please provide a reason for rejecting this appointment...">
-          </textarea>
+                    placeholder="Please provide a reason for rejecting this appointment..."></textarea>
+          <small class="text-muted">This reason will be shown to the patient.</small>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeRejectModal()">Cancel</button>
+        <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">Cancel</button>
         <button type="button" class="btn btn-danger" 
                 (click)="confirmRejectAppointment()"
-                [disabled]="!rejectionReason.trim()">
+                [disabled]="!rejectionReason?.trim()">
           <i class="bi bi-x-lg me-1"></i>Reject Appointment
         </button>
       </div>

@@ -80,7 +80,6 @@ export class AppointmentService {
   approveAppointment(appointmentId: string): Observable<Appointment> {
     return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/approve`, {});
   }
-
   rejectAppointment(appointmentId: string, rejectionReason: string): Observable<Appointment> {
     return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reject`, {
       rejection_reason: rejectionReason
