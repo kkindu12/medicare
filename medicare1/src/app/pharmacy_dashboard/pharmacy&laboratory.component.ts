@@ -16,16 +16,21 @@ type TabType = 'prescriptions' | 'lab-tests' | 'inventory' | 'reports' | 'paymen
 export class PharmacyComponent implements OnInit {
   activeTab: TabType = 'prescriptions' as TabType;
   searchTerm: string = '';
-  selectedStatus: string = 'ALL';
-  filteredPrescriptions: Prescription[] = [];
+  selectedStatus: string = 'ALL';  filteredPrescriptions: Prescription[] = [];
   filteredLabTests: LabTest[] = [];
   filteredInventory: InventoryItem[] = [];
   filteredReports: Report[] = [];
   filteredPayments: Payment[] = [];
-  
+
   // Modal properties
   isModalVisible: boolean = false;
   selectedPrescription: Prescription | null = null;
+  modalType: 'prescription' | 'labtest' = 'prescription';
+  modalMode: 'view' | 'edit' | 'new' = 'new';
+  
+  // Lab Test Modal properties
+  isLabTestModalVisible: boolean = false;
+  selectedLabTest: LabTest | null = null;
   
   pharmacyStats: PharmacyStats = {
     pendingPrescriptions: 12,
@@ -230,10 +235,10 @@ export class PharmacyComponent implements OnInit {
 
   openQuickChat(): void {
     console.log('Opening quick chat...');
-  }
-  addNewPrescription(): void {
+  }  addNewPrescription(): void {
     console.log('Adding new prescription...');
     this.selectedPrescription = null; // Set to null for new prescription
+    this.modalType = 'prescription';
     this.isModalVisible = true;
   }
   updatePrescriptionStatus(prescriptionId: string, newStatus: Prescription['status']): void {
@@ -267,14 +272,14 @@ export class PharmacyComponent implements OnInit {
     this.selectedPrescription = prescription;
     this.isModalVisible = true;
   }
-
   closeModal(): void {
     this.isModalVisible = false;
     this.selectedPrescription = null;
+    this.selectedLabTest = null;
+    this.modalMode = 'new';
   }
-
-  onEditFromModal(prescription: Prescription): void {
-    console.log('Edit from modal:', prescription);
+  onEditFromModal(event: any): void {
+    console.log('Edit from modal:', event);
     // Add edit logic here
     this.closeModal();
   }
@@ -405,30 +410,65 @@ export class PharmacyComponent implements OnInit {
         payment.patientId.includes(this.searchTerm) ||
         payment.id.includes(this.searchTerm)
       );
-    }
-
-    if (this.selectedStatus !== 'ALL') {
+    }    if (this.selectedStatus !== 'ALL') {
       filtered = filtered.filter(payment => payment.status === this.selectedStatus);
-    }
-
+    }    
     this.filteredPayments = filtered;
   }
+  
   // Additional methods for new functionality
   addNewLabTest(): void {
     console.log('Adding new lab test...');
+    this.selectedLabTest = null; // Set to null for new lab test
+    this.modalType = 'labtest';
+    this.modalMode = 'new';
+    this.isModalVisible = true; // Reuse the prescription modal
   }
 
-  addNewInventoryItem(): void {
-    console.log('Adding new inventory item...');
+  editLabTest(labTest: LabTest): void {
+    console.log('Editing lab test:', labTest);
+    this.selectedLabTest = labTest;
+    this.modalType = 'labtest';
+    this.modalMode = 'edit';
+    this.isModalVisible = true; // Reuse the prescription modal
+  }
+  viewLabTestDetails(labTest: LabTest): void {
+    console.log('Viewing lab test details:', labTest);
+    this.selectedLabTest = labTest;
+    this.modalType = 'labtest';
+    this.modalMode = 'view';
+    this.isModalVisible = true; // Reuse the prescription modal
   }
 
-  generateNewReport(): void {
-    console.log('Generating new report...');
+  closeLabTestModal(): void {
+    this.isLabTestModalVisible = false;
+    this.selectedLabTest = null;
+  }
+  onSaveLabTestFromModal(labTest: LabTest): void {
+    console.log('Save lab test from modal:', labTest);
+    
+    // Check if it's a new lab test or an update
+    const existingIndex = this.labTests.findIndex((l: LabTest) => l.id === labTest.id);
+    
+    if (existingIndex >= 0) {
+      // Update existing lab test
+      this.labTests[existingIndex] = labTest;
+      console.log('Updated lab test:', labTest);
+    } else {
+      // Add new lab test
+      this.labTests.unshift(labTest); // Add to beginning of array
+      console.log('Added new lab test:', labTest);
+    }
+    
+    // Update stats and filters
+    this.updateStats();
+    this.applyFilters();
+    this.closeModal(); // Close the shared modal
   }
 
-  processNewPayment(): void {
-    console.log('Processing new payment...');
-  }
+  onEditLabTestFromModal(labTest: LabTest): void {
+    console.log('Edit lab test from modal:', labTest);
+    this.closeLabTestModal();  }
 
   onSearchChange(searchTerm: string): void {
     this.searchTerm = searchTerm;
@@ -479,15 +519,6 @@ export class PharmacyComponent implements OnInit {
     }
   }
 
-  editLabTest(test: LabTest): void {
-    console.log('Editing lab test:', test);
-    // Add edit logic here
-  }
-
-  viewLabTestDetails(test: LabTest): void {
-    console.log('Viewing lab test details:', test);
-    // Add view logic here
-  }
   // Inventory Actions
   restockItem(itemId: string): void {
     const item = this.inventoryItems.find(i => i.id === itemId);
@@ -502,6 +533,11 @@ export class PharmacyComponent implements OnInit {
       this.updateStats();
       this.applyFilters();
     }
+  }
+
+  addNewInventoryItem(): void {
+    console.log('Adding new inventory item...');
+    // TODO: Implement inventory item creation
   }
 
   editInventoryItem(item: InventoryItem): void {
@@ -536,6 +572,11 @@ export class PharmacyComponent implements OnInit {
     }
   }
 
+  generateNewReport(): void {
+    console.log('Generating new report...');
+    // TODO: Implement report generation
+  }
+
   // Payment Actions
   printReceipt(paymentId: string): void {
     const payment = this.payments.find(p => p.id === paymentId);
@@ -552,6 +593,11 @@ export class PharmacyComponent implements OnInit {
       console.log('Processing refund for payment:', paymentId);
       this.applyFilters();
     }
+  }
+
+  processNewPayment(): void {
+    console.log('Processing new payment...');
+    // TODO: Implement payment processing
   }
 
   viewPaymentDetails(payment: Payment): void {

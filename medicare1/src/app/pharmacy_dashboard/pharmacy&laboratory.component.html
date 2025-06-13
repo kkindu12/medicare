@@ -536,14 +536,15 @@
             </p>
           </div>        </div>
       </div>
-    </div>
-  </div>
-  <!-- Prescription Details Modal -->
+    </div>  </div>  <!-- Prescription Details Modal -->
   <app-prescription-modal
     [isVisible]="isModalVisible"
     [prescription]="selectedPrescription"
+    [labTest]="selectedLabTest"
+    [modalType]="modalType"
+    [modalMode]="modalMode"
     (close)="closeModal()"
     (edit)="onEditFromModal($event)"
-    (save)="onSaveFromModal($event)">
+    (save)="modalType === 'prescription' ? onSaveFromModal($any($event)) : onSaveLabTestFromModal($any($event))">
   </app-prescription-modal>
 </div>
