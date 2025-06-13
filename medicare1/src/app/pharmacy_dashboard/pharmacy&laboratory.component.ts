@@ -231,9 +231,10 @@ export class PharmacyComponent implements OnInit {
   openQuickChat(): void {
     console.log('Opening quick chat...');
   }
-
   addNewPrescription(): void {
     console.log('Adding new prescription...');
+    this.selectedPrescription = null; // Set to null for new prescription
+    this.isModalVisible = true;
   }
   updatePrescriptionStatus(prescriptionId: string, newStatus: Prescription['status']): void {
     const prescription = this.recentPrescriptions.find(p => p.id === prescriptionId);
@@ -275,6 +276,28 @@ export class PharmacyComponent implements OnInit {
   onEditFromModal(prescription: Prescription): void {
     console.log('Edit from modal:', prescription);
     // Add edit logic here
+    this.closeModal();
+  }
+
+  onSaveFromModal(prescription: Prescription): void {
+    console.log('Save from modal:', prescription);
+    
+    // Check if it's a new prescription (no existing ID in our list) or an update
+    const existingIndex = this.recentPrescriptions.findIndex(p => p.id === prescription.id);
+    
+    if (existingIndex >= 0) {
+      // Update existing prescription
+      this.recentPrescriptions[existingIndex] = prescription;
+      console.log('Updated prescription:', prescription);
+    } else {
+      // Add new prescription
+      this.recentPrescriptions.unshift(prescription); // Add to beginning of array
+      console.log('Added new prescription:', prescription);
+    }
+    
+    // Update stats and filters
+    this.updateStats();
+    this.applyFilters();
     this.closeModal();
   }
 

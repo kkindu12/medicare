@@ -1,19 +1,20 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Prescription } from '../models/prescription.model';
 
 @Component({
   selector: 'app-prescription-modal',
-  imports: [CommonModule],
-  template: `
+  imports: [CommonModule, FormsModule],  template: `
     <div class="modal-overlay" *ngIf="isVisible" (click)="onOverlayClick($event)">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Prescription Details</h3>
+          <h3>{{ prescription ? 'Prescription Details' : 'New Prescription' }}</h3>
           <button class="close-btn" (click)="closeModal()">×</button>
         </div>
         
-        <div class="modal-body" *ngIf="prescription">
+        <!-- View Mode - Existing Prescription -->
+        <div class="modal-body" *ngIf="prescription && !isEditMode">
           <div class="detail-row">
             <label>Patient Name:</label>
             <span>{{ prescription.patientName }}</span>
@@ -66,10 +67,80 @@ import { Prescription } from '../models/prescription.model';
             <span>{{ prescription.date }} at {{ prescription.time }}</span>
           </div>
         </div>
+
+        <!-- Form Mode - New/Edit Prescription -->
+        <div class="modal-body" *ngIf="!prescription || isEditMode">
+          <form (ngSubmit)="savePrescription()" #prescriptionForm="ngForm">
+            <div class="form-row">
+              <label for="patientName">Patient Name *</label>
+              <input type="text" id="patientName" name="patientName" 
+                     [(ngModel)]="formData.patientName" required 
+                     class="form-input">
+            </div>
+            
+            <div class="form-row">
+              <label for="patientId">Patient ID *</label>
+              <input type="text" id="patientId" name="patientId" 
+                     [(ngModel)]="formData.patientId" required 
+                     class="form-input" placeholder="#12345">
+            </div>
+            
+            <div class="form-row">
+              <label for="medication">Medication *</label>
+              <input type="text" id="medication" name="medication" 
+                     [(ngModel)]="formData.medication" required 
+                     class="form-input" placeholder="e.g., Amoxicillin 500mg">
+            </div>
+            
+            <div class="form-row">
+              <label for="doctor">Prescribed by *</label>
+              <input type="text" id="doctor" name="doctor" 
+                     [(ngModel)]="formData.doctor" required 
+                     class="form-input" placeholder="Dr. Name">
+            </div>
+            
+            <div class="form-row">
+              <label for="dosage">Dosage</label>
+              <input type="text" id="dosage" name="dosage" 
+                     [(ngModel)]="formData.dosage" 
+                     class="form-input" placeholder="e.g., 500mg">
+            </div>
+            
+            <div class="form-row">
+              <label for="frequency">Frequency</label>
+              <input type="text" id="frequency" name="frequency" 
+                     [(ngModel)]="formData.frequency" 
+                     class="form-input" placeholder="e.g., Twice daily">
+            </div>
+            
+            <div class="form-row">
+              <label for="duration">Duration</label>
+              <input type="text" id="duration" name="duration" 
+                     [(ngModel)]="formData.duration" 
+                     class="form-input" placeholder="e.g., 7 days">
+            </div>
+            
+            <div class="form-row full-width">
+              <label for="notes">Notes</label>
+              <textarea id="notes" name="notes" 
+                        [(ngModel)]="formData.notes" 
+                        class="form-textarea" rows="3" 
+                        placeholder="Additional instructions or notes..."></textarea>
+            </div>
+          </form>
+        </div>
         
         <div class="modal-footer">
-          <button class="btn-secondary" (click)="closeModal()">Close</button>
-          <button class="btn-primary" (click)="editPrescription()">Edit</button>
+          <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+          <div *ngIf="prescription && !isEditMode">
+            <button class="btn-primary" (click)="editPrescription()">Edit</button>
+          </div>
+          <div *ngIf="!prescription || isEditMode">
+            <button class="btn-primary" (click)="savePrescription()" 
+                    [disabled]="!isFormValid()">
+              {{ prescription ? 'Update' : 'Save' }} Prescription
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -139,6 +210,45 @@ import { Prescription } from '../models/prescription.model';
 
     .detail-row.full-width {
       flex-direction: column;
+    }
+
+    /* Form Styles */
+    .form-row {
+      margin-bottom: 1rem;
+    }
+
+    .form-row label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row.full-width {
+      grid-column: 1 / -1;
     }
 
     .detail-row label {
@@ -217,20 +327,95 @@ import { Prescription } from '../models/prescription.model';
     }
   `]
 })
-export class PrescriptionModalComponent {
+export class PrescriptionModalComponent implements OnInit, OnChanges {
   @Input() isVisible: boolean = false;
   @Input() prescription: Prescription | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Prescription>();
+  @Output() save = new EventEmitter<Prescription>();
+
+  isEditMode: boolean = false;
+  formData: Partial<Prescription> = {};
+
+  ngOnInit(): void {
+    if (this.prescription && this.isEditMode) {
+      this.formData = { ...this.prescription };
+    } else {
+      this.resetForm();
+    }
+  }
+
+  ngOnChanges(): void {
+    if (this.prescription && this.isEditMode) {
+      this.formData = { ...this.prescription };
+    } else if (!this.prescription) {
+      this.resetForm();
+    }
+  }
+
+  resetForm(): void {
+    this.formData = {
+      patientName: '',
+      patientId: '',
+      medication: '',
+      doctor: '',
+      dosage: '',
+      frequency: '',
+      duration: '',
+      notes: '',
+      status: 'PENDING'
+    };
+  }
 
   closeModal(): void {
+    this.isEditMode = false;
+    this.resetForm();
     this.close.emit();
   }
 
   editPrescription(): void {
+    this.isEditMode = true;
     if (this.prescription) {
-      this.edit.emit(this.prescription);
+      this.formData = { ...this.prescription };
     }
+  }
+
+  savePrescription(): void {
+    if (this.isFormValid()) {
+      const prescriptionData: Prescription = {
+        id: this.prescription?.id || this.generateId(),
+        patientName: this.formData.patientName || '',
+        patientId: this.formData.patientId || '',
+        medication: this.formData.medication || '',
+        doctor: this.formData.doctor || '',
+        status: this.formData.status || 'PENDING',
+        time: new Date().toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        date: new Date().toLocaleDateString('en-US'),
+        dosage: this.formData.dosage || '',
+        frequency: this.formData.frequency || '',
+        duration: this.formData.duration || '',
+        notes: this.formData.notes || ''
+      };
+
+      this.save.emit(prescriptionData);
+      this.closeModal();
+    }
+  }
+
+  isFormValid(): boolean {
+    return !!(
+      this.formData.patientName?.trim() &&
+      this.formData.patientId?.trim() &&
+      this.formData.medication?.trim() &&
+      this.formData.doctor?.trim()
+    );
+  }
+
+  private generateId(): string {
+    return 'RX' + Date.now().toString().slice(-6);
   }
 
   onOverlayClick(event: Event): void {

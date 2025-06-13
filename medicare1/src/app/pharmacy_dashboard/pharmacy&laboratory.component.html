@@ -538,12 +538,12 @@
       </div>
     </div>
   </div>
-
   <!-- Prescription Details Modal -->
   <app-prescription-modal
     [isVisible]="isModalVisible"
     [prescription]="selectedPrescription"
     (close)="closeModal()"
-    (edit)="onEditFromModal($event)">
+    (edit)="onEditFromModal($event)"
+    (save)="onSaveFromModal($event)">
   </app-prescription-modal>
 </div>
