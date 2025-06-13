@@ -541,10 +541,11 @@
     [isVisible]="isModalVisible"
     [prescription]="selectedPrescription"
     [labTest]="selectedLabTest"
+    [inventoryItem]="selectedInventoryItem"
     [modalType]="modalType"
     [modalMode]="modalMode"
     (close)="closeModal()"
     (edit)="onEditFromModal($event)"
-    (save)="modalType === 'prescription' ? onSaveFromModal($any($event)) : onSaveLabTestFromModal($any($event))">
+    (save)="modalType === 'prescription' ? onSaveFromModal($any($event)) : modalType === 'labtest' ? onSaveLabTestFromModal($any($event)) : onSaveInventoryFromModal($any($event))">
   </app-prescription-modal>
 </div>

@@ -1,14 +1,18 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Prescription, LabTest } from '../models/prescription.model';
+import { Prescription, LabTest, InventoryItem } from '../models/prescription.model';
 
 @Component({
   selector: 'app-prescription-modal',
   imports: [CommonModule, FormsModule],  template: `
     <div class="modal-overlay" *ngIf="isVisible" (click)="onOverlayClick($event)">
       <div class="modal-content" (click)="$event.stopPropagation()">        <div class="modal-header">
-          <h3>{{ modalType === 'prescription' ? (prescription ? 'Prescription Details' : 'New Prescription') : (labTest ? 'Lab Test Details' : 'New Lab Test') }}</h3>
+          <h3>{{ 
+            modalType === 'prescription' ? (prescription ? 'Prescription Details' : 'New Prescription') :
+            modalType === 'labtest' ? (labTest ? 'Lab Test Details' : 'New Lab Test') :
+            modalType === 'inventory' ? (inventoryItem ? 'Inventory Item Details' : 'Add Inventory Item') : 'Modal'
+          }}</h3>
           <button class="close-btn" (click)="closeModal()">×</button>
         </div>        <!-- View Mode - Existing Prescription -->
         <div class="modal-body" *ngIf="prescription && modalMode === 'view' && modalType === 'prescription'">
@@ -182,6 +186,99 @@ import { Prescription, LabTest } from '../models/prescription.model';
               </select>
             </div>
             
+            <!-- Inventory Item Fields -->
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="itemName">Item Name *</label>
+              <input type="text" id="itemName" name="itemName" 
+                     [(ngModel)]="formData.name" required 
+                     class="form-input" placeholder="e.g., Paracetamol">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="category">Category *</label>
+              <select id="category" name="category" 
+                      [(ngModel)]="formData.category" required 
+                      class="form-input">
+                <option value="">Select Category</option>
+                <option value="MEDICATION">Medication</option>
+                <option value="MEDICAL_SUPPLIES">Medical Supplies</option>
+                <option value="EQUIPMENT">Equipment</option>
+                <option value="LAB_SUPPLIES">Lab Supplies</option>
+              </select>
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="currentStock">Current Stock *</label>
+              <input type="number" id="currentStock" name="currentStock" 
+                     [(ngModel)]="formData.currentStock" required 
+                     class="form-input" placeholder="0" min="0">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="minimumStock">Minimum Stock *</label>
+              <input type="number" id="minimumStock" name="minimumStock" 
+                     [(ngModel)]="formData.minimumStock" required 
+                     class="form-input" placeholder="0" min="0">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="maxStock">Maximum Stock *</label>
+              <input type="number" id="maxStock" name="maxStock" 
+                     [(ngModel)]="formData.maxStock" required 
+                     class="form-input" placeholder="0" min="0">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="unitPrice">Unit Price *</label>
+              <input type="number" id="unitPrice" name="unitPrice" 
+                     [(ngModel)]="formData.unitPrice" required 
+                     class="form-input" placeholder="0.00" min="0" step="0.01">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="supplier">Supplier *</label>
+              <input type="text" id="supplier" name="supplier" 
+                     [(ngModel)]="formData.supplier" required 
+                     class="form-input" placeholder="Supplier Name">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="batchNumber">Batch Number</label>
+              <input type="text" id="batchNumber" name="batchNumber" 
+                     [(ngModel)]="formData.batchNumber" 
+                     class="form-input" placeholder="Batch Number">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="expiryDate">Expiry Date</label>
+              <input type="date" id="expiryDate" name="expiryDate" 
+                     [(ngModel)]="formData.expiryDate" 
+                     class="form-input">
+            </div>
+            
+            <div class="form-row" *ngIf="modalType === 'inventory'">
+              <label for="inventoryStatus">Status</label>
+              <select id="inventoryStatus" name="inventoryStatus" 
+                      [(ngModel)]="formData.status" 
+                      class="form-input">
+                <option value="IN_STOCK">In Stock</option>
+                <option value="LOW_STOCK">Low Stock</option>
+                <option value="OUT_OF_STOCK">Out of Stock</option>
+                <option value="EXPIRED">Expired</option>
+              </select>
+            </div>
+
+            <div class="form-row" *ngIf="modalType === 'labtest'">
+              <label for="priority">Priority</label>
+              <select id="priority" name="priority" 
+                      [(ngModel)]="formData.priority" 
+                      class="form-input">
+                <option value="NORMAL">Normal</option>
+                <option value="URGENT">Urgent</option>
+                <option value="STAT">STAT</option>
+              </select>
+            </div>
+            
             <div class="form-row full-width">
               <label for="notes">Notes</label>
               <textarea id="notes" name="notes" 
@@ -200,7 +297,11 @@ import { Prescription, LabTest } from '../models/prescription.model';
           <div *ngIf="modalMode === 'edit' || modalMode === 'new'">
             <button class="btn-primary" (click)="savePrescription()" 
                     [disabled]="!isFormValid()">
-              {{ (prescription || labTest) ? 'Update' : 'Save' }} {{ modalType === 'prescription' ? 'Prescription' : 'Lab Test' }}
+              {{ (prescription || labTest || inventoryItem) ? 'Update' : 'Save' }} {{ 
+                modalType === 'prescription' ? 'Prescription' : 
+                modalType === 'labtest' ? 'Lab Test' : 
+                modalType === 'inventory' ? 'Item' : 'Item'
+              }}
             </button>
           </div>
         </div>
@@ -393,11 +494,12 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
   @Input() isVisible: boolean = false;
   @Input() prescription: Prescription | null = null;
   @Input() labTest: LabTest | null = null;
-  @Input() modalType: 'prescription' | 'labtest' = 'prescription';
+  @Input() inventoryItem: InventoryItem | null = null;
+  @Input() modalType: 'prescription' | 'labtest' | 'inventory' = 'prescription';
   @Input() modalMode: 'view' | 'edit' | 'new' = 'new';
   @Output() close = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<Prescription | LabTest>();
-  @Output() save = new EventEmitter<Prescription | LabTest>();
+  @Output() edit = new EventEmitter<Prescription | LabTest | InventoryItem>();
+  @Output() save = new EventEmitter<Prescription | LabTest | InventoryItem>();
 
   isEditMode: boolean = false;
   formData: any = {}; // Use any for flexibility
@@ -411,8 +513,7 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.initializeForm();
-  }
-  initializeForm(): void {
+  }  initializeForm(): void {
     // Set edit mode based on modalMode input
     this.isEditMode = this.modalMode === 'edit' || this.modalMode === 'new';
     
@@ -422,12 +523,14 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
     } else if (this.modalType === 'labtest' && this.labTest && this.modalMode !== 'new') {
       // Editing or viewing existing lab test
       this.formData = { ...this.labTest };
+    } else if (this.modalType === 'inventory' && this.inventoryItem && this.modalMode !== 'new') {
+      // Editing or viewing existing inventory item
+      this.formData = { ...this.inventoryItem };
     } else {
       // Creating new item
       this.resetForm();
     }
-  }
-  resetForm(): void {
+  }  resetForm(): void {
     if (this.modalType === 'prescription') {
       this.formData = {
         patientName: '',
@@ -440,7 +543,8 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
         notes: '',
         status: 'PENDING'
       };
-    } else {      this.formData = {
+    } else if (this.modalType === 'labtest') {
+      this.formData = {
         patientName: '',
         patientId: '',
         testName: '',
@@ -448,6 +552,18 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
         notes: '',
         status: 'PENDING',
         priority: 'NORMAL'
+      };
+    } else if (this.modalType === 'inventory') {
+      this.formData = {
+        name: '',
+        category: '',
+        currentStock: 0,        minimumStock: 0,
+        maxStock: 0,
+        unitPrice: 0,
+        expiryDate: '',
+        batchNumber: '',
+        supplier: '',
+        status: 'IN_STOCK'
       };
     }
   }
@@ -482,10 +598,10 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
           dosage: this.formData.dosage || '',
           frequency: this.formData.frequency || '',
           duration: this.formData.duration || '',
-          notes: this.formData.notes || ''
-        };
+          notes: this.formData.notes || ''        };
         this.save.emit(prescriptionData);
-      } else {        const labTestData: LabTest = {
+      } else if (this.modalType === 'labtest') {
+        const labTestData: LabTest = {
           id: this.labTest?.id || this.generateId(),
           patientName: this.formData.patientName || '',
           patientId: this.formData.patientId || '',
@@ -497,11 +613,25 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
           notes: this.formData.notes || ''
         };
         this.save.emit(labTestData);
+      } else if (this.modalType === 'inventory') {
+        const inventoryData: InventoryItem = {
+          id: this.inventoryItem?.id || this.generateId(),
+          name: this.formData.name || '',
+          category: this.formData.category || '',
+          currentStock: this.formData.currentStock || 0,
+          minimumStock: this.formData.minimumStock || 0,
+          maxStock: this.formData.maxStock || 0,
+          unitPrice: this.formData.unitPrice || 0,
+          expiryDate: this.formData.expiryDate || '',
+          batchNumber: this.formData.batchNumber || '',
+          supplier: this.formData.supplier || '',
+          status: this.formData.status || 'IN_STOCK'
+        };
+        this.save.emit(inventoryData);
       }
       this.closeModal();
     }
-  }
-  isFormValid(): boolean {
+  }  isFormValid(): boolean {
     if (this.modalType === 'prescription') {
       return !!(
         this.formData.patientName?.trim() &&
@@ -509,14 +639,24 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
         this.formData.medication?.trim() &&
         this.formData.doctor?.trim()
       );
-    } else {
+    } else if (this.modalType === 'labtest') {
       return !!(
         this.formData.patientName?.trim() &&
         this.formData.patientId?.trim() &&
         this.formData.testName?.trim() &&
         this.formData.doctor?.trim()
       );
+    } else if (this.modalType === 'inventory') {
+      return !!(
+        this.formData.name?.trim() &&
+        this.formData.category?.trim() &&
+        this.formData.supplier?.trim() &&
+        this.formData.currentStock >= 0 &&        this.formData.minimumStock >= 0 &&
+        this.formData.maxStock >= 0 &&
+        this.formData.unitPrice >= 0
+      );
     }
+    return false;
   }
 
   private generateId(): string {

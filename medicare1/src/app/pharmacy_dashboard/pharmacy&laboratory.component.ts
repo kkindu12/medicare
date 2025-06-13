@@ -21,16 +21,16 @@ export class PharmacyComponent implements OnInit {
   filteredInventory: InventoryItem[] = [];
   filteredReports: Report[] = [];
   filteredPayments: Payment[] = [];
-
   // Modal properties
   isModalVisible: boolean = false;
   selectedPrescription: Prescription | null = null;
-  modalType: 'prescription' | 'labtest' = 'prescription';
+  modalType: 'prescription' | 'labtest' | 'inventory' = 'prescription';
   modalMode: 'view' | 'edit' | 'new' = 'new';
   
   // Lab Test Modal properties
   isLabTestModalVisible: boolean = false;
   selectedLabTest: LabTest | null = null;
+  selectedInventoryItem: InventoryItem | null = null;
   
   pharmacyStats: PharmacyStats = {
     pendingPrescriptions: 12,
@@ -271,11 +271,11 @@ export class PharmacyComponent implements OnInit {
     console.log('Viewing prescription details:', prescription);
     this.selectedPrescription = prescription;
     this.isModalVisible = true;
-  }
-  closeModal(): void {
+  }  closeModal(): void {
     this.isModalVisible = false;
     this.selectedPrescription = null;
     this.selectedLabTest = null;
+    this.selectedInventoryItem = null;
     this.modalMode = 'new';
   }
   onEditFromModal(event: any): void {
@@ -534,15 +534,19 @@ export class PharmacyComponent implements OnInit {
       this.applyFilters();
     }
   }
-
   addNewInventoryItem(): void {
     console.log('Adding new inventory item...');
-    // TODO: Implement inventory item creation
+    this.selectedInventoryItem = null; // Set to null for new inventory item
+    this.modalType = 'inventory';
+    this.modalMode = 'new';
+    this.isModalVisible = true; // Reuse the prescription modal
   }
-
   editInventoryItem(item: InventoryItem): void {
     console.log('Editing inventory item:', item);
-    // Add edit logic here
+    this.selectedInventoryItem = item;
+    this.modalType = 'inventory';
+    this.modalMode = 'edit';
+    this.isModalVisible = true;
   }
 
   viewInventoryItemDetails(item: InventoryItem): void {
@@ -603,5 +607,29 @@ export class PharmacyComponent implements OnInit {
   viewPaymentDetails(payment: Payment): void {
     console.log('Viewing payment details:', payment);
     // Add view logic here
+  }
+
+  onSaveInventoryFromModal(inventoryItem: InventoryItem): void {
+    console.log('Save inventory item from modal:', inventoryItem);
+    
+    // Check if it's a new inventory item or an update
+    const existingIndex = this.inventoryItems.findIndex((item: InventoryItem) => item.id === inventoryItem.id);
+    
+    if (existingIndex >= 0) {
+      // Update existing inventory item
+      this.inventoryItems[existingIndex] = inventoryItem;
+      console.log('Updated inventory item:', inventoryItem);
+    } else {
+      // Add new inventory item
+      // Generate a new ID for the item
+      inventoryItem.id = 'INV-' + Date.now().toString();
+      this.inventoryItems.unshift(inventoryItem); // Add to beginning of array
+      console.log('Added new inventory item:', inventoryItem);
+    }
+    
+    // Update stats and filters
+    this.updateStats();
+    this.applyFilters();
+    this.closeModal(); // Close the shared modal
   }
 }
