@@ -1,1 +1,403 @@
-<p>pharmacy works!</p>
+<div class="pharmacy-dashboard">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-section">
+      <div class="logo-icon">💊</div>
+      <h1>PharmLab System</h1>
+    </div>
+    <div class="user-section">
+      <div class="notification-icon">🔔</div>
+      <div class="user-info">
+        <div class="user-avatar">👤</div>
+        <span class="user-name">Dr. Pharmacy</span>
+        <div class="dropdown-arrow">▼</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <div class="welcome-header">
+        <div class="welcome-text">
+          <h2>Welcome back, Dr. Pharmacy!</h2>
+          <div class="priority-notice">
+            <span class="priority-icon">📋</span>
+            <span>Next priority: 5 urgent prescriptions pending review</span>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-primary" (click)="processOrders()">
+            <span class="btn-icon">📅</span>
+            Process Orders
+          </button>
+          <button class="btn btn-secondary" (click)="openQuickChat()">
+            <span class="btn-icon">💬</span>
+            Quick Chat
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+      <div class="stat-card yellow">
+        <div class="stat-icon">📋</div>
+        <div class="stat-number">{{ pharmacyStats.pendingPrescriptions }}</div>
+        <div class="stat-label">Pending Prescriptions</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-icon">🧪</div>
+        <div class="stat-number">{{ pharmacyStats.labTestRequests }}</div>
+        <div class="stat-label">Lab Test Requests</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">📦</div>
+        <div class="stat-number">{{ pharmacyStats.outOfStockItems }}</div>
+        <div class="stat-label">Out of Stock Items</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">📊</div>
+        <div class="stat-number">{{ pharmacyStats.reportsUploaded }}</div>
+        <div class="stat-label">Reports Uploaded</div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button 
+        class="tab-button" 
+        [class.active]="isActiveTab('prescriptions')"
+        (click)="setActiveTab('prescriptions')">
+        <span class="tab-icon">💊</span>
+        Prescriptions
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="isActiveTab('lab-tests')"
+        (click)="setActiveTab('lab-tests')">
+        <span class="tab-icon">🧪</span>
+        Lab Tests
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="isActiveTab('inventory')"
+        (click)="setActiveTab('inventory')">
+        <span class="tab-icon">📦</span>
+        Inventory
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="isActiveTab('reports')"
+        (click)="setActiveTab('reports')">
+        <span class="tab-icon">📊</span>
+        Reports
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="isActiveTab('payments')"
+        (click)="setActiveTab('payments')">
+        <span class="tab-icon">💳</span>
+        Payments
+      </button>
+    </div>
+
+    <!-- Search and Filter Controls -->
+    <div class="controls-section" *ngIf="activeTab !== 'reports'">
+      <div class="search-box">
+        <input 
+          type="text" 
+          placeholder="Search..." 
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange(searchTerm)">
+        <span class="search-icon">🔍</span>
+      </div>
+      <div class="filter-dropdown">
+        <select [(ngModel)]="selectedStatus" (change)="onStatusFilterChange(selectedStatus)">
+          <option value="ALL">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="URGENT">Urgent</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+      <button class="btn btn-clear" (click)="clearFilters()">
+        <span class="btn-icon">🗑️</span>
+        Clear Filters
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Prescriptions Tab -->
+      <div class="prescriptions-section" *ngIf="isActiveTab('prescriptions')">        <div class="section-header">
+          <h3>Prescription Management</h3>
+          <button class="btn btn-primary" (click)="addNewPrescription()">
+            <span class="btn-icon">💊</span>
+            New Prescription
+          </button>
+        </div>
+
+        <div class="prescriptions-grid" *ngIf="filteredPrescriptions.length > 0">
+          <div class="prescription-card" *ngFor="let prescription of filteredPrescriptions">
+            <div class="card-header">
+              <h4>{{ prescription.patientName }}</h4>
+              <span class="status-badge" [ngClass]="prescription.status.toLowerCase()">
+                {{ prescription.status }}
+              </span>
+            </div>
+            <div class="card-body">
+              <p><strong>Patient ID:</strong> {{ prescription.patientId }}</p>
+              <p><strong>Medication:</strong> {{ prescription.medication }}</p>
+              <p><strong>Doctor:</strong> {{ prescription.doctor }}</p>
+              <p><strong>Dosage:</strong> {{ prescription.dosage }}</p>
+              <p><strong>Frequency:</strong> {{ prescription.frequency }}</p>
+              <p><strong>Duration:</strong> {{ prescription.duration }}</p>
+              <p><strong>Date:</strong> {{ prescription.date }} at {{ prescription.time }}</p>
+              <p *ngIf="prescription.notes"><strong>Notes:</strong> {{ prescription.notes }}</p>
+            </div>            <div class="card-actions">
+              <button class="btn btn-view" (click)="viewPrescriptionDetails(prescription)" 
+                      onclick="console.log('View button clicked directly')">
+                <span class="btn-icon">👁️</span>
+                View
+              </button>
+              <button class="btn btn-edit" (click)="editPrescription(prescription)"
+                      onclick="console.log('Edit button clicked directly')">
+                <span class="btn-icon">✏️</span>
+                Edit
+              </button>
+              <button class="btn btn-status" (click)="updatePrescriptionStatus(prescription.id!, 'COMPLETED')">
+                <span class="btn-icon">✅</span>
+                Mark Complete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredPrescriptions.length === 0">
+          <div class="empty-icon">📋</div>
+          <h3>No prescriptions found</h3>
+          <p *ngIf="searchTerm || selectedStatus !== 'ALL'">
+            Try adjusting your search or filter criteria.
+          </p>
+          <p *ngIf="!searchTerm && selectedStatus === 'ALL'">
+            No prescriptions available at the moment.
+          </p>
+        </div>
+      </div>      <!-- Lab Tests Tab -->
+      <div class="lab-tests-section" *ngIf="isActiveTab('lab-tests')">
+        <div class="section-header">
+          <h3>Laboratory Tests</h3>
+          <button class="btn btn-primary" (click)="addNewLabTest()">
+            <span class="btn-icon">🧪</span>
+            New Lab Test
+          </button>
+        </div>        <div class="prescriptions-grid" *ngIf="filteredLabTests.length > 0">
+          <div class="prescription-card" *ngFor="let test of filteredLabTests">
+            <div class="card-header">
+              <h4>{{ test.testName }}</h4>
+              <span class="status-badge" [ngClass]="test.priority.toLowerCase()">
+                {{ test.priority }}
+              </span>
+            </div>
+            <div class="card-body">
+              <p><strong>Patient ID:</strong> {{ test.patientId }}</p>
+              <p><strong>Patient:</strong> {{ test.patientName }}</p>
+              <p><strong>Doctor:</strong> {{ test.doctor }}</p>
+              <p><strong>Priority:</strong> {{ test.priority }}</p>
+              <p><strong>Status:</strong> {{ test.status }}</p>
+              <p><strong>Request Date:</strong> {{ test.requestDate }}</p>
+              <p *ngIf="test.expectedDate"><strong>Expected Date:</strong> {{ test.expectedDate }}</p>
+              <p *ngIf="test.notes"><strong>Notes:</strong> {{ test.notes }}</p>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-view" (click)="viewLabTestDetails(test)">
+                <span class="btn-icon">👁️</span>
+                View
+              </button>
+              <button class="btn btn-edit" (click)="editLabTest(test)">
+                <span class="btn-icon">✏️</span>
+                Edit
+              </button>
+              <button class="btn btn-status" (click)="startLabTest(test.id)" *ngIf="test.status === 'PENDING'">
+                <span class="btn-icon">✅</span>
+                Mark Complete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredLabTests.length === 0">
+          <div class="empty-icon">🧪</div>
+          <h3>No lab tests found</h3>
+          <p *ngIf="searchTerm || selectedStatus !== 'ALL'">
+            Try adjusting your search or filter criteria.
+          </p>
+          <p *ngIf="!searchTerm && selectedStatus === 'ALL'">
+            No lab tests scheduled at the moment.
+          </p>
+        </div>
+      </div>
+
+      <!-- Inventory Tab -->
+      <div class="inventory-section" *ngIf="isActiveTab('inventory')">        <div class="section-header">
+          <h3>Inventory Management</h3>
+          <button class="btn btn-primary" (click)="addNewInventoryItem()">
+            <span class="btn-icon">📦</span>
+            Add Item
+          </button>
+        </div>
+
+        <div class="inventory-grid" *ngIf="filteredInventory.length > 0">
+          <div class="inventory-card" *ngFor="let item of filteredInventory">
+            <div class="card-header">
+              <h4>{{ item.name }}</h4>
+              <span class="stock-badge" [ngClass]="item.status.toLowerCase().replace('_', '-')">
+                {{ item.status.replace('_', ' ') }}
+              </span>
+            </div>
+            <div class="card-body">
+              <p><strong>Category:</strong> {{ item.category }}</p>
+              <p><strong>Current Stock:</strong> {{ item.currentStock }} units</p>
+              <p><strong>Minimum Stock:</strong> {{ item.minimumStock }} units</p>
+              <p><strong>Unit Price:</strong> ${{ item.unitPrice }}</p>
+              <p><strong>Expiry Date:</strong> {{ item.expiryDate }}</p>
+              <p><strong>Batch Number:</strong> {{ item.batchNumber }}</p>
+              <p><strong>Supplier:</strong> {{ item.supplier }}</p>
+            </div>            <div class="card-actions">
+              <button class="btn btn-view" (click)="viewInventoryItemDetails(item)">
+                <span class="btn-icon">👁️</span>
+                View
+              </button>
+              <button class="btn btn-edit" (click)="editInventoryItem(item)">
+                <span class="btn-icon">✏️</span>
+                Edit
+              </button>
+              <button class="btn btn-restock" (click)="restockItem(item.id)" *ngIf="item.status === 'LOW_STOCK' || item.status === 'OUT_OF_STOCK'">
+                <span class="btn-icon">🔄</span>
+                Restock
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredInventory.length === 0">
+          <div class="empty-icon">📦</div>
+          <h3>No inventory items found</h3>
+          <p *ngIf="searchTerm || selectedStatus !== 'ALL'">
+            Try adjusting your search or filter criteria.
+          </p>
+          <p *ngIf="!searchTerm && selectedStatus === 'ALL'">
+            No inventory items available at the moment.
+          </p>
+        </div>
+      </div>
+
+      <!-- Reports Tab -->
+      <div class="reports-section" *ngIf="isActiveTab('reports')">
+        <div class="section-header">
+          <h3>Reports & Analytics</h3>
+          <button class="btn btn-primary" (click)="generateNewReport()">
+            <span class="btn-icon">📊</span>
+            Generate Report
+          </button>
+        </div>        <div class="reports-stats">
+          <div class="report-stat">
+            <h4>Total Reports</h4>
+            <span class="stat-number">{{ reports.length }}</span>
+          </div>
+          <div class="report-stat">
+            <h4>This Month</h4>
+            <span class="stat-number">{{ monthlyReportsCount }}</span>
+          </div>
+          <div class="report-stat">
+            <h4>Archived</h4>
+            <span class="stat-number">{{ archivedReportsCount }}</span>
+          </div>
+        </div>
+
+        <div class="reports-grid" *ngIf="filteredReports.length > 0">
+          <div class="report-card" *ngFor="let report of filteredReports">
+            <div class="card-header">
+              <h4>{{ report.title }}</h4>
+              <span class="type-badge" [ngClass]="report.type.toLowerCase()">
+                {{ report.type }}
+              </span>
+            </div>
+            <div class="card-body">
+              <p><strong>Generated By:</strong> {{ report.generatedBy }}</p>
+              <p><strong>Date:</strong> {{ report.generatedDate }}</p>
+              <p><strong>File Size:</strong> {{ report.fileSize }}</p>
+              <p><strong>Status:</strong> {{ report.status }}</p>
+            </div>            <div class="card-actions">
+              <button class="btn btn-view" (click)="viewReport(report)">
+                <span class="btn-icon">👁️</span>
+                View
+              </button>
+              <button class="btn btn-download" (click)="downloadReport(report.id)">
+                <span class="btn-icon">⬇️</span>
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredReports.length === 0">
+          <div class="empty-icon">📊</div>
+          <h3>No reports found</h3>
+          <p>No reports have been generated yet.</p>
+        </div>
+      </div>
+
+      <!-- Payments Tab -->
+      <div class="payments-section" *ngIf="isActiveTab('payments')">
+        <div class="section-header">
+          <h3>Payment Transactions</h3>
+        </div>
+
+        <div class="payments-grid" *ngIf="filteredPayments.length > 0">
+          <div class="payment-card" *ngFor="let payment of filteredPayments">
+            <div class="card-header">
+              <h4>{{ payment.patientName }}</h4>
+              <span class="amount">${{ payment.amount }}</span>
+            </div>
+            <div class="card-body">
+              <p><strong>Patient ID:</strong> {{ payment.patientId }}</p>
+              <p><strong>Payment Method:</strong> {{ payment.paymentMethod }}</p>
+              <p><strong>Status:</strong> {{ payment.status }}</p>
+              <p><strong>Transaction Date:</strong> {{ payment.transactionDate }}</p>
+              <p><strong>Items:</strong> {{ payment.items.join(', ') }}</p>
+              <p *ngIf="payment.tax"><strong>Tax:</strong> ${{ payment.tax }}</p>
+              <p *ngIf="payment.discount"><strong>Discount:</strong> ${{ payment.discount }}</p>
+            </div>            <div class="card-actions">
+              <button class="btn btn-view" (click)="viewPaymentDetails(payment)">
+                <span class="btn-icon">👁️</span>
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredPayments.length === 0">
+          <div class="empty-icon">💳</div>
+          <h3>No payments found</h3>
+          <p *ngIf="searchTerm || selectedStatus !== 'ALL'">
+            Try adjusting your search or filter criteria.
+          </p>
+          <p *ngIf="!searchTerm && selectedStatus === 'ALL'">
+            No payments available at the moment.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Prescription Details Modal -->
+  <app-prescription-modal
+    [isOpen]="isModalVisible"
+    [modalType]="modalType"
+    [editData]="selectedPrescription || selectedLabTest || selectedInventoryItem"
+    (closeModalEvent)="closeModal()"
+    (saveEvent)="onSaveFromModal($event)">
+  </app-prescription-modal>
+</div>
