@@ -390,6 +390,7 @@
           </p>
         </div>
       </div>
+<<<<<<< HEAD
     </div>
   </div>
   <!-- Prescription Details Modal -->
@@ -399,5 +400,18 @@
     [editData]="selectedPrescription || selectedLabTest || selectedInventoryItem"
     (closeModalEvent)="closeModal()"
     (saveEvent)="onSaveFromModal($event)">
+=======
+    </div>  </div>  <!-- Prescription Details Modal -->
+  <app-prescription-modal
+    [isVisible]="isModalVisible"
+    [prescription]="selectedPrescription"
+    [labTest]="selectedLabTest"
+    [inventoryItem]="selectedInventoryItem"
+    [modalType]="modalType"
+    [modalMode]="modalMode"
+    (close)="closeModal()"
+    (edit)="onEditFromModal($event)"
+    (save)="modalType === 'prescription' ? onSaveFromModal($any($event)) : modalType === 'labtest' ? onSaveLabTestFromModal($any($event)) : onSaveInventoryFromModal($any($event))">
+>>>>>>> ad43748ede4905d6473e19af9145d55fc4085cb6
   </app-prescription-modal>
 </div>

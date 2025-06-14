@@ -16,18 +16,28 @@ type TabType = 'prescriptions' | 'lab-tests' | 'inventory' | 'reports' | 'paymen
 export class PharmacyComponent implements OnInit {
   activeTab: TabType = 'prescriptions' as TabType;
   searchTerm: string = '';
-  selectedStatus: string = 'ALL';
-  filteredPrescriptions: Prescription[] = [];
+  selectedStatus: string = 'ALL';  filteredPrescriptions: Prescription[] = [];
   filteredLabTests: LabTest[] = [];
   filteredInventory: InventoryItem[] = [];
   filteredReports: Report[] = [];
   filteredPayments: Payment[] = [];
+<<<<<<< HEAD
 
+=======
+>>>>>>> ad43748ede4905d6473e19af9145d55fc4085cb6
   // Modal properties
   isModalVisible: boolean = false;
   selectedPrescription: Prescription | null = null;
   modalType: 'prescription' | 'labtest' | 'inventory' = 'prescription';
   modalMode: 'view' | 'edit' | 'new' = 'new';
+<<<<<<< HEAD
+=======
+  
+  // Lab Test Modal properties
+  isLabTestModalVisible: boolean = false;
+  selectedLabTest: LabTest | null = null;
+  selectedInventoryItem: InventoryItem | null = null;
+>>>>>>> ad43748ede4905d6473e19af9145d55fc4085cb6
   
   // Lab Test Modal properties
   isLabTestModalVisible: boolean = false;
@@ -241,6 +251,7 @@ export class PharmacyComponent implements OnInit {
 
   openQuickChat(): void {
     console.log('Opening quick chat...');
+<<<<<<< HEAD
   }
   addNewPrescription(): void {
     console.log('Adding new prescription...');
@@ -249,6 +260,13 @@ export class PharmacyComponent implements OnInit {
     this.modalMode = 'new';
     this.isModalVisible = true;
     console.log('Modal should be visible now:', this.isModalVisible);
+=======
+  }  addNewPrescription(): void {
+    console.log('Adding new prescription...');
+    this.selectedPrescription = null; // Set to null for new prescription
+    this.modalType = 'prescription';
+    this.isModalVisible = true;
+>>>>>>> ad43748ede4905d6473e19af9145d55fc4085cb6
   }
 
   updatePrescriptionStatus(prescriptionId: string, newStatus: Prescription['status']): void {
@@ -358,6 +376,7 @@ export class PharmacyComponent implements OnInit {
     this.modalType = 'labtest';
     this.modalMode = 'new';
     this.isModalVisible = true;
+<<<<<<< HEAD
   }
 
   viewLabTestDetails(labTest: LabTest): void {
@@ -530,6 +549,41 @@ ${payment.discount ? `Discount: $${payment.discount}` : ''}
 
   isActiveTab(tab: string): boolean {
     return this.activeTab === tab;
+=======
+  }  closeModal(): void {
+    this.isModalVisible = false;
+    this.selectedPrescription = null;
+    this.selectedLabTest = null;
+    this.selectedInventoryItem = null;
+    this.modalMode = 'new';
+  }
+  onEditFromModal(event: any): void {
+    console.log('Edit from modal:', event);
+    // Add edit logic here
+    this.closeModal();
+  }
+
+  onSaveFromModal(prescription: Prescription): void {
+    console.log('Save from modal:', prescription);
+    
+    // Check if it's a new prescription (no existing ID in our list) or an update
+    const existingIndex = this.recentPrescriptions.findIndex(p => p.id === prescription.id);
+    
+    if (existingIndex >= 0) {
+      // Update existing prescription
+      this.recentPrescriptions[existingIndex] = prescription;
+      console.log('Updated prescription:', prescription);
+    } else {
+      // Add new prescription
+      this.recentPrescriptions.unshift(prescription); // Add to beginning of array
+      console.log('Added new prescription:', prescription);
+    }
+    
+    // Update stats and filters
+    this.updateStats();
+    this.applyFilters();
+    this.closeModal();
+>>>>>>> ad43748ede4905d6473e19af9145d55fc4085cb6
   }
 
   applyFilters(): void {
@@ -637,12 +691,229 @@ ${payment.discount ? `Discount: $${payment.discount}` : ''}
         payment.patientId?.includes(this.searchTerm) ||
         payment.paymentMethod?.toLowerCase().includes(searchLower)
       );
-    }
-
-    if (this.selectedStatus !== 'ALL') {
+    }    if (this.selectedStatus !== 'ALL') {
       filtered = filtered.filter(payment => payment.status === this.selectedStatus);
-    }
-
+    }    
     this.filteredPayments = filtered;
   }
+<<<<<<< HEAD
+=======
+  
+  // Additional methods for new functionality
+  addNewLabTest(): void {
+    console.log('Adding new lab test...');
+    this.selectedLabTest = null; // Set to null for new lab test
+    this.modalType = 'labtest';
+    this.modalMode = 'new';
+    this.isModalVisible = true; // Reuse the prescription modal
+  }
+
+  editLabTest(labTest: LabTest): void {
+    console.log('Editing lab test:', labTest);
+    this.selectedLabTest = labTest;
+    this.modalType = 'labtest';
+    this.modalMode = 'edit';
+    this.isModalVisible = true; // Reuse the prescription modal
+  }
+  viewLabTestDetails(labTest: LabTest): void {
+    console.log('Viewing lab test details:', labTest);
+    this.selectedLabTest = labTest;
+    this.modalType = 'labtest';
+    this.modalMode = 'view';
+    this.isModalVisible = true; // Reuse the prescription modal
+  }
+
+  closeLabTestModal(): void {
+    this.isLabTestModalVisible = false;
+    this.selectedLabTest = null;
+  }
+  onSaveLabTestFromModal(labTest: LabTest): void {
+    console.log('Save lab test from modal:', labTest);
+    
+    // Check if it's a new lab test or an update
+    const existingIndex = this.labTests.findIndex((l: LabTest) => l.id === labTest.id);
+    
+    if (existingIndex >= 0) {
+      // Update existing lab test
+      this.labTests[existingIndex] = labTest;
+      console.log('Updated lab test:', labTest);
+    } else {
+      // Add new lab test
+      this.labTests.unshift(labTest); // Add to beginning of array
+      console.log('Added new lab test:', labTest);
+    }
+    
+    // Update stats and filters
+    this.updateStats();
+    this.applyFilters();
+    this.closeModal(); // Close the shared modal
+  }
+
+  onEditLabTestFromModal(labTest: LabTest): void {
+    console.log('Edit lab test from modal:', labTest);
+    this.closeLabTestModal();  }
+
+  onSearchChange(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+    this.applyFilters();
+  }
+
+  onStatusFilterChange(status: string): void {
+    this.selectedStatus = status;
+    this.applyFilters();
+  }
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedStatus = 'ALL';
+    this.applyFilters();
+  }
+
+  isActiveTab(tab: string): boolean {
+    return this.activeTab === tab;
+  }
+
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'URGENT': return '#dc2626';
+      case 'PENDING': return '#92400e';
+      case 'COMPLETED': return '#065f46';
+      case 'CANCELLED': return '#7f1d1d';
+      default: return '#6b7280';
+    }
+  }
+  // Lab Tests Actions
+  startLabTest(testId: string): void {
+    const test = this.labTests.find(t => t.id === testId);
+    if (test && test.status === 'PENDING') {
+      test.status = 'IN_PROGRESS';
+      console.log(`Lab test ${testId} started`);
+      this.updateStats();
+      this.applyFilters();
+    }
+  }
+
+  completeLabTest(testId: string): void {
+    const test = this.labTests.find(t => t.id === testId);
+    if (test && test.status === 'IN_PROGRESS') {
+      test.status = 'COMPLETED';
+      console.log(`Lab test ${testId} completed`);
+      this.updateStats();
+      this.applyFilters();
+    }
+  }
+
+  // Inventory Actions
+  restockItem(itemId: string): void {
+    const item = this.inventoryItems.find(i => i.id === itemId);
+    if (item) {
+      // For demo purposes, add 100 units
+      item.currentStock += 100;
+      // Update status based on new stock level
+      if (item.currentStock >= item.minimumStock) {
+        item.status = 'IN_STOCK';
+      }
+      console.log(`Item ${itemId} restocked. New stock: ${item.currentStock}`);
+      this.updateStats();
+      this.applyFilters();
+    }
+  }
+  addNewInventoryItem(): void {
+    console.log('Adding new inventory item...');
+    this.selectedInventoryItem = null; // Set to null for new inventory item
+    this.modalType = 'inventory';
+    this.modalMode = 'new';
+    this.isModalVisible = true; // Reuse the prescription modal
+  }
+  editInventoryItem(item: InventoryItem): void {
+    console.log('Editing inventory item:', item);
+    this.selectedInventoryItem = item;
+    this.modalType = 'inventory';
+    this.modalMode = 'edit';
+    this.isModalVisible = true;
+  }
+
+  viewInventoryItemDetails(item: InventoryItem): void {
+    console.log('Viewing inventory item details:', item);
+    // Add view logic here
+  }
+
+  // Reports Actions
+  downloadReport(reportId: string): void {
+    const report = this.reports.find(r => r.id === reportId);
+    if (report) {
+      console.log('Downloading report:', report.title);
+      // Add download logic here
+    }
+  }
+
+  viewReport(report: Report): void {
+    console.log('Viewing report:', report);
+    // Add view logic here
+  }
+
+  shareReport(reportId: string): void {
+    const report = this.reports.find(r => r.id === reportId);
+    if (report) {
+      console.log('Sharing report:', report.title);
+      // Add share logic here
+    }
+  }
+
+  generateNewReport(): void {
+    console.log('Generating new report...');
+    // TODO: Implement report generation
+  }
+
+  // Payment Actions
+  printReceipt(paymentId: string): void {
+    const payment = this.payments.find(p => p.id === paymentId);
+    if (payment) {
+      console.log('Printing receipt for payment:', paymentId);
+      // Add print logic here
+    }
+  }
+
+  processRefund(paymentId: string): void {
+    const payment = this.payments.find(p => p.id === paymentId);
+    if (payment) {
+      payment.status = 'REFUNDED';
+      console.log('Processing refund for payment:', paymentId);
+      this.applyFilters();
+    }
+  }
+
+  processNewPayment(): void {
+    console.log('Processing new payment...');
+    // TODO: Implement payment processing
+  }
+
+  viewPaymentDetails(payment: Payment): void {
+    console.log('Viewing payment details:', payment);
+    // Add view logic here
+  }
+
+  onSaveInventoryFromModal(inventoryItem: InventoryItem): void {
+    console.log('Save inventory item from modal:', inventoryItem);
+    
+    // Check if it's a new inventory item or an update
+    const existingIndex = this.inventoryItems.findIndex((item: InventoryItem) => item.id === inventoryItem.id);
+    
+    if (existingIndex >= 0) {
+      // Update existing inventory item
+      this.inventoryItems[existingIndex] = inventoryItem;
+      console.log('Updated inventory item:', inventoryItem);
+    } else {
+      // Add new inventory item
+      // Generate a new ID for the item
+      inventoryItem.id = 'INV-' + Date.now().toString();
+      this.inventoryItems.unshift(inventoryItem); // Add to beginning of array
+      console.log('Added new inventory item:', inventoryItem);
+    }
+    
+    // Update stats and filters
+    this.updateStats();
+    this.applyFilters();
+    this.closeModal(); // Close the shared modal
+  }
+>>>>>>> ad43748ede4905d6473e19af9145d55fc4085cb6
 }
