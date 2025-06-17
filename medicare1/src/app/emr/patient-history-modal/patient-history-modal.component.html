@@ -12,14 +12,14 @@
         <div *ngIf="previousPatientRecords.length > 0">
           <div class="table-responsive">
             <table class="table table-striped"> 
-              <thead>
-                <tr>
+              <thead>                <tr>
                   <th>Date</th>
                   <th>Time</th>
                   <th>Condition</th>
                   <th>Doctor</th>
                   <th>Status</th>
                   <th>Prescription</th>
+                  <th>Edit Info</th>
                 </tr>
               </thead>
               <tbody>
@@ -30,6 +30,17 @@
                   <td>{{record.doctor}}</td>
                   <td><span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span></td>
                   <td>{{record.prescription}}</td>
+                  <td>
+                    <div *ngIf="record.isEdited; else notEdited" class="text-info">
+                      <small>
+                        <i class="bi bi-pencil-square"></i> Edited<br>
+                        <span *ngIf="record.editedByName">by: {{ record.editedByName }}</span>
+                      </small>
+                    </div>
+                    <ng-template #notEdited>
+                      <small class="text-muted">Original</small>
+                    </ng-template>
+                  </td>
                 </tr>
               </tbody>
             </table>
