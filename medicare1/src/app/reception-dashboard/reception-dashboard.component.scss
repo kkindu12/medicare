@@ -1,125 +1,66 @@
-/* Navbar */
-.custom-navbar {
-  background-color: #0c84fc !important;
-  color: #ffffff !important;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
+ .navbar {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
-  .navbar-brand {
-    font-weight: bold;
-    font-size: 1.25rem;
-    color: white;
-  }
+  color: #f8f9fa;
+  padding-left: 2%;
+  margin-bottom: 2%;
+  padding: 10px;
 
   .nav-link {
-    color: white !important;
-    font-weight: 500;
+    font-size: 1rem;
     text-decoration: none;
+    color: white;
+     
 
     &:hover {
       text-decoration: underline;
-      color: #161616 !important;
+      color: #161616;
     }
   }
+  background-color: #0c84fc;
 }
 
-/* Dashboard Header */
 .dashboard-header {
-  background-color: #fffbfc !important;
-  border: 1px solid #eaeaea;
+  background-color: #f1eeee;
   border-radius: 0.5rem;
-  margin: 40px;
-  padding: 20px;
-
-  h4 {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-
-  .sub-text {
-    margin: 0;
-    color: #6c757d;
-  }
+  border: 1px solid #eaeaea;
+  margin-bottom: 5%;
+  padding-left: 2%;
+  margin-left: 5%;
+  margin-right: 5%;
+   
+}
+.dashboard-header h4 {
+  font-size: 1.5rem;  
+   
 }
 
-/* Info Row */
+
 .info-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
   gap: 1rem;
-  padding: 0 40px;
-  margin-bottom: 40px;
-  margin-left: 150px;
-  margin-top: 80px;
+  flex-wrap: wrap;
+  margin-left: 5%;
 }
 
-/* Info Card */
 .info-card {
-  background-color: white !important;
+  padding: 1rem;
   border: 1px solid #5aa8f7;
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   flex: 1 1 220px;
   max-width: 240px;
-  padding: 1rem;
-
-  h6 {
+  background-color: white;
+}
+.info-card h6{
     font-size: 15px;
-    color: #6d6d6d !important;
-  }
-
-  .form-select {
-    margin-top: 8px;
-  }
-
-  .button-container {
-    margin-top: 12px;
-  }
+    color: #6d6d6d;
 }
-
-/* Custom Buttons */
-.custom-btn {
-  display: block;
-  width: 100%;
-  padding: 0.4rem;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-weight: 500;
-  text-align: center;
-  transition: background-color 0.3s ease;
-
-  &.primary {
-    background-color: #0c84fc;
-  }
-
-  &.success {
-    background-color: #28a745;
-  }
-
-  &.info {
-    background-color: #17a2b8;
-  }
-
-  &.warning {
-    background-color: #ffc107;
-    color: black;
-  }
-
-  &:hover {
-    filter: brightness(0.95);
-  }
-}
-
-/* Footer */
 .footer {
-  text-align: center;
-  background-color: #237fdb !important;
-  padding: 1rem;
-  color: white !important;
-  margin-top: 140px;
+  border-top: 1px solid #dee2e6;
   font-size: 0.875rem;
+  background-color:#237fdb ;
+  margin-top: 10%;
+  padding: 1%;
+  color: white;
 }
