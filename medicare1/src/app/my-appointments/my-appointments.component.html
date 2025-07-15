@@ -1,19 +1,16 @@
 <div class="appointments-container">
-  <div class="appointments-header">
-    <h2>My Appointments</h2>
-    <button class="button button-primary" (click)="goToBooking()">
-      <i class="fas fa-plus"></i> Book New Appointment
-    </button>
-  </div>
-
   <div class="appointments-list">
+    <div class="loading" *ngIf="isLoading">
+      <p>Loading appointments...</p>
+    </div>
+
     <div class="appointment-card" *ngFor="let appointment of appointments">
       <div class="appointment-header">
         <div class="doctor-info">
           <i class="fas fa-user-md"></i>
           <div>
-            <h3>Dr. {{appointment.doctorName}}</h3>
-            <p class="specialty">{{appointment.doctorSpecialty}}</p>
+            <h3>Dr. {{appointment.doctor_name}}</h3>
+            <p class="specialty">{{appointment.doctor_specialty}}</p>
           </div>
         </div>
         <span class="status" [ngClass]="appointment.status">
@@ -24,11 +21,11 @@
       <div class="appointment-details">
         <div class="detail-item">
           <i class="far fa-calendar"></i>
-          <span>{{appointment.date}}</span>
+          <span>{{appointment.appointment_date}}</span>
         </div>
         <div class="detail-item">
           <i class="far fa-clock"></i>
-          <span>{{appointment.time}}</span>
+          <span>{{appointment.appointment_time}}</span>
         </div>
         <div class="detail-item">
           <i class="far fa-comment"></i>
@@ -46,7 +43,7 @@
       </div>
     </div>
 
-    <div class="no-appointments" *ngIf="appointments.length === 0">
+    <div class="no-appointments" *ngIf="appointments.length === 0 && !isLoading">
       <i class="far fa-calendar-times"></i>
       <h3>No Appointments Found</h3>
       <p>You haven't booked any appointments yet.</p>
