@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
- 
+import { RouterOutlet } from '@angular/router';
+import { AlertComponent } from "./shared/alert/alert.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule ],
-    
+  imports: [RouterOutlet, AlertComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'medicare1';
+  title = 'emr';
 }

@@ -1,0 +1,150 @@
+<style>
+  @keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+</style>
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background-color: #fff;">
+  <div class="row w-100 justify-content-center">
+    <div class="col-lg-10 col-md-11 col-12">
+      <div class="d-flex flex-row rounded-4 shadow-lg overflow-hidden bg-white my-5" style="min-height: 480px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <!-- Left: Image -->
+        <div class="col-md-4 p-0 d-none d-md-block bg-light">
+          <img src="https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?auto=format&fit=crop&w=600&q=80" alt="Healthcare Professionals" class="img-fluid h-100 w-100 object-fit-cover" style="object-fit: cover; height: 100%; min-height: 480px;">
+        </div>
+        
+        <!-- Middle: Signup Form -->
+        <div class="col-md-4 p-4 d-flex flex-column justify-content-center">
+          <div class="mb-3 d-flex align-items-center">
+            <span class="me-2"><i class="bi bi-box-fill" style="font-size: 2rem; color: #0d6efd;"></i></span>
+            <span class="fw-bold fs-2 text-primary">Medicare</span>
+          </div>
+          <h4 class="fw-semibold mb-2" style="color: #212529;">Create your account</h4>
+          <form (ngSubmit)="onSubmit()" #signupForm="ngForm" autocomplete="off">
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <div class="mb-2">
+                  <label for="firstName" class="form-label small">First Name</label>
+                  <input type="text" class="form-control bg-light border-primary" id="firstName" name="firstName" [(ngModel)]="firstName" required placeholder="First Name">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-2">
+                  <label for="lastName" class="form-label small">Last Name</label>
+                  <input type="text" class="form-control bg-light border-primary" id="lastName" name="lastName" [(ngModel)]="lastName" required placeholder="Last Name">
+                </div>
+              </div>
+            </div>
+            <div class="mb-2">
+              <label for="email" class="form-label small">Email Address</label>
+              <input type="email" class="form-control bg-light border-primary" id="email" name="email" [(ngModel)]="email" required placeholder="Email Address">
+            </div>
+            <div class="mb-2">
+              <label for="phoneNumber" class="form-label small">Phone Number</label>
+              <input type="tel" class="form-control bg-light border-primary" id="phoneNumber" name="phoneNumber" [(ngModel)]="phoneNumber" placeholder="Phone Number">
+            </div>
+            <div class="mb-2">
+              <label for="password" class="form-label small">Password</label>
+              <input type="password" class="form-control bg-light border-primary" id="password" name="password" [(ngModel)]="password" required placeholder="Password">
+            </div>
+            <div class="mb-2">
+              <label for="confirmPassword" class="form-label small">Confirm Password</label>
+              <input type="password" class="form-control bg-light border-primary" id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmPassword" required placeholder="Confirm Password">
+            </div>
+              <div class="mb-3">
+              <label class="form-label small d-block">Role</label>
+              <div class="role-selector d-flex" style="gap: 10px;">
+                <input type="radio" class="btn-check" name="role" id="rolePatient" [(ngModel)]="role" value="patient" autocomplete="off" checked>
+                <label class="btn btn-sm btn-outline-primary" for="rolePatient">Patient</label>
+                
+                <input type="radio" class="btn-check" name="role" id="roleDoctor" [(ngModel)]="role" value="doctor" autocomplete="off">
+                <label class="btn btn-sm btn-outline-primary" for="roleDoctor">Doctor</label>
+              </div>
+            </div>            
+            <div class="mb-3" *ngIf="role === 'doctor'">
+              <h6 class="text-primary mb-3">Doctor Registration Details</h6>
+              
+              <!-- Working Hours -->
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <label for="usualStartingTime" class="form-label small">Usual Starting Time</label>
+                  <input type="time" class="form-control bg-light border-primary" id="usualStartingTime" name="usualStartingTime" [(ngModel)]="usualStartingTime" placeholder="9:00 AM">
+                </div>
+                <div class="col-md-6">
+                  <label for="usualEndingTime" class="form-label small">Usual Ending Time</label>
+                  <input type="time" class="form-control bg-light border-primary" id="usualEndingTime" name="usualEndingTime" [(ngModel)]="usualEndingTime" placeholder="5:00 PM">
+                </div>
+              </div>
+
+              <!-- Experience and Qualifications -->
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <label for="experience" class="form-label small">Experience (Years)</label>
+                  <input type="number" class="form-control bg-light border-primary" id="experience" name="experience" [(ngModel)]="experience" min="0" placeholder="5">
+                </div>
+                <div class="col-md-6">
+                  <label for="highestQualifications" class="form-label small">Highest Qualifications</label>
+                  <input type="text" class="form-control bg-light border-primary" id="highestQualifications" name="highestQualifications" [(ngModel)]="highestQualifications" placeholder="MBBS">
+                </div>
+              </div>
+
+              <!-- Registration Details -->
+              <div class="mb-2">
+                <label for="registrationNumber" class="form-label small">Registration Number</label>
+                <input type="text" class="form-control bg-light border-primary" id="registrationNumber" name="registrationNumber" [(ngModel)]="registrationNumber" placeholder="1234567890">
+              </div>
+
+              <div class="mb-2">
+                <label for="registrationAuthority" class="form-label small">Registration Authority</label>
+                <input type="text" class="form-control bg-light border-primary" id="registrationAuthority" name="registrationAuthority" [(ngModel)]="registrationAuthority" placeholder="Medical Council of India">
+              </div>
+
+              <div class="mb-2">
+                <label for="registrationDate" class="form-label small">Registration Date</label>
+                <input type="date" class="form-control bg-light border-primary" id="registrationDate" name="registrationDate" [(ngModel)]="registrationDate">
+              </div>
+
+              <div class="mb-2">
+                <label for="feeForAppointment" class="form-label small">Fee for Appointment</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-primary">Rs.</span>
+                  <input type="number" class="form-control bg-light border-primary" id="feeForAppointment" name="feeForAppointment" [(ngModel)]="feeForAppointment" min="0" placeholder="500">
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
+            <button type="submit" class="btn btn-primary w-100 fw-bold mb-2">SIGN UP</button>
+          </form>
+          <div class="mt-2 text-center">
+            <span class="text-secondary small">Already have an account?</span>
+            <a routerLink="/signin" class="text-primary small fw-bold text-decoration-none ms-1">Sign in</a>          </div>
+        </div>
+        
+        <!-- Right: Medicare Information -->
+        <div class="col-md-4 p-0 d-flex flex-column bg-primary text-white d-none d-md-flex" style="position: relative; background: linear-gradient(135deg, #0d6efd, #0a4caf);">
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; text-align: center;">
+            <h3 class="fw-bold mb-3" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.2); letter-spacing: 0.5px;">Join Medicare Today <span style="display: inline-block; animation: pulse 1.5s infinite;">!</span></h3>
+            <h6 class="fw-semi-bold mb-4" style="text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px;">your complete healthcare solution</h6>
+            <p class="mb-4" style="line-height: 1.6; text-shadow: 0px 1px 2px rgba(0,0,0,0.1);">Register now to book appointments, receive AI-driven doctor recommendations, view lab reports, and securely manage your medical history.</p>
+            
+            <div class="d-flex justify-content-center mb-4">
+              <div class="mx-2 bg-white bg-opacity-25 p-2 rounded-circle">
+                <i class="bi bi-person-plus" style="font-size: 1.5rem;"></i>
+              </div>
+              <div class="mx-2 bg-white bg-opacity-25 p-2 rounded-circle">
+                <i class="bi bi-hospital" style="font-size: 1.5rem;"></i>
+              </div>
+              <div class="mx-2 bg-white bg-opacity-25 p-2 rounded-circle">
+                <i class="bi bi-file-medical" style="font-size: 1.5rem;"></i>
+              </div>
+            </div>
+          </div>
+          
+          <p class="mt-auto text-center p-3 small" style="border-top: 1px solid rgba(255,255,255,0.1);">© 2025 Medicare. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
