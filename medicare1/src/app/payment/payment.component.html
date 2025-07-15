@@ -1,0 +1,108 @@
+ <div class="container payment-container mt-5   ">
+  <div class="text-center mb-4">
+    <button class="btn btn-dark btn-lg w-100">
+      <i class="paypal"></i> PayPal
+    </button>
+  </div>
+
+  <div class="divider text-center my-3">
+    <span>Or pay with card</span>
+  </div>
+
+  <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <input
+        type="email"
+        class="form-control long-input"
+        placeholder="Email"
+        formControlName="email"
+        required
+      />
+    </div>
+
+    
+    <div class="mb-3">
+      <label>Card information</label>
+
+  <div class="card-logos">
+  <label class="card-option">
+    <input type="radio" name="cardType" value="mastercard" />
+    <img src=" assets/img/WhatsApp Image 2025-05-27 at 13.34.25_55adbff0.jpg" alt="Mastercard" />
+  </label>
+
+  <label class="card-option">
+    <input type="radio" name="cardType" value="visa" />
+    <img src="assets/visa.png" alt="Visa" />
+  </label>
+
+  <label class="card-option">
+    <input type="radio" name="cardType" value="amex" />
+    <img src="assets/amex.png" alt="American Express" />
+  </label>
+</div>
+
+
+      <input
+        type="text"
+        class="form-control mb-2"
+        placeholder="1234 1234 1234 1234"
+        formControlName="cardNumber"
+        required
+      />
+     
+      <div class="d-flex">
+        <input
+          type="text"
+          class="form-control me-2"
+          placeholder="MM / YY"
+          formControlName="expiry"
+          required
+        />
+        <input
+          type="text"
+          class="form-control"
+          placeholder="CVC"
+          formControlName="cvc"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Name on card"
+        formControlName="cardName"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <select
+        class="form-select long-input"
+        formControlName="country"
+        required
+      >
+        <option value="">Country or region</option>
+        <option value="Sri Lanka">Sri Lanka</option>
+        <option value="Canada">Canada</option>
+        <option value="India">India</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <input
+        type="text"
+        class="form-control long-input"
+        placeholder="ZIP"
+        formControlName="zip"
+        required
+      />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">
+      Pay
+    </button>
+  </form>
+</div> 

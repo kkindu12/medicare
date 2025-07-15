@@ -1,4 +1,9 @@
 import { Routes } from '@angular/router';
+import { CreateBillComponent } from './create-bill/create-bill.component';
+import { BillReceiptComponent } from './bill-receipt/bill-receipt.component';
+import { PaymentSuccessComponent } from './payment-success/payment-success.component';
+import { PaymentComponent } from './payment/payment.component';
+import { ReceptionDashboardComponent } from './reception-dashboard/reception-dashboard.component';
 import { SigninComponent } from './pages/signin/signin.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { EmrComponent } from './emr/emr.component';
@@ -24,5 +29,10 @@ export const routes: Routes = [
     { path: 'my-appointments', component: MyAppointmentsComponent },
     { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
     { path: 'doctor-dashboard', component: DoctorDashboardComponent, canActivate: [AuthGuard] },
+    { path: 'create-bill', component: CreateBillComponent },
+    { path: 'bill-receipt', component: BillReceiptComponent },
+    { path: 'payment-success', component: PaymentSuccessComponent },
+    { path: 'payment', component: PaymentComponent },
+    { path: 'reception', component: ReceptionDashboardComponent },
     { path: '**', redirectTo: '' }
 ];
