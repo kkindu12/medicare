@@ -1,0 +1,53 @@
+ <!-- Navbar -->
+<nav class="navbar custom-navbar">
+  <span class="navbar-brand">Medicare</span>
+  <div class="navbar-right">
+    <a class="nav-link" href="/profile">
+      <i class="bi bi-person-circle me-1"></i> Profile
+    </a>
+  </div>
+</nav>
+
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+  <div>
+    <h4>Welcome back, Reception!</h4>
+    <p class="sub-text">Manage appointments, patients, and billing.</p>
+  </div>
+</div>
+
+<!-- Info Cards Row -->
+<div class="info-row">
+  <div class="info-card">
+    <h6>Appointment Management</h6>
+    <select class="form-select" [(ngModel)]="selectedAction">
+      <option value="book">Book Appointment</option>
+      <option value="edit">Edit Appointment</option>
+      <option value="cancel">Cancel Appointment</option>
+    </select>
+    <div class="button-container">
+      <button class="custom-btn primary">Proceed</button>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <h6>Patient Registration</h6>
+    <button class="custom-btn success">Add New Patient</button>
+  </div>
+
+  <div class="info-card">
+    <h6>Doctor Availability</h6>
+    <button class="custom-btn info">View Availability</button>
+  </div>
+
+  <div class="info-card">
+    <h6>Create Bill</h6>
+    <button class="custom-btn warning">Generate Bill</button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <small>&copy; 2025 Medicare. All rights reserved.</small>
+</footer>
+

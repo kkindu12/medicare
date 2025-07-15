@@ -1,0 +1,125 @@
+/* Navbar */
+.custom-navbar {
+  background-color: #0c84fc !important;
+  color: #ffffff !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: white;
+  }
+
+  .nav-link {
+    color: white !important;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      color: #161616 !important;
+    }
+  }
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  background-color: #fffbfc !important;
+  border: 1px solid #eaeaea;
+  border-radius: 0.5rem;
+  margin: 40px;
+  padding: 20px;
+
+  h4 {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .sub-text {
+    margin: 0;
+    color: #6c757d;
+  }
+}
+
+/* Info Row */
+.info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0 40px;
+  margin-bottom: 40px;
+  margin-left: 150px;
+  margin-top: 80px;
+}
+
+/* Info Card */
+.info-card {
+  background-color: white !important;
+  border: 1px solid #5aa8f7;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex: 1 1 220px;
+  max-width: 240px;
+  padding: 1rem;
+
+  h6 {
+    font-size: 15px;
+    color: #6d6d6d !important;
+  }
+
+  .form-select {
+    margin-top: 8px;
+  }
+
+  .button-container {
+    margin-top: 12px;
+  }
+}
+
+/* Custom Buttons */
+.custom-btn {
+  display: block;
+  width: 100%;
+  padding: 0.4rem;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.3s ease;
+
+  &.primary {
+    background-color: #0c84fc;
+  }
+
+  &.success {
+    background-color: #28a745;
+  }
+
+  &.info {
+    background-color: #17a2b8;
+  }
+
+  &.warning {
+    background-color: #ffc107;
+    color: black;
+  }
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  background-color: #237fdb !important;
+  padding: 1rem;
+  color: white !important;
+  margin-top: 140px;
+  font-size: 0.875rem;
+}
