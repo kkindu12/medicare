@@ -1,66 +1,122 @@
- .navbar {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f8f9fa;
-  padding-left: 2%;
-  margin-bottom: 2%;
-  padding: 10px;
+/* Reception Dashboard Styles - Aligned with Doctor Dashboard */
 
-  .nav-link {
-    font-size: 1rem;
-    text-decoration: none;
-    color: white;
-     
-
-    &:hover {
-      text-decoration: underline;
-      color: #161616;
-    }
-  }
-  background-color: #0c84fc;
+/* Dashboard Card Hover Effects */
+.dashboard-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
 }
 
-.dashboard-header {
-  background-color: #f1eeee;
-  border-radius: 0.5rem;
-  border: 1px solid #eaeaea;
-  margin-bottom: 5%;
-  padding-left: 2%;
-  margin-left: 5%;
-  margin-right: 5%;
-   
-}
-.dashboard-header h4 {
-  font-size: 1.5rem;  
-   
+.dashboard-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 123, 255, 0.15) !important;
 }
 
-
-.info-row {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-left: 5%;
+.stats-card {
+  border-radius: 15px;
+  overflow: hidden;
 }
 
-.info-card {
-  padding: 1rem;
-  border: 1px solid #5aa8f7;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  flex: 1 1 220px;
-  max-width: 240px;
-  background-color: white;
+.stats-card .card-body {
+  padding: 2rem 1.5rem;
 }
-.info-card h6{
-    font-size: 15px;
-    color: #6d6d6d;
+
+.stats-card h5 {
+  font-size: 1.25rem;
+  color: #2c3e50;
 }
-.footer {
-  border-top: 1px solid #dee2e6;
+
+/* Welcome Section Styling */
+.bg-light {
+  background-color: #f8f9fa !important;
+  border-radius: 15px;
+}
+
+.card-title {
+  color: #2c3e50;
+}
+
+.card-text {
+  color: #6c757d;
+}
+
+/* Icon Styling */
+.bg-primary.bg-opacity-10 {
+  background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-success.bg-opacity-10 {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.bg-info.bg-opacity-10 {
+  background-color: rgba(13, 202, 240, 0.1) !important;
+}
+
+.bg-warning.bg-opacity-10 {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+/* Button Styling */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  background-color:#237fdb ;
-  margin-top: 10%;
-  padding: 1%;
-  color: white;
+}
+
+/* Form Controls */
+.form-select {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  font-size: 0.875rem;
+}
+
+.form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Container Styling */
+.container-fluid {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stats-card .card-body {
+    padding: 1.5rem 1rem;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  .stats-card h5 {
+    font-size: 1rem;
+  }
+  
+  .card-text.small {
+    font-size: 0.75rem;
+  }
 }
