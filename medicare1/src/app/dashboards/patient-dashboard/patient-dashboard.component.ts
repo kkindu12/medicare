@@ -291,9 +291,13 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/booking']);
   }
   rescheduleAppointment(appointment: DashboardAppointment): void {
-    // Here you would typically open a rescheduling modal or navigate to a rescheduling page
-    console.log('Rescheduling appointment:', appointment);
-    this.alertService.showInfo('Coming Soon', 'Rescheduling functionality will be implemented soon!');
+    if (!appointment.id) {
+      this.alertService.showError('Error', 'Cannot reschedule appointment without ID');
+      return;
+    }
+    
+    // Navigate to reschedule appointment page with appointment ID
+    this.router.navigate(['/reschedule-appointment', appointment.id]);
   }
   async cancelAppointment(appointment: DashboardAppointment): Promise<void> {
     const confirmed = await this.alertService.showConfirm(

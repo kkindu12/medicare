@@ -16,6 +16,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { HomePageComponent } from './home-page/home-page/home-page.component';
 import { BookingComponent } from './booking/booking.component';
 import { MyAppointmentsComponent } from './my-appointments/my-appointments.component';
+import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment.component';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
@@ -24,9 +25,15 @@ export const routes: Routes = [
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
     { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
     { path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard] },    
+    { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+    { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
+    { path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard] },    
     { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
     { path: 'booking', component: BookingComponent },
     { path: 'my-appointments', component: MyAppointmentsComponent },
+    { path: 'reschedule-appointment/:id', component: RescheduleAppointmentComponent, canActivate: [AuthGuard] },
+    { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
+    { path: 'doctor-dashboard', component: DoctorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
     { path: 'doctor-dashboard', component: DoctorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'create-bill', component: CreateBillComponent },
