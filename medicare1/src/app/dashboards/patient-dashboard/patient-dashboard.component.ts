@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { PatientDashboardRecordCardComponent } from './components/patient-dashboard-record-card/patient-dashboard-record-card.component';
 import { AppointmentCardComponent, AppointmentCard } from './components/appointment-card/appointment-card.component';
@@ -9,6 +10,7 @@ import { MedicalRecordsService } from '../../services/medicalRecordService/medic
 import { AppointmentService, Appointment } from '../../services/appointment.service';
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../shared/alert/alert.service';
+import { ChatbotService, ChatMessage } from '../../services/chatbot.service';
 import type { PatientRecordWithUser } from '../../emr/models';
 import { interval, Subscription } from 'rxjs';
 
@@ -38,11 +40,11 @@ interface Payment {
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, PatientDashboardRecordCardComponent, AppointmentCardComponent, PatientHistoryModalComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, PatientDashboardRecordCardComponent, AppointmentCardComponent, PatientHistoryModalComponent],
   templateUrl: './patient-dashboard.component.html',
   styleUrl: './patient-dashboard.component.scss'
 })
-export class PatientDashboardComponent implements OnInit, OnDestroy {
+export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewChecked {
   activeTab: string = 'appointments';
   
   // Current User
@@ -63,7 +65,15 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
   
   // Real-time polling
   private appointmentPollingSubscription?: Subscription;
+  private chatSubscription?: Subscription;
   private readonly POLLING_INTERVAL = 10000; // Poll every 10 seconds
+
+  // Chat-related properties
+  showChatInterface = false;
+  currentMessage = '';
+  chatMessages: ChatMessage[] = [];
+  @ViewChild('chatMessagesContainer', { static: false }) chatMessagesContainer!: ElementRef;
+  @ViewChild('messageInput', { static: false }) messageInputElement!: ElementRef;
 
   // medicalRecords: MedicalRecord[] = [
   //   {
@@ -119,6 +129,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
     private appointmentService: AppointmentService,
     private authService: AuthService,
     private alertService: AlertService,
+    private chatbotService: ChatbotService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}ngOnInit(): void {
     // Load current user from sessionStorage (only in browser)
@@ -145,6 +156,18 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
     // Clean up polling subscription
     if (this.appointmentPollingSubscription) {
       this.appointmentPollingSubscription.unsubscribe();
+    }
+    
+    // Clean up chat subscription
+    if (this.chatSubscription) {
+      this.chatSubscription.unsubscribe();
+    }
+  }
+
+  ngAfterViewChecked(): void {
+    // Auto-scroll to bottom after view updates
+    if (this.showChatInterface) {
+      this.scrollToBottom();
     }
   }
 
@@ -291,9 +314,13 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/booking']);
   }
   rescheduleAppointment(appointment: DashboardAppointment): void {
-    // Here you would typically open a rescheduling modal or navigate to a rescheduling page
-    console.log('Rescheduling appointment:', appointment);
-    this.alertService.showInfo('Coming Soon', 'Rescheduling functionality will be implemented soon!');
+    if (!appointment.id) {
+      this.alertService.showError('Error', 'Cannot reschedule appointment without ID');
+      return;
+    }
+    
+    // Navigate to reschedule appointment page with appointment ID
+    this.router.navigate(['/reschedule-appointment', appointment.id]);
   }
   async cancelAppointment(appointment: DashboardAppointment): Promise<void> {
     const confirmed = await this.alertService.showConfirm(
@@ -314,6 +341,60 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
           this.alertService.showError('Cancellation Failed', 'Failed to cancel appointment. Please try again.');
         }
       });
+    }
+  }
+
+  // Chat-related methods
+  startConversation(): void {
+    this.showChatInterface = true;
+    
+    // Clear any existing subscription
+    if (this.chatSubscription) {
+      this.chatSubscription.unsubscribe();
+    }
+    
+    // Subscribe to chatbot messages
+    this.chatSubscription = this.chatbotService.messages$.subscribe(messages => {
+      this.chatMessages = messages;
+    });
+
+    // Clear any existing messages and start fresh
+    this.chatbotService.clearChat();
+  }
+
+  closeChatInterface(): void {
+    this.showChatInterface = false;
+    this.currentMessage = '';
+    this.chatMessages = [];
+    
+    // Unsubscribe from chat messages
+    if (this.chatSubscription) {
+      this.chatSubscription.unsubscribe();
+      this.chatSubscription = undefined;
+    }
+  }
+
+  sendMessage(): void {
+    if (!this.currentMessage.trim()) return;
+
+    const userMessage = this.currentMessage.trim();
+    this.currentMessage = '';
+
+    // Send message to chatbot service
+    this.chatbotService.sendMessage(userMessage);
+
+    // Focus back to input
+    setTimeout(() => {
+      if (this.messageInputElement) {
+        this.messageInputElement.nativeElement.focus();
+      }
+    }, 100);
+  }
+
+  private scrollToBottom(): void {
+    if (this.chatMessagesContainer) {
+      const element = this.chatMessagesContainer.nativeElement;
+      element.scrollTop = element.scrollHeight;
     }
   }
 }

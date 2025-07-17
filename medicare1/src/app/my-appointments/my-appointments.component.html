@@ -33,6 +33,29 @@
         </div>
       </div>
 
+      <!-- Reschedule History Section -->
+      <div *ngIf="appointment.reschedule_history && appointment.reschedule_history.length > 0" class="reschedule-history">
+        <h4><i class="fas fa-history"></i> Reschedule History</h4>
+        <div class="history-timeline">
+          <div *ngFor="let history of appointment.reschedule_history; let i = index" class="history-item">
+            <div class="history-entry">
+              <div class="history-details">
+                <div class="history-datetime">
+                  <i class="far fa-calendar me-1"></i>
+                  <span>{{ history.appointment_date }} at {{ history.appointment_time }}</span>
+                </div>
+                <div *ngIf="history.reschedule_reason" class="history-reason">
+                  <strong>Reason:</strong> {{ history.reschedule_reason }}
+                </div>
+                <div class="history-timestamp">
+                  <small class="text-muted">Rescheduled on: {{ formatDate(history.rescheduled_at) }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="appointment-actions">
         <button class="button button-secondary" (click)="rescheduleAppointment(appointment)">
           <i class="fas fa-calendar-alt"></i> Reschedule
