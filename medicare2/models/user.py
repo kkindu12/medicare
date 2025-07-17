@@ -2,16 +2,6 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
-class DoctorDetails(BaseModel):
-    usualStartingTime: str
-    usualEndingTime: str
-    experience: int
-    highestQualifications: str
-    registrationNumber: str
-    registrationAuthority: str
-    registrationDate: str
-    feeForAppointment: int
-
 class Report(BaseModel):
     name: str
     type: str
@@ -40,7 +30,6 @@ class UserCreate(BaseModel):
     emergencyContactName: Optional[str] = None
     emergencyContactPhone: Optional[str] = None
     role: bool = False  # Default to False for non-admin users
-    doctorDetails: Optional[DoctorDetails] = None
 
 class User(UserCreate):
     id: str
@@ -75,4 +64,3 @@ class UserUpdate(BaseModel):
     emergencyContactPhone: Optional[str] = None
     password: Optional[str] = None
     role: Optional[bool] = None
-    doctorDetails: Optional[DoctorDetails] = None
