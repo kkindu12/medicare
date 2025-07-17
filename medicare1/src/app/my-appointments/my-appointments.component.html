@@ -1,16 +1,19 @@
 <div class="appointments-container">
-  <div class="appointments-list">
-    <div class="loading" *ngIf="isLoading">
-      <p>Loading appointments...</p>
-    </div>
+  <div class="appointments-header">
+    <h2>My Appointments</h2>
+    <button class="button button-primary" (click)="goToBooking()">
+      <i class="fas fa-plus"></i> Book New Appointment
+    </button>
+  </div>
 
+  <div class="appointments-list">
     <div class="appointment-card" *ngFor="let appointment of appointments">
       <div class="appointment-header">
         <div class="doctor-info">
           <i class="fas fa-user-md"></i>
           <div>
-            <h3>Dr. {{appointment.doctor_name}}</h3>
-            <p class="specialty">{{appointment.doctor_specialty}}</p>
+            <h3>Dr. {{appointment.doctorName}}</h3>
+            <p class="specialty">{{appointment.doctorSpecialty}}</p>
           </div>
         </div>
         <span class="status" [ngClass]="appointment.status">
@@ -21,38 +24,15 @@
       <div class="appointment-details">
         <div class="detail-item">
           <i class="far fa-calendar"></i>
-          <span>{{appointment.appointment_date}}</span>
+          <span>{{appointment.date}}</span>
         </div>
         <div class="detail-item">
           <i class="far fa-clock"></i>
-          <span>{{appointment.appointment_time}}</span>
+          <span>{{appointment.time}}</span>
         </div>
         <div class="detail-item">
           <i class="far fa-comment"></i>
           <span>{{appointment.reason}}</span>
-        </div>
-      </div>
-
-      <!-- Reschedule History Section -->
-      <div *ngIf="appointment.reschedule_history && appointment.reschedule_history.length > 0" class="reschedule-history">
-        <h4><i class="fas fa-history"></i> Reschedule History</h4>
-        <div class="history-timeline">
-          <div *ngFor="let history of appointment.reschedule_history; let i = index" class="history-item">
-            <div class="history-entry">
-              <div class="history-details">
-                <div class="history-datetime">
-                  <i class="far fa-calendar me-1"></i>
-                  <span>{{ history.appointment_date }} at {{ history.appointment_time }}</span>
-                </div>
-                <div *ngIf="history.reschedule_reason" class="history-reason">
-                  <strong>Reason:</strong> {{ history.reschedule_reason }}
-                </div>
-                <div class="history-timestamp">
-                  <small class="text-muted">Rescheduled on: {{ formatDate(history.rescheduled_at) }}</small>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -66,7 +46,7 @@
       </div>
     </div>
 
-    <div class="no-appointments" *ngIf="appointments.length === 0 && !isLoading">
+    <div class="no-appointments" *ngIf="appointments.length === 0">
       <i class="far fa-calendar-times"></i>
       <h3>No Appointments Found</h3>
       <p>You haven't booked any appointments yet.</p>

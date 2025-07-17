@@ -17,9 +17,8 @@ export interface PatientRecordWithUser {
   prescription: string;
   status: string;
   labTest?: string[];
-  medicine?: MedicineDetails[];  
+  medicine?: MedicineDetails[];
   user?: User;
-  doctorUser?: User;  // Doctor who issued this record
   isEdited?: boolean;
   editedBy?: string;  // Doctor ID who edited
   editedByName?: string;  // Doctor name who edited

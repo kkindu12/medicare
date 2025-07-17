@@ -590,6 +590,7 @@ export class EmrComponent implements OnInit {
       }
     });
   }
+
   togglePreviousRecords(patientRecord: PatientRecordWithUser) {
     this.selectedPatientRecord = patientRecord;
     this.showPreviousRecords = true;
@@ -603,11 +604,7 @@ export class EmrComponent implements OnInit {
           doctor: report.doctor,
           prescription: report.prescription,
           status: report.status,
-          user: report.user,
-          isEdited: report.isEdited,
-          editedBy: report.editedBy,
-          editedByName: report.editedByName,
-          editedAt: report.editedAt
+          user: report.user
         }));
       },})
 
@@ -678,22 +675,18 @@ export class EmrComponent implements OnInit {
     }
     return doctorId;
   }
+
   getPatientRecordsByPatientId(patientId: string) {
     this.medicalRecordsService.getPatientRecordsById(patientId).subscribe({
       next: (reports) => {
         this.previousPatientRecords = reports.map(report => ({
-          id: report.id,
+          name: report.user?.firstName || 'Unknown',
           visitTime: report.visitTime,
           visitDate: report.visitDate,
           condition: report.condition,
           doctor: report.doctor,
           status: report.status,
-          prescription: report.prescription,
-          user: report.user,
-          isEdited: report.isEdited,
-          editedBy: report.editedBy,
-          editedByName: report.editedByName,
-          editedAt: report.editedAt
+          prescription: report.prescription
         }));
       },
       error: (err) => {

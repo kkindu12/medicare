@@ -51,17 +51,7 @@ async def get_users():
 @router.get("/users/patients", response_model=List[User])
 async def get_patients_by_role():
     users = []
-    for user in get_db().users.find({"role": False}):  # role=False means patient
-        user["id"] = str(user["_id"])
-        user.pop("_id")
-        users.append(User(**user))
-    return users
-
-# New endpoint to get users by role (doctors only)
-@router.get("/users/doctors", response_model=List[User])
-async def get_doctors_by_role():
-    users = []
-    for user in get_db().users.find({"role": True}):  # role=True means doctor
+    for user in get_db().users.find({"role": False}):  # role=True means patient
         user["id"] = str(user["_id"])
         user.pop("_id")
         users.append(User(**user))
