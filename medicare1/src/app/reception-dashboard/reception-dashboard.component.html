@@ -63,6 +63,61 @@
         </div>
       </div>
 
+      <!-- Add New Patient Form -->
+      <div *ngIf="showAddPatientForm" class="col-12 mb-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">Register New Patient</h5>
+            <form (ngSubmit)="submitNewPatient()" #patientForm="ngForm" autocomplete="off">
+              <div class="row mb-2">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">First Name *</label>
+                  <input type="text" class="form-control" [(ngModel)]="patientFirstName" name="firstName" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Last Name *</label>
+                  <input type="text" class="form-control" [(ngModel)]="patientLastName" name="lastName" required>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Email *</label>
+                  <input type="email" class="form-control" [(ngModel)]="patientEmail" name="email" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Phone Number *</label>
+                  <input type="tel" class="form-control" [(ngModel)]="patientPhoneNumber" name="phoneNumber" required>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Date of Birth *</label>
+                  <input type="date" class="form-control" [(ngModel)]="patientDOB" name="dob" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Gender *</label>
+                  <select class="form-select" [(ngModel)]="patientGender" name="gender" required>
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-2">
+                <label class="form-label small">Address</label>
+                <input type="text" class="form-control" [(ngModel)]="patientAddress" name="address">
+              </div>
+              <div *ngIf="patientError" class="alert alert-danger py-2">{{ patientError }}</div>
+              <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-success">Register</button>
+                <button type="button" class="btn btn-secondary" (click)="cancelAddPatient()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
         <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
           <div class="card-body text-center py-4">

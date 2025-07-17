@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../components/navbar/navbar.component';
 
@@ -11,6 +12,18 @@ import { NavbarComponent } from '../components/navbar/navbar.component';
   styleUrls: ['./reception-dashboard.component.scss']
 })
 export class ReceptionDashboardComponent {
+  constructor(private router: Router) {}
+
+  showAddPatientForm = false;
+  // Patient form fields
+  patientFirstName = '';
+  patientLastName = '';
+  patientEmail = '';
+  patientPhoneNumber = '';
+  patientDOB = '';
+  patientGender = '';
+  patientAddress = '';
+  patientError = '';
   doctorFilter: 'available' | 'all' = 'available';
   allDoctors = [
     { name: 'John Smith', specialty: 'Cardiology', availableTime: '10:00 AM - 12:00 PM', available: true },
@@ -82,10 +95,48 @@ export class ReceptionDashboardComponent {
     }
   }
 
+
   // Method to handle patient registration
   addNewPatient(): void {
-    console.log('Adding new patient...');
-    // Navigate to patient registration or open modal
+    this.router.navigate(['/add-patient']);
+  }
+
+  // Method to handle bill generation
+  generateBill(): void {
+    this.router.navigate(['/create-bill']);
+  }
+
+  submitNewPatient(): void {
+    this.patientError = '';
+    if (!this.patientFirstName || !this.patientLastName || !this.patientEmail || !this.patientPhoneNumber || !this.patientDOB || !this.patientGender) {
+      this.patientError = 'Please fill in all required fields.';
+      return;
+    }
+    // Here you would send the patient data to the backend
+    console.log('Patient added:', {
+      firstName: this.patientFirstName,
+      lastName: this.patientLastName,
+      email: this.patientEmail,
+      phoneNumber: this.patientPhoneNumber,
+      dob: this.patientDOB,
+      gender: this.patientGender,
+      address: this.patientAddress
+    });
+    // Reset form and hide
+    this.showAddPatientForm = false;
+    this.patientFirstName = '';
+    this.patientLastName = '';
+    this.patientEmail = '';
+    this.patientPhoneNumber = '';
+    this.patientDOB = '';
+    this.patientGender = '';
+    this.patientAddress = '';
+    this.patientError = '';
+  }
+
+  cancelAddPatient(): void {
+    this.showAddPatientForm = false;
+    this.patientError = '';
   }
 
   // Method to view doctor availability
@@ -101,8 +152,5 @@ export class ReceptionDashboardComponent {
   }
 
   // Method to generate bill
-  generateBill(): void {
-    console.log('Generating bill...');
-    // Navigate to billing component or open modal
-  }
+  // (Removed duplicate, now handled above)
 }

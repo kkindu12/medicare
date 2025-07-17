@@ -16,6 +16,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { HomePageComponent } from './home-page/home-page/home-page.component';
 import { BookingComponent } from './booking/booking.component';
 import { MyAppointmentsComponent } from './my-appointments/my-appointments.component';
+import { AddPatientComponent } from './add-patient/add-patient.component';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
@@ -34,5 +35,9 @@ export const routes: Routes = [
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment', component: PaymentComponent },
     { path: 'reception', component: ReceptionDashboardComponent  },
+    {
+        path: 'add-patient',
+        component: AddPatientComponent
+    },
     { path: '**', redirectTo: '' }
 ];

@@ -1,5 +1,5 @@
 <div class="card p-4 shadow-sm" *ngIf="bill">
-  <h4 class="mb-3 text-center">Hospital Bill Receipt</h4>
+  <h4 class="mb-3 text-center text-primary">Hospital Bill Receipt</h4>
 
   <div class="mb-2">
     <strong>Bill Number:</strong> {{bill.billNumber}}
@@ -12,7 +12,7 @@
   </div>
 
   <table class="table table-bordered">
-    <thead class="table-light">
+    <thead class="table-primary">
       <tr>
         <th>No.</th>
         <th>Description</th>
@@ -32,5 +32,5 @@
     <h5>Total: Rs. {{bill.totalAmount}}</h5>
   </div>
 
-  <button class="btn btn-primary mt-3 w-100 d-print-none" (click)="printBill()">Print Bill</button>
+  <button class="btn mt-3 w-100 d-print-none" style="background-color: #0d6efd !important; border-color: #0d6efd !important; color: #fff !important; font-weight: 600;" (click)="printBill()">Print Bill</button>
 </div> 
