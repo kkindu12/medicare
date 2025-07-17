@@ -12,7 +12,6 @@ import { DoctorDashboardComponent } from './dashboards/doctor-dashboard/doctor-d
 import { ProfileComponent } from './components/navbar/profile/profile.component';
 import { SettingsComponent } from './components/navbar/settings/settings.component';
 import { ChangePasswordComponent } from './components/navbar/settings/change-password/change-password.component';
-import { PharmacyComponent } from './pharmacy_dashboard/pharmacy&laboratory.component';
 import { AuthGuard } from './guards/auth.guard';
 import { HomePageComponent } from './home-page/home-page/home-page.component';
 import { BookingComponent } from './booking/booking.component';
@@ -20,7 +19,7 @@ import { MyAppointmentsComponent } from './my-appointments/my-appointments.compo
 import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/signin', pathMatch: 'full' },
+    { path: '', component: HomePageComponent },
     { path: 'signin', component: SigninComponent },
     { path: 'signup', component: SignupComponent },
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
@@ -42,6 +41,5 @@ export const routes: Routes = [
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment', component: PaymentComponent },
     { path: 'reception', component: ReceptionDashboardComponent },
-    { path: '**', redirectTo: '' },
-    { path: 'pharmacy', component: PharmacyComponent }
+    { path: '**', redirectTo: '' }
 ];
