@@ -34,6 +34,11 @@ class UserCreate(BaseModel):
     email: str
     phoneNumber: str
     password: str
+    dateOfBirth: Optional[str] = None
+    gender: Optional[str] = None
+    address: Optional[str] = None
+    emergencyContactName: Optional[str] = None
+    emergencyContactPhone: Optional[str] = None
     role: bool = False  # Default to False for non-admin users
     doctorDetails: Optional[DoctorDetails] = None
 
@@ -44,7 +49,15 @@ class UserLoginResponse(BaseModel):
     id: str
     firstName: str
     lastName: str
+    email: str
+    phoneNumber: str
+    dateOfBirth: Optional[str] = None
+    gender: Optional[str] = None
+    address: Optional[str] = None
+    emergencyContactName: Optional[str] = None
+    emergencyContactPhone: Optional[str] = None
     role: bool
+    doctorDetails: Optional[DoctorDetails] = None
 
 class UserLogin(BaseModel):
     email: str
@@ -55,6 +68,11 @@ class UserUpdate(BaseModel):
     lastName: Optional[str] = None
     email: Optional[str] = None
     phoneNumber: Optional[str] = None
+    dateOfBirth: Optional[str] = None
+    gender: Optional[str] = None
+    address: Optional[str] = None
+    emergencyContactName: Optional[str] = None
+    emergencyContactPhone: Optional[str] = None
     password: Optional[str] = None
     role: Optional[bool] = None
     doctorDetails: Optional[DoctorDetails] = None

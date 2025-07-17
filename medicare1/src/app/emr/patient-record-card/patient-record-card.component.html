@@ -12,6 +12,21 @@
     Email: {{ record.user?.email }}<br>
     Last Visit: {{ record.visitDate }} at {{ record.visitTime }}<br>
     Status: <span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span>
+      <!-- Doctor Information -->
+    <span class="d-block mt-2">
+      <small class="text-primary">
+        <i class="bi bi-person-badge"></i> 
+        <strong>Treating Doctor:</strong> 
+        <span *ngIf="record.doctorUser; else doctorNameOnly">
+          Dr. {{ record.doctorUser.firstName }} {{ record.doctorUser.lastName }}
+          <br><small class="text-muted">{{ record.doctorUser.email }}</small>
+        </span>
+        <ng-template #doctorNameOnly>
+          {{ record.doctor }}
+        </ng-template>
+      </small>
+    </span>
+    
     <span *ngIf="record.isEdited && record.editedByName" class="d-block mt-1">
       <small class="text-info">
         <i class="bi bi-person-check"></i> Edited by: {{ record.editedByName }}

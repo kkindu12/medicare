@@ -1,0 +1,107 @@
+ 
+.payment-container {
+  max-width: 520px;
+      margin: 0 auto;
+   border: 2px solid #cce3fc;
+margin-top: -2%;
+   position: relative;
+  top: 20%;
+  transform: translateY(10%);
+  border-radius: 2%;
+
+.long-input {
+  width: 80%; // Full width of the container
+  max-width: 450px; // Or set a custom size like 90%, 600px, etc.
+}
+
+
+  .divider {
+    position: relative;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #ddd;
+    }
+
+    &::before {
+      left: 0;
+    }
+
+    &::after {
+      right: 0;
+    }
+  }
+
+.card-logos {
+  display: flex;
+  gap: 5rem;
+   margin-top: 2%;
+  margin-bottom: 0rem;
+  margin
+
+  .card-option {
+    cursor: pointer;
+    input {
+      display: none;
+    }
+
+    img {
+      width: 60px;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      transition: border-color 0.2s ease;
+    }
+
+    input:checked + img {
+      border-color: #bcd0e5;
+    }
+  }
+}
+
+
+  .form-control,
+  .form-select {
+    border-radius: 8px;
+    padding: 12px 35px;
+    font-size: 14px;
+     border: 2px solid rgb(166, 185, 247)  ;
+     margin-top: 2%;
+     margin-left: 2%;
+    
+  }
+
+button {
+    background-color: #007bff;
+}
+
+  .btn-primary {
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 500;
+    color: rgb(243, 235, 235);
+    padding-inline: 40%;
+    margin-left: 8%;
+     border: 2px solid transparent;
+     margin-top: 5%;
+    margin-bottom: 2%;
+  }
+
+  .btn-dark {
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 500;
+     border: 2px solid transparent;
+     padding-inline: 40%;
+    margin-left: 8%;
+    margin-top: 5%;
+    margin-bottom: 2%;
+  }
+}
