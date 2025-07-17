@@ -1,15 +1,102 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NavbarComponent } from '../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-reception-dashboard',
   standalone: true,
-     imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './reception-dashboard.component.html',
   styleUrls: ['./reception-dashboard.component.scss']
 })
 export class ReceptionDashboardComponent {
+  appointmentFilter: 'today' | 'all' = 'today';
+  showDoctorAvailability = false;
+  availableDoctors = [
+    { name: 'John Smith', specialty: 'Cardiology', availableTime: '10:00 AM - 12:00 PM' },
+    { name: 'Sarah Johnson', specialty: 'Pediatrics', availableTime: '02:00 PM - 04:00 PM' },
+    { name: 'Emily Davis', specialty: 'Neurology', availableTime: '09:00 AM - 11:00 AM' }
+  ];
+  showAppointmentTabs = false;
+  activeTab: 'today' | 'all' = 'today';
   selectedAction = 'book';
   actions = ['book', 'edit', 'cancel'];
+
+  showTodayAppointments = false;
+  allAppointments = [
+    {
+      doctorName: 'John Smith',
+      doctorSpecialty: 'Cardiology',
+      date: new Date().toISOString().split('T')[0],
+      time: '10:00 AM',
+      reason: 'Regular checkup',
+      status: 'Scheduled'
+    },
+    {
+      doctorName: 'Sarah Johnson',
+      doctorSpecialty: 'Pediatrics',
+      date: new Date().toISOString().split('T')[0],
+      time: '02:00 PM',
+      reason: 'Follow-up',
+      status: 'Pending'
+    },
+    {
+      doctorName: 'Emily Davis',
+      doctorSpecialty: 'Neurology',
+      date: '2025-07-16',
+      time: '11:00 AM',
+      reason: 'Consultation',
+      status: 'Completed'
+    }
+  ];
+
+  get todayAppointments() {
+    const today = new Date().toISOString().split('T')[0];
+    return this.allAppointments.filter(app => app.date === today);
+  }
+
+  // Method to handle appointment management actions
+  proceedWithAction(): void {
+    switch (this.selectedAction) {
+      case 'book':
+        console.log('Booking appointment...');
+        // Navigate to booking component or open modal
+        break;
+      case 'edit':
+        console.log('Editing appointment...');
+        // Navigate to edit appointment
+        break;
+      case 'cancel':
+        console.log('Canceling appointment...');
+        // Handle appointment cancellation
+        break;
+      default:
+        console.log('Unknown action');
+    }
+  }
+
+  // Method to handle patient registration
+  addNewPatient(): void {
+    console.log('Adding new patient...');
+    // Navigate to patient registration or open modal
+  }
+
+  // Method to view doctor availability
+  viewDoctorAvailability(): void {
+    console.log('Viewing doctor availability...');
+    // Navigate to doctor availability view
+  }
+
+  // Method to view today's appointments
+  viewTodayAppointments(): void {
+    // Navigate to the appointments view
+    window.location.href = '/my-appointments';
+  }
+
+  // Method to generate bill
+  generateBill(): void {
+    console.log('Generating bill...');
+    // Navigate to billing component or open modal
+  }
 }

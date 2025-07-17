@@ -33,6 +33,6 @@ export const routes: Routes = [
     { path: 'bill-receipt', component: BillReceiptComponent },
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment', component: PaymentComponent },
-    { path: 'reception', component: ReceptionDashboardComponent },
+    { path: 'reception', component: ReceptionDashboardComponent  },
     { path: '**', redirectTo: '' }
 ];
