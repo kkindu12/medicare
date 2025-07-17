@@ -1,0 +1,59 @@
+<!-- Previous Records Modal -->
+<div class="modal fade" id="previousRecordsModal" tabindex="-1" aria-labelledby="previousRecordsModalLabel" aria-hidden="true" [class.show]="showPreviousRecords" [style.display]="showPreviousRecords ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="previousRecordsModalLabel">
+          Medical History: {{selectedPatientRecord?.user?.firstName}} {{selectedPatientRecord?.user?.lastName}}
+        </h5>
+        <button type="button" class="btn-close" (click)="onClose()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="previousPatientRecords.length > 0">
+          <div class="table-responsive">
+            <table class="table table-striped"> 
+              <thead>                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Condition</th>
+                  <th>Doctor</th>
+                  <th>Status</th>
+                  <th>Prescription</th>
+                  <th>Edit Info</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let record of previousPatientRecords">
+                  <td>{{record.visitDate}}</td>
+                  <td>{{record.visitTime}}</td>
+                  <td>{{record.condition}}</td>
+                  <td>{{record.doctor}}</td>
+                  <td><span class="badge" [ngClass]="{'bg-success': record.status === 'Stable', 'bg-warning': record.status === 'Critical'}">{{ record.status }}</span></td>
+                  <td>{{record.prescription}}</td>
+                  <td>
+                    <div *ngIf="record.isEdited; else notEdited" class="text-dark">
+                      <small>
+                        <i class="bi bi-pencil-square"></i> Edited<br>
+                        <span *ngIf="record.editedByName">by: {{ record.editedByName }}</span>
+                      </small>
+                    </div>
+                    <ng-template #notEdited>
+                      <small class="text-muted">Original</small>
+                    </ng-template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div *ngIf="previousPatientRecords.length === 0">
+          <p class="text-muted">No previous records found for this patient.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showPreviousRecords" class="modal-backdrop fade show"></div>
