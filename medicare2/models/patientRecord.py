@@ -54,4 +54,11 @@ class PatientRecordWithUser(BaseModel):
     prescription: Optional[str] = None
     status: str
     medications: Optional[List[Medication]] = []
-    user: Optional[User] = None  # Include user data
+    labTest: Optional[List[str]] = []
+    medicine: Optional[List[MedicineDetails]] = []
+    user: Optional[User] = None  # Include patient user data
+    doctorUser: Optional[User] = None  # Include doctor user data
+    isEdited: Optional[bool] = False
+    editedBy: Optional[str] = None  # Doctor ID who edited
+    editedByName: Optional[str] = None  # Doctor name who edited
+    editedAt: Optional[str] = None  # Timestamp of edit

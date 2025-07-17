@@ -530,7 +530,6 @@ export class EmrComponent implements OnInit {
       }
     });
   }
-
   togglePreviousRecords(patientRecord: PatientRecordWithUser) {
     this.selectedPatientRecord = patientRecord;
     this.showPreviousRecords = true;
@@ -544,7 +543,11 @@ export class EmrComponent implements OnInit {
           doctor: report.doctor,
           prescription: report.prescription,
           status: report.status,
-          user: report.user
+          user: report.user,
+          isEdited: report.isEdited,
+          editedBy: report.editedBy,
+          editedByName: report.editedByName,
+          editedAt: report.editedAt
         }));
       },})
 
@@ -602,17 +605,36 @@ export class EmrComponent implements OnInit {
     return doctorName;
   }
 
+  getCurrentDoctorId(){
+    let doctorId = '';
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const userString = sessionStorage.getItem('user');
+        const user = userString ? JSON.parse(userString) : null;
+        doctorId = user ? user.id : '';
+      } catch (error) {
+        console.error('Error reading user data from sessionStorage:', error);
+        doctorId = '';
+      }
+    }
+    return doctorId;
+  }
   getPatientRecordsByPatientId(patientId: string) {
     this.medicalRecordsService.getPatientRecordsById(patientId).subscribe({
       next: (reports) => {
         this.previousPatientRecords = reports.map(report => ({
-          name: report.user?.firstName || 'Unknown',
+          id: report.id,
           visitTime: report.visitTime,
           visitDate: report.visitDate,
           condition: report.condition,
           doctor: report.doctor,
           status: report.status,
-          prescription: report.prescription
+          prescription: report.prescription,
+          user: report.user,
+          isEdited: report.isEdited,
+          editedBy: report.editedBy,
+          editedByName: report.editedByName,
+          editedAt: report.editedAt
         }));
       },
       error: (err) => {
