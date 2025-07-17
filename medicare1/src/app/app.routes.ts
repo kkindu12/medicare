@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { PharmacyComponent } from './pharmacy/pharmacy.component';
-import { LaboratoryComponent } from './laboratory/laboratory.component';
 import { CreateBillComponent } from './create-bill/create-bill.component';
 import { BillReceiptComponent } from './bill-receipt/bill-receipt.component';
 import { PaymentSuccessComponent } from './payment-success/payment-success.component';
@@ -21,10 +19,6 @@ import { MyAppointmentsComponent } from './my-appointments/my-appointments.compo
 import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/pharmacy', pathMatch: 'full' },
-  { path: 'pharmacy', component: PharmacyComponent },
-  { path: 'laboratory', component: LaboratoryComponent },
-  { path: '**', redirectTo: '/pharmacy' }
     { path: '', component: HomePageComponent },
     { path: 'signin', component: SigninComponent },
     { path: 'signup', component: SignupComponent },

@@ -11,26 +11,11 @@ from routers.sse import router as sse_router
 import uvicorn
 
 app = FastAPI(title="Medicare EMR API")
-from datetime import datetime
 
-# Import configuration and utilities
-from config import settings
-from utils import ensure_upload_dirs
-
-# Import routers
-from routers import laboratory, pharmacy
-
-# Initialize FastAPI app with configuration
-app = FastAPI(
-    title=settings.APP_NAME,
-    description=settings.APP_DESCRIPTION,
-    version=settings.APP_VERSION
-)
-
-# CORS middleware
+# Configure CORS to allow Angular frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=["http://localhost:4200"],  # Adjust if your Angular app runs on a different port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,24 +33,3 @@ app.include_router(sse_router, prefix="/api")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-# Include routers
-app.include_router(laboratory.router, prefix="/api/laboratory", tags=["Laboratory"])
-app.include_router(pharmacy.router, prefix="/api/pharmacy", tags=["Pharmacy"])
-
-# Ensure upload directories exist
-ensure_upload_dirs()
-
-@app.get("/")
-async def root():
-    return {
-        "message": "Medicare API - Pharmacy & Laboratory Management System",
-        "version": "1.0.0",
-        "endpoints": {
-            "laboratory": "/api/laboratory",
-            "pharmacy": "/api/pharmacy"
-        }
-    }
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "timestamp": datetime.now()}
