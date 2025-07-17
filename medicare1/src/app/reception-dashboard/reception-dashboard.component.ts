@@ -3,7 +3,20 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService, Appointment } from '../services/appointment.service';
+import { PatientService } from '../services/patientService/patient.service';
+import { UserService } from '../services/userService/user.service';
+import { Patient } from '../emr/models';
 import { Subscription } from 'rxjs';
+
+// Interface for basic patient registration data
+export interface RegisteredPatient {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  gender?: string;
+}
 
 @Component({
   selector: 'app-reception-dashboard',
@@ -15,25 +28,34 @@ import { Subscription } from 'rxjs';
 export class ReceptionDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
-    private appointmentService: AppointmentService
+    private appointmentService: AppointmentService,
+    private patientService: PatientService,
+    private userService: UserService
   ) {}
 
   // Subscriptions
   private appointmentSubscription?: Subscription;
   private todayAppointmentSubscription?: Subscription;
+  private patientSubscription?: Subscription;
 
   // Loading states
   isLoadingAppointments = false;
   appointmentError: string | null = null;
+  isLoadingPatients = false;
+  patientError: string | null = null;
 
   // Appointment data from backend
   allAppointments: Appointment[] = [];
   todayAppointments: Appointment[] = [];
   appointmentFilter: 'today' | 'all' = 'today';
 
+  // Patient data from backend
+  allPatients: RegisteredPatient[] = [];
+
   ngOnInit(): void {
     this.loadAppointments();
     this.loadTodayAppointments();
+    this.loadPatients();
   }
 
   ngOnDestroy(): void {
@@ -42,6 +64,9 @@ export class ReceptionDashboardComponent implements OnInit, OnDestroy {
     }
     if (this.todayAppointmentSubscription) {
       this.todayAppointmentSubscription.unsubscribe();
+    }
+    if (this.patientSubscription) {
+      this.patientSubscription.unsubscribe();
     }
   }
 
@@ -75,11 +100,44 @@ export class ReceptionDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Load all patients from backend
+  loadPatients(): void {
+    this.isLoadingPatients = true;
+    this.patientError = null;
+
+    this.patientSubscription = this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        // Convert users to RegisteredPatient format, filtering out doctors/staff if needed
+        this.allPatients = users
+          .filter(user => !user.role) // Filter out admin/doctor users (role = false means regular users/patients)
+          .map(user => ({
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            gender: user.gender || 'Not specified'
+          }));
+        this.isLoadingPatients = false;
+      },
+      error: (error) => {
+        console.error('Error loading patients:', error);
+        this.patientError = 'Failed to load patients. Please try again.';
+        this.isLoadingPatients = false;
+      }
+    });
+  }
+
   // Refresh appointments data
   refreshAppointments(): void {
     this.appointmentService.loadAppointments();
     this.loadAppointments();
     this.loadTodayAppointments();
+  }
+
+  // Refresh patients data
+  refreshPatients(): void {
+    this.loadPatients();
   }
 
   // Get filtered appointments based on current filter
@@ -101,7 +159,6 @@ export class ReceptionDashboardComponent implements OnInit, OnDestroy {
   patientDOB = '';
   patientGender = '';
   patientAddress = '';
-  patientError = '';
 
   // Doctor management properties
   doctorFilter: 'available' | 'all' = 'available';
@@ -156,7 +213,7 @@ export class ReceptionDashboardComponent implements OnInit, OnDestroy {
   }
 
   submitNewPatient(): void {
-    this.patientError = '';
+    this.patientError = null;
     if (!this.patientFirstName || !this.patientLastName || !this.patientEmail || !this.patientPhoneNumber || !this.patientDOB || !this.patientGender) {
       this.patientError = 'Please fill in all required fields.';
       return;
@@ -180,12 +237,12 @@ export class ReceptionDashboardComponent implements OnInit, OnDestroy {
     this.patientDOB = '';
     this.patientGender = '';
     this.patientAddress = '';
-    this.patientError = '';
+    this.patientError = null;
   }
 
   cancelAddPatient(): void {
     this.showAddPatientForm = false;
-    this.patientError = '';
+    this.patientError = null;
   }
 
   // Method to view doctor availability

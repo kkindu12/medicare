@@ -15,4 +15,9 @@ export class UserService {
   getPatientUsers() {
     return this.http.get<User[]>(`${this.apiUrl}/api/users/patients`);
   }
+
+  // Get all registered users
+  getAllUsers() {
+    return this.http.get<any[]>(`${this.apiUrl}/api/users`);
+  }
 }
