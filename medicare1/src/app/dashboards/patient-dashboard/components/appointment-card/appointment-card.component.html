@@ -48,6 +48,31 @@
         Booked on: {{ formatDate(appointment.created_at) }}
       </small>
     </div>
+
+    <!-- Reschedule History Section -->
+    <div *ngIf="appointment.reschedule_history && appointment.reschedule_history.length > 0" class="reschedule-history mb-3">
+      <small class="text-muted fw-semibold">Reschedule History:</small>
+      <div class="history-timeline">
+        <div *ngFor="let history of appointment.reschedule_history; let i = index" class="history-item">
+          <div class="history-entry">
+            <div class="history-details">
+              <div class="d-flex align-items-center mb-1">
+                <i class="bi bi-clock-history me-1 text-warning"></i>
+                <small class="text-muted">
+                  {{ formatDate(history.appointment_date) }} at {{ formatTime(history.appointment_time) }}
+                </small>
+              </div>
+              <div *ngIf="history.reschedule_reason" class="reason-text">
+                <small class="text-muted fst-italic">Reason: {{ history.reschedule_reason }}</small>
+              </div>
+              <div class="timestamp">
+                <small class="text-muted">Rescheduled on: {{ formatDate(history.rescheduled_at) }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
     <div class="d-flex justify-content-end mt-auto pt-2">
     <div class="action-buttons">

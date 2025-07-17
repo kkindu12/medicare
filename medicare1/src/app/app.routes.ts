@@ -17,6 +17,7 @@ import { HomePageComponent } from './home-page/home-page/home-page.component';
 import { BookingComponent } from './booking/booking.component';
 import { MyAppointmentsComponent } from './my-appointments/my-appointments.component';
 import { AddPatientComponent } from './add-patient/add-patient.component';
+import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
@@ -25,9 +26,15 @@ export const routes: Routes = [
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
     { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
     { path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard] },    
+    { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+    { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
+    { path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard] },    
     { path: 'emr', component: EmrComponent, canActivate: [AuthGuard] },
     { path: 'booking', component: BookingComponent },
     { path: 'my-appointments', component: MyAppointmentsComponent },
+    { path: 'reschedule-appointment/:id', component: RescheduleAppointmentComponent, canActivate: [AuthGuard] },
+    { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
+    { path: 'doctor-dashboard', component: DoctorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'patient-dashboard', component: PatientDashboardComponent, canActivate: [AuthGuard] },
     { path: 'doctor-dashboard', component: DoctorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'create-bill', component: CreateBillComponent },
@@ -35,9 +42,6 @@ export const routes: Routes = [
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment', component: PaymentComponent },
     { path: 'reception', component: ReceptionDashboardComponent  },
-    {
-        path: 'add-patient',
-        component: AddPatientComponent
-    },
+    {path: 'add-patient',component: AddPatientComponent},
     { path: '**', redirectTo: '' }
 ];
