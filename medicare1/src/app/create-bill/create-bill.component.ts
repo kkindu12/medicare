@@ -60,7 +60,9 @@ export class CreateBillComponent implements OnInit {
         amount: this.newItem.amount
       });
       this.calculateTotal();
-      this.newItem = { description: '', amount: 0 };
+      // Only clear description and amount fields
+      this.newItem.description = '';
+      this.newItem.amount = 0;
     } else {
       alert('Select patient, fill Patient ID and enter description & amount.');
     }

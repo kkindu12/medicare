@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AlertComponent } from "./shared/alert/alert.component";
 
-@Component({
+
+ @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, AlertComponent],
@@ -10,5 +11,7 @@ import { AlertComponent } from "./shared/alert/alert.component";
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'emr';
+  title(title: any) {
+    throw new Error('Method not implemented.');
+  }
 }

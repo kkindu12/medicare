@@ -1,87 +1,62 @@
-<div class="container mt-4">
+<div class="content-box" style="border: 2px solid #0d6efd; box-shadow: 0 2px 8px rgba(13,110,253,0.08);">
+  <h4 class="text-center mb-4" style="font-size: 1rem; color: #0d6efd;">Create Patient Bill</h4>
 
-  <!-- Medicare Banner -->
-  <div class="medicare-banner text-white px-4 py-2 mb-4">
-    Medicare
-  </div>
- <!-- Bill Box -->
-  <div class="content-box shadow p-4">
-
-    <div class="card-body">
-      <h4 class="text-center mb-4">Create Patient Bill</h4>
-
-      <!-- Bill Info -->
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label>Bill Number</label>
-          <input type="text" class="form-control" [value]="billNumber" readonly>
-        </div>
-        <div class="col-md-6">
-          <label>Select Patient Name</label>
-          <select class="form-select" [(ngModel)]="selectedPatientName" (change)="onPatientSelect($event)">
-            <option [ngValue]="null">-- Select Patient --</option>
-            <option *ngFor="let patient of patients" [ngValue]="patient.name">
-              {{patient.name}}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Patient ID -->
-      <div class="mb-3">
-        <label>Patient ID</label>
-        <input type="number" class="form-control" [(ngModel)]="selectedPatientId"  >
-      </div>
-
-      <!-- Item Entry -->
-      <div class="row g-3 mb-3 align-items-end">
-        <div class="col-md-8">
-          <label>Description</label>
-          <input type="text" class="form-control" [(ngModel)]="newItem.description">
-        </div>
-        <div class="col-md-4">
-          <label>Amount (Rs.)</label>
-          <input type="number" class="form-control" [(ngModel)]="newItem.amount">
-        </div>
-      </div>
-
-      <button class="btn-primary w-100 mb-3" (click)="addItem()">Add to Bill</button>
-
-      <!-- Bill Table -->
-      <table class="table table-bordered" *ngIf="billItems.length > 0">
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>Patient ID</th>
-            <th>Description</th>
-            <th>Amount (Rs.)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of billItems; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>{{ item.patientId }}</td>
-            <td>{{ item.description }}</td>
-            <td>{{ item.amount }}</td>
-            <td>
-              <button class="btn-danger" (click)="removeItem(i)">Remove</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- Total + Submit -->
-      <div *ngIf="billItems.length > 0" class="text-end mt-3">
-        <h5>Total: Rs. {{ totalAmount }}</h5>
-        <button class="btn-success w-100 mt-2" (click)="submitBill()">Save & Print Bill</button>
-      </div>
-    </div>
+  <!-- Bill Info -->
+  <div class="mb-1">
+    <label class="text-primary fw-semibold">Bill Number</label>
+    <input type="text" class="form-control mb-1 py-1" [value]="billNumber" readonly>
+    <label class="text-primary fw-semibold">Select Patient Name</label>
+    <select class="form-select mb-1 py-1" [(ngModel)]="selectedPatientName" (change)="onPatientSelect($event)">
+      <option [ngValue]="null">-- Select Patient --</option>
+      <option *ngFor="let patient of patients" [ngValue]="patient.name">
+        {{patient.name}}
+      </option>
+    </select>
   </div>
 
-  <!-- Footer -->
-  <footer class="footer text-center mt-5">
-    &copy; 2025 Medicare System
-  </footer>
+  <!-- Patient ID -->
+  <div class="mb-1">
+    <label class="text-primary fw-semibold">Patient ID</label>
+    <input type="number" class="form-control py-1" [(ngModel)]="selectedPatientId">
+  </div>
 
+  <!-- Item Entry -->
+  <div class="mb-1">
+    <label class="text-primary fw-semibold">Description</label>
+    <input type="text" class="form-control mb-1 py-1" [(ngModel)]="newItem.description">
+    <label class="text-primary fw-semibold">Amount (Rs.)</label>
+    <input type="number" class="form-control py-1" [(ngModel)]="newItem.amount">
+  </div>
+  <button class="btn btn-primary w-100 mb-3" style="height: 38px;" (click)="addItem()">
+    <span style="font-size: 1.2em;">&#43;</span> Add Bill
+  </button>
+  <!-- Bill Table -->
+  <table class="table table-bordered" *ngIf="billItems.length > 0">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Patient ID</th>
+        <th>Description</th>
+        <th>Amount (Rs.)</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of billItems; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.patientId }}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.amount }}</td>
+        <td>
+          <button class="btn btn-danger" (click)="removeItem(i)">Remove</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Total + Submit -->
+  <div *ngIf="billItems.length > 0" class="text-center mt-3">
+    <h5 class="text-end">Total: Rs. {{ totalAmount }}</h5>
+    <button class="btn btn-primary mt-2 mx-auto d-block" style="min-width: 100px; max-width: 140px; font-size: 0.95rem; padding: 6px 0;" (click)="submitBill()">Save & Print Bill</button>
+  </div>
 </div>
