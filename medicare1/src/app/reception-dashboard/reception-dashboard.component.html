@@ -145,7 +145,38 @@
         <!-- Patient tab content placeholder -->
       </div>
       <div class="tab-pane fade" id="doctor" role="tabpanel" aria-labelledby="doctor-tab">
-        <!-- Doctor tab content placeholder -->
+        <!-- Doctor tab with filter button for Available and All -->
+        <div class="d-flex justify-content-end mb-3">
+          <div class="btn-group" role="group" aria-label="Filter doctors">
+            <button type="button" class="btn btn-outline-primary" [class.active]="doctorFilter === 'available'" (click)="doctorFilter = 'available'">Available</button>
+            <button type="button" class="btn btn-outline-primary" [class.active]="doctorFilter === 'all'" (click)="doctorFilter = 'all'">All</button>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">{{ doctorFilter === 'available' ? 'Available Doctors' : 'All Doctors' }}</h5>
+            <div *ngIf="(doctorFilter === 'available' ? availableDoctors : allDoctors).length > 0; else noDoctorsTab">
+              <div class="row">
+                <div class="col-md-4 mb-3" *ngFor="let doctor of (doctorFilter === 'available' ? availableDoctors : allDoctors)">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h6 class="fw-bold mb-1">{{doctor.name}}</h6>
+                      <p class="mb-1 text-muted">{{doctor.specialty}}</p>
+                      <p class="mb-1"><i class="bi bi-clock me-1"></i>{{doctor.availableTime}}</p>
+                      <span class="badge bg-success" *ngIf="doctorFilter === 'available' || doctor.available">Available</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #noDoctorsTab>
+              <div class="text-center text-muted py-4">
+                <i class="bi bi-person-x fs-2"></i>
+                <h6>No doctors found.</h6>
+              </div>
+            </ng-template>
+          </div>
+        </div>
       </div>
       <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab">
         <!-- Payment tab content placeholder -->

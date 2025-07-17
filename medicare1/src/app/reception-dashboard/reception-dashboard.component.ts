@@ -11,13 +11,19 @@ import { NavbarComponent } from '../components/navbar/navbar.component';
   styleUrls: ['./reception-dashboard.component.scss']
 })
 export class ReceptionDashboardComponent {
+  doctorFilter: 'available' | 'all' = 'available';
+  allDoctors = [
+    { name: 'John Smith', specialty: 'Cardiology', availableTime: '10:00 AM - 12:00 PM', available: true },
+    { name: 'Sarah Johnson', specialty: 'Pediatrics', availableTime: '02:00 PM - 04:00 PM', available: true },
+    { name: 'Emily Davis', specialty: 'Neurology', availableTime: '09:00 AM - 11:00 AM', available: true },
+    { name: 'Michael Brown', specialty: 'Orthopedics', availableTime: '01:00 PM - 03:00 PM', available: false },
+    { name: 'Jessica Lee', specialty: 'Dermatology', availableTime: '11:00 AM - 01:00 PM', available: false }
+  ];
   appointmentFilter: 'today' | 'all' = 'today';
   showDoctorAvailability = false;
-  availableDoctors = [
-    { name: 'John Smith', specialty: 'Cardiology', availableTime: '10:00 AM - 12:00 PM' },
-    { name: 'Sarah Johnson', specialty: 'Pediatrics', availableTime: '02:00 PM - 04:00 PM' },
-    { name: 'Emily Davis', specialty: 'Neurology', availableTime: '09:00 AM - 11:00 AM' }
-  ];
+  get availableDoctors() {
+    return this.allDoctors.filter(doc => doc.available);
+  }
   showAppointmentTabs = false;
   activeTab: 'today' | 'all' = 'today';
   selectedAction = 'book';
