@@ -58,16 +58,12 @@ export class AppointmentService {
   // Get today's appointments only
   getTodayAppointments(): Observable<Appointment[]> {
     const today = new Date().getDate(); // Gets today's numerical date (18)
-    console.log('Looking for appointments on day:', today);
     return this.getAppointments().pipe(
       map(appointments => {
-        console.log('Total appointments loaded:', appointments.length);
         const todayApps = appointments.filter(app => {
           const appointmentDay = new Date(app.appointment_date).getDate();
-          console.log(`Appointment: ${app.doctor_name} - Date: ${app.appointment_date} - Day: ${appointmentDay} - Is today? ${appointmentDay === today}`);
           return appointmentDay === today;
         });
-        console.log('Today\'s appointments found:', todayApps.length);
         return todayApps;
       })
     );
