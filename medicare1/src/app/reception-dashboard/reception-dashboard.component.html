@@ -162,37 +162,81 @@
     <div class="tab-content mb-4">
       <div class="tab-pane fade show active" id="appointment" role="tabpanel" aria-labelledby="appointment-tab">
         <!-- Appointment tab with filter button for Today and All -->
-        <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="btn-group" role="group" aria-label="Filter appointments">
-            <button type="button" class="btn btn-outline-primary" [class.active]="appointmentFilter === 'today'" (click)="appointmentFilter = 'today'">Today</button>
-            <button type="button" class="btn btn-outline-primary" [class.active]="appointmentFilter === 'all'" (click)="appointmentFilter = 'all'">All</button>
+            <button type="button" 
+                    class="btn btn-outline-primary px-4" 
+                    [class.active]="appointmentFilter === 'today'" 
+                    (click)="setAppointmentFilter('today')">
+              Today
+            </button>
+            <button type="button" 
+                    class="btn btn-outline-primary px-4 ms-2" 
+                    [class.active]="appointmentFilter === 'all'" 
+                    (click)="setAppointmentFilter('all')">
+              All
+            </button>
           </div>
+          <button type="button" 
+                  class="btn btn-secondary" 
+                  (click)="refreshAppointments()"
+                  [disabled]="isLoadingAppointments">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            {{ isLoadingAppointments ? 'Loading...' : 'Refresh' }}
+          </button>
         </div>
         <div class="card border-0 shadow-sm mb-4">
           <div class="card-body">
             <h5 class="fw-bold mb-3">{{ appointmentFilter === 'today' ? "Today's Appointments" : 'All Appointments' }}</h5>
-            <div *ngIf="(appointmentFilter === 'today' ? todayAppointments : allAppointments).length > 0; else noAppointments">
-              <div class="row">
-                <div class="col-md-4 mb-3" *ngFor="let appointment of (appointmentFilter === 'today' ? todayAppointments : allAppointments)">
-                  <div class="card h-100">
-                    <div class="card-body">
-                      <h6 class="fw-bold mb-1">{{appointment.doctorName}}</h6>
-                      <p class="mb-1 text-muted">{{appointment.doctorSpecialty}}</p>
-                      <p class="mb-1"><i class="bi bi-calendar me-1"></i>{{appointment.date}}</p>
-                      <p class="mb-1"><i class="bi bi-clock me-1"></i>{{appointment.time}}</p>
-                      <p class="mb-1"><i class="bi bi-person me-1"></i>{{appointment.reason}}</p>
-                      <span class="badge bg-primary">{{appointment.status}}</span>
-                    </div>
+            
+            <!-- Loading state -->
+            <div *ngIf="isLoadingAppointments" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">Loading appointments...</p>
+            </div>
+
+            <!-- Error state -->
+            <div *ngIf="appointmentError && !isLoadingAppointments" class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ appointmentError }}
+              <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="refreshAppointments()">
+                Try Again
+              </button>
+            </div>
+
+            <!-- Appointments list -->
+            <div *ngIf="!isLoadingAppointments && !appointmentError && getFilteredAppointments().length > 0" class="row">
+              <div class="col-md-4 mb-3" *ngFor="let appointment of getFilteredAppointments()">
+                <div class="card h-100 appointment-card">
+                  <div class="card-body">
+                    <h6 class="fw-bold mb-1">{{ appointment.doctor_name }}</h6>
+                    <p class="mb-1 text-muted">{{ appointment.doctor_specialty }}</p>
+                    <p class="mb-1"><i class="bi bi-calendar me-1"></i>{{ appointment.appointment_date }}</p>
+                    <p class="mb-1"><i class="bi bi-clock me-1"></i>{{ appointment.appointment_time }}</p>
+                    <p class="mb-1"><i class="bi bi-person me-1"></i>{{ appointment.patient_name || 'N/A' }}</p>
+                    <p class="mb-1"><i class="bi bi-chat-square-text me-1"></i>{{ appointment.reason || 'No reason provided' }}</p>
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-success': appointment.status === 'scheduled',
+                            'bg-warning': appointment.status === 'pending',
+                            'bg-danger': appointment.status === 'cancelled',
+                            'bg-secondary': appointment.status === 'completed'
+                          }">
+                      {{ appointment.status | titlecase }}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-            <ng-template #noAppointments>
-              <div class="text-center text-muted py-4">
-                <i class="bi bi-calendar-x fs-2"></i>
-                <h6>No appointments found.</h6>
-              </div>
-            </ng-template>
+
+            <!-- No appointments state -->
+            <div *ngIf="!isLoadingAppointments && !appointmentError && getFilteredAppointments().length === 0" class="text-center text-muted py-4">
+              <i class="bi bi-calendar-x fs-2"></i>
+              <h6>No {{ appointmentFilter === 'today' ? 'appointments for today' : 'appointments' }} found.</h6>
+              <p class="small">{{ appointmentFilter === 'today' ? 'Check the "All" tab to see all appointments.' : 'New appointments will appear here when created.' }}</p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { BehaviorSubject, Observable, catchError, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface AppointmentHistory {
   appointment_date: string;
@@ -31,29 +31,54 @@ export interface Appointment {
   providedIn: 'root'
 })
 export class AppointmentService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = 'http://localhost:8000/api/appointments';
   private appointments = new BehaviorSubject<Appointment[]>([]);
 
   constructor(private http: HttpClient) {
     this.loadAppointments();
   }
 
-  private loadAppointments(): void {
-    // For now, keep some initial mock data
-    const initialAppointments: Appointment[] = [];
-    this.appointments.next(initialAppointments);
+  // Load all appointments from backend
+  loadAppointments(): void {
+    this.http.get<Appointment[]>(this.apiUrl).pipe(
+      catchError(error => {
+        console.error('Error loading appointments:', error);
+        return of([]); // Return empty array on error
+      })
+    ).subscribe(appointments => {
+      this.appointments.next(appointments);
+    });
   }
 
+  // Get all appointments
   getAppointments(): Observable<Appointment[]> {
     return this.appointments.asObservable();
   }
 
+  // Get today's appointments only
+  getTodayAppointments(): Observable<Appointment[]> {
+    const today = new Date().getDate(); // Gets today's numerical date (18)
+    console.log('Looking for appointments on day:', today);
+    return this.getAppointments().pipe(
+      map(appointments => {
+        console.log('Total appointments loaded:', appointments.length);
+        const todayApps = appointments.filter(app => {
+          const appointmentDay = new Date(app.appointment_date).getDate();
+          console.log(`Appointment: ${app.doctor_name} - Date: ${app.appointment_date} - Day: ${appointmentDay} - Is today? ${appointmentDay === today}`);
+          return appointmentDay === today;
+        });
+        console.log('Today\'s appointments found:', todayApps.length);
+        return todayApps;
+      })
+    );
+  }
+
   getPatientAppointments(patientId: string): Observable<Appointment[]> {
-    return this.http.get<Appointment[]>(`${this.apiUrl}/api/appointments/patient/${patientId}`);
+    return this.http.get<Appointment[]>(`${this.apiUrl}/patient/${patientId}`);
   }
 
   createAppointment(appointment: Appointment): Observable<Appointment> {
-    return this.http.post<Appointment>(`${this.apiUrl}/api/appointments`, appointment);
+    return this.http.post<Appointment>(this.apiUrl, appointment);
   }
   addAppointment(appointmentData: {
     doctor_id: string;
@@ -75,28 +100,31 @@ export class AppointmentService {
   }
 
   cancelAppointment(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/api/appointments/${id}`);
-  }  updateAppointmentStatus(id: string, status: string): Observable<Appointment> {
-    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${id}`, { status });
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+  
+  updateAppointmentStatus(id: string, status: string): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/${id}`, { status });
   }
 
   // Doctor-specific methods
   getDoctorAppointments(doctorId: string, status?: string): Observable<Appointment[]> {
     const params = status ? `?status=${status}` : '';
-    return this.http.get<Appointment[]>(`${this.apiUrl}/api/appointments/doctor/${doctorId}${params}`);
+    return this.http.get<Appointment[]>(`${this.apiUrl}/doctor/${doctorId}${params}`);
   }
 
   approveAppointment(appointmentId: string): Observable<Appointment> {
-    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/approve`, {});
+    return this.http.put<Appointment>(`${this.apiUrl}/${appointmentId}/approve`, {});
   }
+  
   rejectAppointment(appointmentId: string, rejectionReason: string): Observable<Appointment> {
-    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reject`, {
+    return this.http.put<Appointment>(`${this.apiUrl}/${appointmentId}/reject`, {
       rejection_reason: rejectionReason
     });
   }
 
   getAppointmentById(appointmentId: string): Observable<Appointment> {
-    return this.http.get<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}`);
+    return this.http.get<Appointment>(`${this.apiUrl}/${appointmentId}`);
   }
 
   rescheduleAppointment(appointmentId: string, rescheduleData: {
@@ -111,6 +139,6 @@ export class AppointmentService {
     reason: string;
     reschedule_reason: string;
   }): Observable<Appointment> {
-    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reschedule`, rescheduleData);
+    return this.http.put<Appointment>(`${this.apiUrl}/${appointmentId}/reschedule`, rescheduleData);
   }
 }

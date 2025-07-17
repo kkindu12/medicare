@@ -1,21 +1,99 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '../components/navbar/navbar.component';
+import { AppointmentService, Appointment } from '../services/appointment.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reception-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './reception-dashboard.component.html',
   styleUrls: ['./reception-dashboard.component.scss']
 })
-export class ReceptionDashboardComponent {
-  constructor(private router: Router) {}
+export class ReceptionDashboardComponent implements OnInit, OnDestroy {
+  constructor(
+    private router: Router,
+    private appointmentService: AppointmentService
+  ) {}
 
+  // Subscriptions
+  private appointmentSubscription?: Subscription;
+  private todayAppointmentSubscription?: Subscription;
+
+  // Loading states
+  isLoadingAppointments = false;
+  appointmentError: string | null = null;
+
+  // Appointment data from backend
+  allAppointments: Appointment[] = [];
+  todayAppointments: Appointment[] = [];
+  appointmentFilter: 'today' | 'all' = 'today';
+
+  ngOnInit(): void {
+    this.loadAppointments();
+    this.loadTodayAppointments();
+  }
+
+  ngOnDestroy(): void {
+    if (this.appointmentSubscription) {
+      this.appointmentSubscription.unsubscribe();
+    }
+    if (this.todayAppointmentSubscription) {
+      this.todayAppointmentSubscription.unsubscribe();
+    }
+  }
+
+  // Load all appointments from backend
+  loadAppointments(): void {
+    this.isLoadingAppointments = true;
+    this.appointmentError = null;
+
+    this.appointmentSubscription = this.appointmentService.getAppointments().subscribe({
+      next: (appointments) => {
+        this.allAppointments = appointments;
+        this.isLoadingAppointments = false;
+      },
+      error: (error) => {
+        console.error('Error loading appointments:', error);
+        this.appointmentError = 'Failed to load appointments. Please try again.';
+        this.isLoadingAppointments = false;
+      }
+    });
+  }
+
+  // Load today's appointments
+  loadTodayAppointments(): void {
+    this.todayAppointmentSubscription = this.appointmentService.getTodayAppointments().subscribe({
+      next: (appointments) => {
+        this.todayAppointments = appointments;
+      },
+      error: (error) => {
+        console.error('Error loading today\'s appointments:', error);
+      }
+    });
+  }
+
+  // Refresh appointments data
+  refreshAppointments(): void {
+    this.appointmentService.loadAppointments();
+    this.loadAppointments();
+    this.loadTodayAppointments();
+  }
+
+  // Get filtered appointments based on current filter
+  getFilteredAppointments(): Appointment[] {
+    return this.appointmentFilter === 'today' ? this.todayAppointments : this.allAppointments;
+  }
+
+  // Set appointment filter
+  setAppointmentFilter(filter: 'today' | 'all'): void {
+    this.appointmentFilter = filter;
+  }
+
+  // Patient management properties
   showAddPatientForm = false;
-  // Patient form fields
   patientFirstName = '';
   patientLastName = '';
   patientEmail = '';
@@ -24,6 +102,8 @@ export class ReceptionDashboardComponent {
   patientGender = '';
   patientAddress = '';
   patientError = '';
+
+  // Doctor management properties
   doctorFilter: 'available' | 'all' = 'available';
   allDoctors = [
     { name: 'John Smith', specialty: 'Cardiology', availableTime: '10:00 AM - 12:00 PM', available: true },
@@ -32,48 +112,17 @@ export class ReceptionDashboardComponent {
     { name: 'Michael Brown', specialty: 'Orthopedics', availableTime: '01:00 PM - 03:00 PM', available: false },
     { name: 'Jessica Lee', specialty: 'Dermatology', availableTime: '11:00 AM - 01:00 PM', available: false }
   ];
-  appointmentFilter: 'today' | 'all' = 'today';
-  showDoctorAvailability = false;
+
   get availableDoctors() {
     return this.allDoctors.filter(doc => doc.available);
   }
+
+  // UI state properties
+  showDoctorAvailability = false;
   showAppointmentTabs = false;
   activeTab: 'today' | 'all' = 'today';
   selectedAction = 'book';
   actions = ['book', 'edit', 'cancel'];
-
-  showTodayAppointments = false;
-  allAppointments = [
-    {
-      doctorName: 'John Smith',
-      doctorSpecialty: 'Cardiology',
-      date: new Date().toISOString().split('T')[0],
-      time: '10:00 AM',
-      reason: 'Regular checkup',
-      status: 'Scheduled'
-    },
-    {
-      doctorName: 'Sarah Johnson',
-      doctorSpecialty: 'Pediatrics',
-      date: new Date().toISOString().split('T')[0],
-      time: '02:00 PM',
-      reason: 'Follow-up',
-      status: 'Pending'
-    },
-    {
-      doctorName: 'Emily Davis',
-      doctorSpecialty: 'Neurology',
-      date: '2025-07-16',
-      time: '11:00 AM',
-      reason: 'Consultation',
-      status: 'Completed'
-    }
-  ];
-
-  get todayAppointments() {
-    const today = new Date().toISOString().split('T')[0];
-    return this.allAppointments.filter(app => app.date === today);
-  }
 
   // Method to handle appointment management actions
   proceedWithAction(): void {
