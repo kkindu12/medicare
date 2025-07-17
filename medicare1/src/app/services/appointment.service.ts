@@ -3,6 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface AppointmentHistory {
+  appointment_date: string;
+  appointment_time: string;
+  reschedule_reason?: string;
+  rescheduled_at: string;
+}
+
 export interface Appointment {
   id?: string;
   doctor_id: string;
@@ -15,7 +22,9 @@ export interface Appointment {
   reason: string;
   status: string;
   rejection_reason?: string;
+  reschedule_reason?: string;
   created_at?: string;
+  reschedule_history?: AppointmentHistory[];
 }
 
 @Injectable({
@@ -84,5 +93,24 @@ export class AppointmentService {
     return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reject`, {
       rejection_reason: rejectionReason
     });
+  }
+
+  getAppointmentById(appointmentId: string): Observable<Appointment> {
+    return this.http.get<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}`);
+  }
+
+  rescheduleAppointment(appointmentId: string, rescheduleData: {
+    appointment_id: string;
+    doctor_id: string;
+    doctor_name: string;
+    doctor_specialty: string;
+    patient_id: string;
+    patient_name: string;
+    appointment_date: string;
+    appointment_time: string;
+    reason: string;
+    reschedule_reason: string;
+  }): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reschedule`, rescheduleData);
   }
 }

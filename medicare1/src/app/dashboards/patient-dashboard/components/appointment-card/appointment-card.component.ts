@@ -1,6 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+export interface AppointmentHistory {
+  appointment_date: string;
+  appointment_time: string;
+  reschedule_reason?: string;
+  rescheduled_at: string;
+}
+
 export interface AppointmentCard {
   id?: string;
   doctor_id?: string;
@@ -13,6 +20,7 @@ export interface AppointmentCard {
   reason?: string;
   status: string;
   created_at?: string;
+  reschedule_history?: AppointmentHistory[];
 }
 
 @Component({

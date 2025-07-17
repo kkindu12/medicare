@@ -182,15 +182,67 @@
             </div>
             <!-- Health Assistant Tab -->
             <div *ngIf="activeTab === 'chatbot'" class="tab-content-section">
-              <div class="text-center py-5">
+              <div *ngIf="!showChatInterface" class="text-center py-5">
                 <div class="bg-primary bg-opacity-10 p-4 rounded-circle d-inline-block mb-4">
                   <i class="bi bi-robot text-primary" style="font-size: 3rem;"></i>
                 </div>
                 <h5 class="fw-bold mb-3">Health Assistant</h5>
                 <p class="text-muted mb-4">Get instant answers to your health questions and receive personalized health tips.</p>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" (click)="startConversation()">
                   <i class="bi bi-chat-dots me-2"></i>Start Conversation
                 </button>
+              </div>
+
+              <!-- Chat Interface -->
+              <div *ngIf="showChatInterface" class="chat-container">
+                <div class="chat-header d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
+                      <i class="bi bi-robot text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0 fw-bold">Healthcare Assistant</h6>
+                      <small class="text-muted">Online now</small>
+                    </div>
+                  </div>
+                  <button class="btn btn-outline-secondary btn-sm" (click)="closeChatInterface()">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="chat-messages" #chatMessagesContainer>
+                  <div *ngFor="let message of chatMessages" class="message mb-3" 
+                       [ngClass]="{'user-message': !message.isBot, 'bot-message': message.isBot}">
+                    <div class="message-content" [ngClass]="{'user-content': !message.isBot, 'bot-content': message.isBot}">
+                      <div *ngIf="message.isTyping" class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                      <p *ngIf="!message.isTyping" class="mb-1">{{ message.message }}</p>
+                      <small *ngIf="!message.isTyping" class="text-muted">{{ message.timestamp | date:'short' }}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input mt-3">
+                  <div class="input-group">
+                    <input type="text" 
+                           class="form-control" 
+                           placeholder="Type your message..." 
+                           [(ngModel)]="currentMessage"
+                           (keydown.enter)="sendMessage()"
+                           #messageInput>
+                    <button class="btn btn-primary" 
+                            type="button" 
+                            (click)="sendMessage()"
+                            [disabled]="!currentMessage.trim()">
+                      <i class="bi bi-send"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
