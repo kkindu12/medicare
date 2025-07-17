@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
-from models.appointment import Appointment, AppointmentCreate, AppointmentUpdate
+from models.appointment import Appointment, AppointmentCreate, AppointmentUpdate, AppointmentReschedule
 from services.database import get_db
 from bson import ObjectId
 from typing import List
@@ -133,6 +133,66 @@ async def reject_appointment(appointment_id: str, rejection_data: dict):
         "title": "Appointment Rejected",
         "message": f"Your appointment with Dr. {appointment['doctor_name']} on {appointment['appointment_date']} at {appointment['appointment_time']} has been rejected. Reason: {rejection_reason}",
         "type": "appointment_rejected",
+        "relatedRecordId": appointment_id,
+        "read": False,
+        "createdAt": datetime.now().isoformat()
+    }
+    get_db().notifications.insert_one(notification_data)
+    
+    return Appointment(**appointment)
+
+@router.put("/appointments/{appointment_id}/reschedule", response_model=Appointment)
+async def reschedule_appointment(appointment_id: str, reschedule_data: AppointmentReschedule):
+    """Reschedule an appointment with a reason and notify the doctor"""
+    
+    # First, get the current appointment to save to history
+    current_appointment = get_db().appointments.find_one({"_id": ObjectId(appointment_id)})
+    if not current_appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    # Create history entry for the current appointment details
+    history_entry = {
+        "appointment_date": current_appointment["appointment_date"],
+        "appointment_time": current_appointment["appointment_time"],
+        "reschedule_reason": reschedule_data.reschedule_reason,
+        "rescheduled_at": datetime.now().isoformat()
+    }
+    
+    # Get existing history or initialize empty list
+    existing_history = current_appointment.get("reschedule_history", [])
+    existing_history.append(history_entry)
+    
+    # Update appointment with new details and add history
+    update_data = {
+        "doctor_id": reschedule_data.doctor_id,
+        "doctor_name": reschedule_data.doctor_name,
+        "doctor_specialty": reschedule_data.doctor_specialty,
+        "appointment_date": reschedule_data.appointment_date,
+        "appointment_time": reschedule_data.appointment_time,
+        "reason": reschedule_data.reason,
+        "reschedule_reason": reschedule_data.reschedule_reason,
+        "status": "pending",  # Reset status to pending for doctor approval
+        "reschedule_history": existing_history
+    }
+    
+    result = get_db().appointments.update_one(
+        {"_id": ObjectId(appointment_id)}, 
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    # Get updated appointment
+    appointment = get_db().appointments.find_one({"_id": ObjectId(appointment_id)})
+    appointment["id"] = str(appointment["_id"])
+    appointment.pop("_id")
+    
+    # Create notification for doctor about rescheduled appointment
+    notification_data = {
+        "userId": appointment["doctor_id"],
+        "title": "Appointment Rescheduled",
+        "message": f"Patient {appointment['patient_name']} has rescheduled their appointment to {appointment['appointment_date']} at {appointment['appointment_time']}. Reason: {reschedule_data.reschedule_reason}",
+        "type": "appointment_rescheduled",
         "relatedRecordId": appointment_id,
         "read": False,
         "createdAt": datetime.now().isoformat()
