@@ -1,0 +1,62 @@
+// Profile component styles to match signin design
+.profile-view {
+  .bg-light {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6;
+  }
+}
+
+// Ensure form controls match signin styling
+.form-control {
+  &.bg-light {
+    background-color: #f8f9fa !important;
+  }
+  
+  &.border-primary {
+    border-color: #0d6efd !important;
+    
+    &:focus {
+      border-color: #0d6efd !important;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    }
+  }
+}
+
+// Button styling consistency
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  
+  &:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+  }
+}
+
+// Alert styling
+.alert {
+  border-radius: 0.5rem;
+  
+  &.alert-success {
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    color: #0f5132;
+  }
+  
+  &.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    color: #842029;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767.98px) {
+  .d-md-flex {
+    display: none !important;
+  }
+  
+  .d-md-block {
+    display: none !important;
+  }
+}

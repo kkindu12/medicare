@@ -1,73 +1,116 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+export interface AppointmentHistory {
+  appointment_date: string;
+  appointment_time: string;
+  reschedule_reason?: string;
+  rescheduled_at: string;
+}
 
 export interface Appointment {
-  id: number;
-  doctorName: string;
-  doctorSpecialty: string;
-  date: string;
-  time: string;
+  id?: string;
+  doctor_id: string;
+  doctor_name: string;
+  doctor_specialty: string;
+  patient_id: string;
+  patient_name: string;
+  appointment_date: string;
+  appointment_time: string;
   reason: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
+  status: string;
+  rejection_reason?: string;
+  reschedule_reason?: string;
+  created_at?: string;
+  reschedule_history?: AppointmentHistory[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
+  private apiUrl = environment.apiUrl;
   private appointments = new BehaviorSubject<Appointment[]>([]);
-  private nextId = 1;
 
-  constructor() {
-    // Load initial appointments
-    const initialAppointments: Appointment[] = [
-      {
-        id: 1,
-        doctorName: 'John Smith',
-        doctorSpecialty: 'Cardiology',
-        date: '2025-06-11',
-        time: '10:00 AM',
-        reason: 'Regular checkup',
-        status: 'scheduled'
-      },
-      {
-        id: 2,
-        doctorName: 'Sarah Johnson',
-        doctorSpecialty: 'Pediatrics',
-        date: '2025-06-15',
-        time: '02:00 PM',
-        reason: 'Follow-up consultation',
-        status: 'scheduled'
-      }
-    ];
+  constructor(private http: HttpClient) {
+    this.loadAppointments();
+  }
+
+  private loadAppointments(): void {
+    // For now, keep some initial mock data
+    const initialAppointments: Appointment[] = [];
     this.appointments.next(initialAppointments);
-    this.nextId = initialAppointments.length + 1;
   }
 
   getAppointments(): Observable<Appointment[]> {
     return this.appointments.asObservable();
   }
 
-  addAppointment(appointment: Omit<Appointment, 'id'>): void {
-    const currentAppointments = this.appointments.value;
-    const newAppointment = {
-      ...appointment,
-      id: this.nextId++
+  getPatientAppointments(patientId: string): Observable<Appointment[]> {
+    return this.http.get<Appointment[]>(`${this.apiUrl}/api/appointments/patient/${patientId}`);
+  }
+
+  createAppointment(appointment: Appointment): Observable<Appointment> {
+    return this.http.post<Appointment>(`${this.apiUrl}/api/appointments`, appointment);
+  }
+  addAppointment(appointmentData: {
+    doctor_id: string;
+    doctor_name: string;
+    doctor_specialty: string;
+    appointment_date: string;
+    appointment_time: string;
+    reason: string;
+    patient_id: string;
+    patient_name: string;
+  }): Observable<Appointment> {
+    const appointment: Appointment = {
+      ...appointmentData,
+      status: 'pending'
     };
-    this.appointments.next([...currentAppointments, newAppointment]);
+
+    // Add to backend and return the Observable
+    return this.createAppointment(appointment);
   }
 
-  cancelAppointment(id: number): void {
-    const currentAppointments = this.appointments.value;
-    const updatedAppointments = currentAppointments.filter(app => app.id !== id);
-    this.appointments.next(updatedAppointments);
+  cancelAppointment(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/api/appointments/${id}`);
+  }  updateAppointmentStatus(id: string, status: string): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${id}`, { status });
   }
 
-  updateAppointmentStatus(id: number, status: 'scheduled' | 'completed' | 'cancelled'): void {
-    const currentAppointments = this.appointments.value;
-    const updatedAppointments = currentAppointments.map(app => 
-      app.id === id ? { ...app, status } : app
-    );
-    this.appointments.next(updatedAppointments);
+  // Doctor-specific methods
+  getDoctorAppointments(doctorId: string, status?: string): Observable<Appointment[]> {
+    const params = status ? `?status=${status}` : '';
+    return this.http.get<Appointment[]>(`${this.apiUrl}/api/appointments/doctor/${doctorId}${params}`);
   }
-} 
+
+  approveAppointment(appointmentId: string): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/approve`, {});
+  }
+  rejectAppointment(appointmentId: string, rejectionReason: string): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reject`, {
+      rejection_reason: rejectionReason
+    });
+  }
+
+  getAppointmentById(appointmentId: string): Observable<Appointment> {
+    return this.http.get<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}`);
+  }
+
+  rescheduleAppointment(appointmentId: string, rescheduleData: {
+    appointment_id: string;
+    doctor_id: string;
+    doctor_name: string;
+    doctor_specialty: string;
+    patient_id: string;
+    patient_name: string;
+    appointment_date: string;
+    appointment_time: string;
+    reason: string;
+    reschedule_reason: string;
+  }): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/api/appointments/${appointmentId}/reschedule`, rescheduleData);
+  }
+}

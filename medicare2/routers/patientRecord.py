@@ -1,20 +1,73 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Request
 from models.patient import Patient, PatientCreate, PatientUpdate, Report
 from models.patientRecord import PatientRecord, PatientRecordCreate, PatientRecordUpdate, Medication, PatientRecordWithUser
+from models.notification import CreateNotificationRequest
 from services.database import get_db, get_fs
 from services.dropboxService import upload_file_to_dropbox, get_dropbox_auth_url, complete_dropbox_auth, refresh_dropbox_token, test_dropbox_connection, list_dropbox_files
 from bson import ObjectId
 from typing import List
 from datetime import datetime
+import uuid
+import requests
 from services.dropboxService import upload_file_to_dropbox_simple
 
 router = APIRouter()
 
 @router.post("/patientRecords")
 async def create_patient_record(record: PatientRecordCreate):
+    print(f"Creating patient record for patient: {record.patientId}")
+    db = get_db()
     record_dict = record.dict()
-    result = get_db().patientRecords.insert_one(record_dict)
-    return {"id": str(result.inserted_id)}
+    result = db.patientRecords.insert_one(record_dict)
+    record_id = str(result.inserted_id)
+    print(f"Patient record created with ID: {record_id}")
+    
+    # Create notification for the patient
+    try:
+        # Get patient information
+        patient = db.users.find_one({"_id": ObjectId(record.patientId)})
+        if patient:
+            patient_name = f"{patient.get('firstName', '')} {patient.get('lastName', '')}"
+            print(f"Found patient: {patient_name}")
+            
+            # Get doctor information if available
+            doctor_name = record.doctor
+            
+            # Create more descriptive notification
+            notification_id = str(uuid.uuid4())
+            current_time = datetime.now().isoformat()
+            
+            notification_doc = {
+                "_id": notification_id,
+                "userId": record.patientId,
+                "title": "New Medical Record Added",
+                "message": f"Dr. {doctor_name} added a medical record on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}. Condition: {record.condition}",
+                "type": "medical_record",                "relatedRecordId": record_id,
+                "createdAt": current_time,
+                "read": False,
+                "createdBy": None,  # We could add doctor ID if available
+                "createdByName": doctor_name
+            }
+            
+            notification_result = db.notifications.insert_one(notification_doc)
+            print(f"Notification created with ID: {notification_result.inserted_id}")
+            print(f"Notification details: {notification_doc}")
+            
+            # Trigger immediate SSE update for real-time notifications
+            try:
+                sse_response = requests.post(f"http://localhost:8000/api/sse/trigger/{record.patientId}", timeout=1)
+                print(f"SSE trigger response: {sse_response.json()}")
+            except Exception as sse_error:
+                print(f"SSE trigger failed (non-critical): {sse_error}")
+        else:
+            print(f"Patient not found with ID: {record.patientId}")
+    except Exception as e:
+        print(f"Error creating notification: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        # Don't fail the record creation if notification fails
+    
+    return {"id": record_id}
 
 @router.get("/patientRecords", response_model=List[PatientRecordWithUser])
 async def get_patient_records():
@@ -218,11 +271,11 @@ async def get_patient_reports(patient_id: str):
             record["id"] = str(record["_id"])
             record.pop("_id")
             
-            # Get user data based on patientId
+            # Get patient user data based on patientId
             try:
                 patient_user = db.users.find_one({"_id": ObjectId(record["patientId"])})
                 if patient_user:
-                    # Add user data to the record
+                    # Add patient user data to the record
                     patient_user["id"] = str(patient_user["_id"])
                     patient_user.pop("_id")
                     record["user"] = patient_user
@@ -230,11 +283,31 @@ async def get_patient_reports(patient_id: str):
                     record["user"] = None
             except Exception as e:
                 record["user"] = None
+              # Get doctor user data by doctor name
+            try:
+                doctor_name_parts = record["doctor"].split(" ")
+                if len(doctor_name_parts) >= 2:
+                    first_name = doctor_name_parts[0]
+                    last_name = " ".join(doctor_name_parts[1:])
+                    doctor_user = db.users.find_one({
+                        "firstName": first_name,
+                        "lastName": last_name,
+                        "role": True  # true means doctor
+                    })
+                    if doctor_user:
+                        # Add doctor user data to the record
+                        doctor_user["id"] = str(doctor_user["_id"])
+                        doctor_user.pop("_id")
+                        record["doctorUser"] = doctor_user
+                    else:
+                        record["doctorUser"] = None
+            except Exception as e:
+                record["doctorUser"] = None
             
             records.append(record)
         
         return records
-    
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
