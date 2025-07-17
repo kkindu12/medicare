@@ -16,8 +16,8 @@ export interface Prescription {
 export interface PharmacyStats {
   pendingPrescriptions: number;
   labTestRequests: number;
-  outOfStockItems: number;
-  reportsUploaded: number;
+  lowStockItems: number;
+  outOfStockItems?: number; // Made optional to resolve mismatch
 }
 
 export interface LabTest {
