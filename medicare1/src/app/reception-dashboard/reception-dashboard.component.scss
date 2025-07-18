@@ -90,6 +90,112 @@
   max-width: 1200px;
 }
 
+/* Appointment Card Styling */
+.appointment-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+}
+
+.appointment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #007bff;
+}
+
+.appointment-card .card-body {
+  padding: 1.25rem;
+}
+
+.appointment-card h6 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.appointment-card .badge {
+  font-size: 0.75rem;
+  padding: 0.4em 0.6em;
+}
+
+/* Patient Card Styling */
+.patient-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+}
+
+.patient-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #28a745;
+}
+
+.patient-card .card-body {
+  padding: 1.25rem;
+}
+
+.patient-card h6 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.patient-card .badge {
+  font-size: 0.75rem;
+  padding: 0.4em 0.6em;
+}
+
+/* Doctor Card Styling */
+.doctor-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+}
+
+.doctor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #17a2b8;
+}
+
+.doctor-card .card-body {
+  padding: 1.25rem;
+}
+
+.doctor-card h6 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.doctor-card .badge {
+  font-size: 0.75rem;
+  padding: 0.4em 0.6em;
+}
+
+.doctor-card .bg-success {
+  background-color: #28a745 !important;
+}
+
+.doctor-card .bg-secondary {
+  background-color: #6c757d !important;
+}
+
+/* Loading spinner styling */
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Filter button styling */
+.btn-group .btn {
+  border-radius: 6px;
+}
+
+.btn-group .btn.active {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .stats-card .card-body {
