@@ -11,6 +11,9 @@ import { AppointmentService, Appointment } from '../../services/appointment.serv
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../shared/alert/alert.service';
 import { ChatbotService, ChatMessage } from '../../services/chatbot.service';
+import { NotificationService } from '../../services/notification.service';
+import { UserNotification } from '../../models/notification.model';
+import { BillService, Bill } from '../../services/bill.service';
 import type { PatientRecordWithUser } from '../../emr/models';
 import { interval, Subscription } from 'rxjs';
 
@@ -75,6 +78,16 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
   @ViewChild('chatMessagesContainer', { static: false }) chatMessagesContainer!: ElementRef;
   @ViewChild('messageInput', { static: false }) messageInputElement!: ElementRef;
 
+  // Notifications properties
+  notifications: UserNotification[] = [];
+  isLoadingNotifications = false;
+  unreadNotificationCount = 0;
+
+  // Bills/Payment properties
+  bills: Bill[] = [];
+  isLoadingBills = false;
+  billsError: string | null = null;
+
   // medicalRecords: MedicalRecord[] = [
   //   {
   //     id: 1,
@@ -99,30 +112,16 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
   // ];
 
   paymentHistory: Payment[] = [
-    {
-      id: 1,
-      date: '2025-06-05',
-      amount: 250.00,
-      description: 'Cardiology Consultation - Dr. Sarah Johnson',
-      method: 'Credit Card',
-      status: 'paid'
-    },
-    {
-      id: 2,
-      date: '2025-05-28',
-      amount: 120.00,
-      description: 'Blood Test - Laboratory Services',
-      method: 'Insurance',
-      status: 'paid'
-    },
-    {
-      id: 3,
-      date: '2025-05-20',
-      amount: 80.00,
-      description: 'Prescription Medication',
-      method: 'Debit Card',
-      status: 'pending'
-    }  ];  constructor(
+    // Commented out hardcoded data - now loaded from backend as bills
+    // {
+    //   id: 1,
+    //   date: '2025-06-05',
+    //   amount: 250.00,
+    //   description: 'Cardiology Consultation - Dr. Sarah Johnson',
+    //   method: 'Credit Card',
+    //   status: 'paid'
+    // }
+  ];  constructor(
     private medicalRecordsService: MedicalRecordsService,
     private router: Router,
     private route: ActivatedRoute,
@@ -130,6 +129,8 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
     private authService: AuthService,
     private alertService: AlertService,
     private chatbotService: ChatbotService,
+    private notificationService: NotificationService,
+    private billService: BillService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}ngOnInit(): void {
     // Load current user from sessionStorage (only in browser)
@@ -149,6 +150,8 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
     
     this.loadPatientRecords();
     this.loadAppointments();
+    this.loadNotifications();
+    this.loadPatientBills();
     this.startAppointmentPolling(); // Start auto-refreshing appointments
   }
   
@@ -238,6 +241,82 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
     });
   }
 
+  // Notification methods
+  loadNotifications(): void {
+    if (!this.currentUser?.id) return;
+    
+    this.isLoadingNotifications = true;
+    this.notificationService.loadNotifications(this.currentUser.id).subscribe({
+      next: (notifications: UserNotification[]) => {
+        this.notifications = notifications;
+        this.unreadNotificationCount = notifications.filter(n => !n.read).length;
+        this.isLoadingNotifications = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading notifications:', error);
+        this.isLoadingNotifications = false;
+      }
+    });
+  }
+
+  refreshNotifications(): void {
+    this.loadNotifications();
+  }
+
+  markNotificationAsRead(notification: UserNotification): void {
+    if (notification.read) return;
+    
+    this.notificationService.markAsRead(notification.id).subscribe({
+      next: () => {
+        notification.read = true;
+        this.unreadNotificationCount = Math.max(0, this.unreadNotificationCount - 1);
+      },
+      error: (error: any) => {
+        console.error('Error marking notification as read:', error);
+      }
+    });
+  }
+
+  markAllAsRead(): void {
+    const unreadNotifications = this.notifications.filter(n => !n.read);
+    
+    unreadNotifications.forEach(notification => {
+      this.notificationService.markAsRead(notification.id).subscribe({
+        next: () => {
+          notification.read = true;
+        },
+        error: (error: any) => {
+          console.error('Error marking notification as read:', error);
+        }
+      });
+    });
+    
+    this.unreadNotificationCount = 0;
+  }
+
+  deleteNotification(notification: UserNotification): void {
+    // Implementation depends on if you have a delete endpoint
+    const index = this.notifications.indexOf(notification);
+    if (index > -1) {
+      this.notifications.splice(index, 1);
+      if (!notification.read) {
+        this.unreadNotificationCount = Math.max(0, this.unreadNotificationCount - 1);
+      }
+    }
+  }
+
+  getNotificationIcon(type: string): string {
+    switch (type) {
+      case 'medical_record': return 'bi-file-medical-fill text-success';
+      case 'appointment': return 'bi-calendar-event-fill text-primary';
+      case 'appointment_approved': return 'bi-check-circle-fill text-success';
+      case 'appointment_rejected': return 'bi-x-circle-fill text-danger';
+      case 'prescription': return 'bi-prescription text-info';
+      case 'lab_result': return 'bi-clipboard-data-fill text-warning';
+      case 'general': return 'bi-info-circle-fill text-info';
+      default: return 'bi-bell-fill text-secondary';
+    }
+  }
   onViewHistory(record: PatientRecordWithUser): void {
     this.selectedPatientRecord = record;
     this.showPreviousRecords = true;
@@ -396,5 +475,51 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
       const element = this.chatMessagesContainer.nativeElement;
       element.scrollTop = element.scrollHeight;
     }
+  }
+
+  // Bills/Payment methods
+  loadPatientBills(): void {
+    if (!this.currentUser?.id) return;
+    
+    this.isLoadingBills = true;
+    this.billsError = null;
+    
+    this.billService.getPatientBills(this.currentUser.id).subscribe({
+      next: (bills: Bill[]) => {
+        this.bills = bills;
+        // Convert bills to payment history format for compatibility
+        this.paymentHistory = bills.map(bill => ({
+          id: parseInt(bill.id || '0'),
+          date: new Date(bill.createdAt).toLocaleDateString(),
+          amount: bill.totalAmount,
+          description: `Bill ${bill.billNumber} - ${bill.billItems.map(item => item.description).join(', ')}`,
+          method: 'Hospital Bill',
+          status: bill.status as 'paid' | 'pending' | 'failed'
+        }));
+        this.isLoadingBills = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading patient bills:', error);
+        this.billsError = 'Failed to load payment history. Please try again.';
+        this.isLoadingBills = false;
+      }
+    });
+  }
+
+  refreshBills(): void {
+    this.loadPatientBills();
+  }
+
+  payBill(billId: string): void {
+    this.billService.updateBillStatus(billId, 'paid').subscribe({
+      next: () => {
+        this.alertService.showSuccess('Payment Successful', 'Bill has been marked as paid.');
+        this.loadPatientBills(); // Reload bills
+      },
+      error: (error: any) => {
+        console.error('Error updating bill status:', error);
+        this.alertService.showError('Payment Failed', 'Unable to process payment. Please try again.');
+      }
+    });
   }
 }
