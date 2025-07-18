@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SigninService } from '../../services/signinService/signin.service';
+import { AlertService } from '../../shared/alert/alert.service';
 
 @Component({
   selector: 'app-signin',
@@ -20,6 +21,7 @@ export class SigninComponent {
   constructor(
     private router: Router, 
     private signinService: SigninService,
+    private alertService: AlertService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -60,7 +62,7 @@ export class SigninComponent {
           }
         }      });
     } else {
-      alert("Invalid email or password.");
+      this.alertService.showError('Validation Error', 'Invalid email or password.');
     }
   }
 }

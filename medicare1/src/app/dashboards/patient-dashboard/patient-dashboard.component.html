@@ -75,7 +75,8 @@
                         type="button">
                   <i class="bi bi-file-medical me-2"></i>Medical Records
                 </button>
-              </li>              <li class="nav-item" role="presentation">
+              </li>              
+              <li class="nav-item" role="presentation">
                 <button class="nav-link"
                         [class.active]="activeTab === 'chatbot'"
                         (click)="setActiveTab('chatbot')"
@@ -249,25 +250,58 @@
             <!-- Payment Tab -->
             <div *ngIf="activeTab === 'payment'" class="tab-content-section">
               <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0 fw-bold">Payment History</h5>
-                <button class="btn btn-primary btn-sm">
-                  <i class="bi bi-plus-lg me-1"></i>Add Payment Method
+                <h5 class="mb-0 fw-bold">Payment History & Bills</h5>
+                <button class="btn btn-primary btn-sm" (click)="refreshBills()">
+                  <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                 </button>
               </div>
               
-              <div class="row">
+              <!-- Loading State -->
+              <div *ngIf="isLoadingBills" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="text-muted mt-3">Loading payment history...</p>
+              </div>
+
+              <!-- Error State -->
+              <div *ngIf="billsError && !isLoadingBills" class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ billsError }}
+                <button class="btn btn-sm btn-outline-danger ms-2" (click)="refreshBills()">
+                  Try Again
+                </button>
+              </div>
+              
+              <!-- No Bills State -->
+              <div *ngIf="!isLoadingBills && !billsError && paymentHistory.length === 0" class="text-center py-5">
+                <i class="bi bi-receipt display-1 text-muted mb-3"></i>
+                <h6 class="text-muted">No bills or payments yet</h6>
+                <p class="text-muted">Your hospital bills and payment history will appear here.</p>
+              </div>
+              
+              <!-- Bills/Payments List -->
+              <div *ngIf="!isLoadingBills && !billsError && paymentHistory.length > 0" class="row">
                 <div *ngFor="let payment of paymentHistory" class="col-md-6 col-lg-4 mb-3">
                   <div class="card border-0 shadow-sm h-100 payment-card">
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-start mb-3">
-                        <span [class]="getPaymentStatusClass(payment.status)">{{ payment.status }}</span>
+                        <span [class]="getPaymentStatusClass(payment.status)">{{ payment.status | titlecase }}</span>
                         <small class="text-muted">{{ payment.date }}</small>
                       </div>
-                      <h6 class="card-title fw-bold">${{ payment.amount }}</h6>
+                      <h6 class="card-title fw-bold">Rs. {{ payment.amount | number:'1.2-2' }}</h6>
                       <p class="text-muted small mb-2">{{ payment.description }}</p>
-                      <div class="d-flex align-items-center">
-                        <i class="bi bi-credit-card me-2 text-primary"></i>
-                        <span class="fw-semibold">{{ payment.method }}</span>
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                          <i class="bi bi-receipt me-2 text-primary"></i>
+                          <span class="fw-semibold">{{ payment.method }}</span>
+                        </div>
+                        <button *ngIf="payment.status === 'pending'" 
+                                class="btn btn-sm btn-success" 
+                                (click)="payBill(payment.id.toString())"
+                                title="Mark as paid">
+                          <i class="bi bi-check-lg"></i> Pay
+                        </button>
                       </div>
                     </div>
                   </div>
