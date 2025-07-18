@@ -204,7 +204,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
         this.isLoadingRecords = false;
       },
       error: (error) => {
-        console.error('Error loading patient records:', error);
+        this.alertService.showError('Error', 'Failed to load medical records. Please try again.');
         this.recordsError = 'Failed to load medical records. Please try again.';
         this.isLoadingRecords = false;
       }
@@ -235,7 +235,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
         this.isLoadingAppointments = false;
       },
       error: (error) => {
-        console.error('Error loading appointments:', error);
+        this.alertService.showError('Error', 'Failed to load appointments. Please try again.');
         this.isLoadingAppointments = false;
       }
     });
@@ -253,7 +253,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
         this.isLoadingNotifications = false;
       },
       error: (error: any) => {
-        console.error('Error loading notifications:', error);
+        this.alertService.showError('Error', 'Failed to load notifications. Please try again.');
         this.isLoadingNotifications = false;
       }
     });
@@ -272,7 +272,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
         this.unreadNotificationCount = Math.max(0, this.unreadNotificationCount - 1);
       },
       error: (error: any) => {
-        console.error('Error marking notification as read:', error);
+        this.alertService.showError('Error', 'Failed to mark notification as read.');
       }
     });
   }
@@ -286,7 +286,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
           notification.read = true;
         },
         error: (error: any) => {
-          console.error('Error marking notification as read:', error);
+          this.alertService.showError('Error', 'Failed to mark notification as read.');
         }
       });
     });
@@ -328,7 +328,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
           this.previousPatientRecords = records;
         },
         error: (error) => {
-          console.error('Error loading patient history:', error);
+          this.alertService.showError('Error', 'Failed to load patient history.');
           this.previousPatientRecords = [];
         }
       });
@@ -416,7 +416,6 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
           this.loadAppointments(); // Reload appointments
         },
         error: (error) => {
-          console.error('Error cancelling appointment:', error);
           this.alertService.showError('Cancellation Failed', 'Failed to cancel appointment. Please try again.');
         }
       });
@@ -499,7 +498,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
         this.isLoadingBills = false;
       },
       error: (error: any) => {
-        console.error('Error loading patient bills:', error);
+        this.alertService.showError('Error', 'Failed to load payment history. Please try again.');
         this.billsError = 'Failed to load payment history. Please try again.';
         this.isLoadingBills = false;
       }
@@ -517,7 +516,6 @@ export class PatientDashboardComponent implements OnInit, OnDestroy, AfterViewCh
         this.loadPatientBills(); // Reload bills
       },
       error: (error: any) => {
-        console.error('Error updating bill status:', error);
         this.alertService.showError('Payment Failed', 'Unable to process payment. Please try again.');
       }
     });

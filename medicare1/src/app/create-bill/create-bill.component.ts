@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../services/userService/user.service';
 import { NotificationService } from '../services/notification.service';
 import { BillService, BillCreate } from '../services/bill.service';
+import { AlertService } from '../shared/alert/alert.service';
 import { CreateNotificationRequest } from '../models/notification.model';
 
 @Component({
@@ -38,7 +39,8 @@ export class CreateBillComponent implements OnInit {
     private router: Router, 
     private userService: UserService,
     private notificationService: NotificationService,
-    private billService: BillService
+    private billService: BillService,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -51,12 +53,8 @@ export class CreateBillComponent implements OnInit {
     this.isLoadingPatients = true;
     this.patientError = null;
 
-    console.log('Loading patients for bill creation...');
-
     this.userService.getAllUsers().subscribe({
       next: (users) => {
-        console.log('Received users from API:', users);
-        
         // Filter users to get only patients (role = false)
         this.patients = users
           .filter(user => !user.role) // Get only patients (not doctors/admins)
@@ -70,14 +68,13 @@ export class CreateBillComponent implements OnInit {
           }));
         
         this.isLoadingPatients = false;
-        console.log('Filtered patients for billing:', this.patients.length, 'patients found');
         
         if (this.patients.length === 0) {
           this.patientError = 'No patients found. Please register patients first.';
         }
       },
       error: (error) => {
-        console.error('Error loading patients:', error);
+        this.alertService.showError('Error', 'Failed to load patients. Please check if the backend is running and try again.');
         this.patientError = 'Failed to load patients. Please check if the backend is running and try again.';
         this.isLoadingPatients = false;
       }
@@ -91,7 +88,7 @@ export class CreateBillComponent implements OnInit {
 
   generateBill() {
     if (!this.selectedPatientName || this.billItems.length === 0) {
-      alert('Select patient and add at least one bill item.');
+      this.alertService.showError('Validation Error', 'Select patient and add at least one bill item.');
       return;
     }
 
@@ -99,7 +96,7 @@ export class CreateBillComponent implements OnInit {
     const selectedPatient = this.patients.find(p => p.name === this.selectedPatientName);
     
     if (!selectedPatient) {
-      alert('Error: Could not find patient information.');
+      this.alertService.showError('Error', 'Could not find patient information.');
       return;
     }
 
@@ -118,8 +115,6 @@ export class CreateBillComponent implements OnInit {
     // Save bill to backend first
     this.billService.createBill(billData).subscribe({
       next: (savedBill) => {
-        console.log('Bill saved to backend:', savedBill);
-        
         // Generate and open bill receipt
         this.generateBillReceipt(billData);
 
@@ -130,8 +125,7 @@ export class CreateBillComponent implements OnInit {
         this.resetForm();
       },
       error: (error) => {
-        console.error('Error saving bill to backend:', error);
-        alert('Error saving bill to database. Please try again.');
+        this.alertService.showError('Error', 'Error saving bill to database. Please try again.');
       }
     });
   }
@@ -214,16 +208,12 @@ export class CreateBillComponent implements OnInit {
       createdByName: 'Reception Desk'
     };
 
-    console.log('Sending bill notification to patient:', patient.name);
-
     this.notificationService.createNotification(notificationRequest).subscribe({
       next: (response) => {
-        console.log('Bill notification sent successfully:', response);
-        alert(`Bill generated successfully! Patient ${patient.name} has been notified.`);
+        this.alertService.showSuccess('Success', `Bill generated successfully! Patient ${patient.name} has been notified.`);
       },
       error: (error) => {
-        console.error('Error sending bill notification:', error);
-        alert(`Bill generated successfully, but notification could not be sent. Please inform the patient manually.`);
+        this.alertService.showWarning('Warning', `Bill generated successfully, but notification could not be sent. Please inform the patient manually.`);
       }
     });
   }
@@ -242,9 +232,6 @@ export class CreateBillComponent implements OnInit {
 
   onPatientSelect(event: any) {
     const selected = this.patients.find(p => p.name === this.selectedPatientName);
-    if (selected) {
-      console.log('Selected patient:', selected);
-    }
   }
 
   addItem() {
@@ -259,7 +246,7 @@ export class CreateBillComponent implements OnInit {
       this.newItem.description = '';
       this.newItem.amount = 0;
     } else {
-      alert('Please select a patient and enter description & amount.');
+      this.alertService.showError('Validation Error', 'Please select a patient and enter description & amount.');
     }
   }
 
