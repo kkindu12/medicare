@@ -17,7 +17,7 @@ import { HomePageComponent } from './home-page/home-page/home-page.component';
 import { BookingComponent } from './booking/booking.component';
 import { MyAppointmentsComponent } from './my-appointments/my-appointments.component';
 import { AddPatientComponent } from './add-patient/add-patient.component';
-import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment
+import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment.component';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
