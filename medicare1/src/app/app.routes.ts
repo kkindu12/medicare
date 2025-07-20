@@ -17,6 +17,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { HomePageComponent } from './home-page/home-page/home-page.component';
 import { BookingComponent } from './booking/booking.component';
 import { MyAppointmentsComponent } from './my-appointments/my-appointments.component';
+import { AddPatientComponent } from './add-patient/add-patient.component';
 import { RescheduleAppointmentComponent } from './reschedule-appointment/reschedule-appointment.component';
 
 export const routes: Routes = [
@@ -41,7 +42,9 @@ export const routes: Routes = [
     { path: 'bill-receipt', component: BillReceiptComponent },
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment', component: PaymentComponent },
-    { path: 'reception', component: ReceptionDashboardComponent },
-    { path: '**', redirectTo: '' },
-    { path: 'pharmacy', component: PharmacyComponent }
+    { path: 'reception', component: ReceptionDashboardComponent  },
+    {path: 'add-patient',component: AddPatientComponent},
+    { path: 'pharmacy', component: PharmacyComponent },
+    { path: '**', redirectTo: '' }
+
 ];

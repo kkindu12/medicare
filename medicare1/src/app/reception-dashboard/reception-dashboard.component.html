@@ -1,50 +1,382 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
-  <span class="navbar-brand fw-bold text-white">Medicare </span>
-  <div class="ms-auto">
-    <a class="nav-link text-white fw-semibold" href="/profile">
-      <i class="bi bi-person-circle me-1"></i> Profile
-    </a>
-  </div>
-</nav>
+<!-- Include Navbar -->
+ 
 
+<!-- Main Dashboard Content -->
+<div class="container-fluid py-4">
+  <div class="container">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm bg-light">
+          <div class="card-body p-4">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h2 class="card-title mb-2 fw-bold text-dark">Welcome back, Reception!</h2>
+                <p class="card-text mb-0 text-muted">
+                  <i class="bi bi-calendar-check me-2"></i>
+                  Manage appointments, patients, and billing efficiently
+                  <span class="ms-3">
+                    <i class="bi bi-people me-2"></i>
+                    Patient registration and management
+                  </span>
+                </p>
+              </div>
+              <div class="col-md-4 text-md-end">
+                <div class="d-flex justify-content-md-end justify-content-start gap-2 mt-3 mt-md-0">
+                  <button class="btn btn-primary btn-sm">
+                    <i class="bi bi-calendar-plus me-1"></i>Quick Actions
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="dashboard-header p-3 mb-4 shadow-sm d-flex justify-content-between align-items-center bg-white rounded">
-  <div>
-    <h4 class="fw-bold">Welcome back,Reception! </h4>
-    <p class="mb-0 text-muted">Manage appointments, patients, and billing.</p>
-  </div>
-</div>
+    <!-- Quick Stats Cards -->
+    <div class="row mb-4 justify-content-center">
+      <!-- Today Appointment box removed -->
+      <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
+          <div class="card-body text-center py-4">
+            <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+              <i class="bi bi-calendar-event text-primary fs-5"></i>
+            </div>
+            <div *ngIf="todayAppointments.length > 0" class="fs-3 fw-bold mb-1 text-dark">{{todayAppointments.length}}</div>
+            <h5 class="card-title fw-bold mb-1">Today Appointments</h5>
+            <!-- Only showing today appointments and its quantity above the label -->
+          </div>
+        </div>
+      </div>
 
-<div class="info-row mb-4">
-  <div class="info-card bg-light">
-    <h6>Appointment Management</h6>
-    <select class="form-select" [(ngModel)]="selectedAction">
-      <option value="book">Book Appointment</option>
-      <option value="edit">Edit Appointment</option>
-      <option value="cancel">Cancel Appointment</option>
-    </select>
-    <div class="mt-2">
-      <button class="btn btn-primary btn-sm w-100 mt-2">Proceed</button>
+      <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
+          <div class="card-body text-center py-4">
+            <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+              <i class="bi bi-person-plus text-success fs-5"></i>
+            </div>
+            <h5 class="card-title fw-bold mb-1">Patient Registration</h5>
+            <p class="card-text text-muted small mb-3">Add New Patients</p>
+            <button class="btn btn-success btn-sm w-100" (click)="addNewPatient()">Add New Patient</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add New Patient Form -->
+      <div *ngIf="showAddPatientForm" class="col-12 mb-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">Register New Patient</h5>
+            <form (ngSubmit)="submitNewPatient()" #patientForm="ngForm" autocomplete="off">
+              <div class="row mb-2">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">First Name *</label>
+                  <input type="text" class="form-control" [(ngModel)]="patientFirstName" name="firstName" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Last Name *</label>
+                  <input type="text" class="form-control" [(ngModel)]="patientLastName" name="lastName" required>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Email *</label>
+                  <input type="email" class="form-control" [(ngModel)]="patientEmail" name="email" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Phone Number *</label>
+                  <input type="tel" class="form-control" [(ngModel)]="patientPhoneNumber" name="phoneNumber" required>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Date of Birth *</label>
+                  <input type="date" class="form-control" [(ngModel)]="patientDOB" name="dob" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small">Gender *</label>
+                  <select class="form-select" [(ngModel)]="patientGender" name="gender" required>
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-2">
+                <label class="form-label small">Address</label>
+                <input type="text" class="form-control" [(ngModel)]="patientAddress" name="address">
+              </div>
+              <div *ngIf="patientError" class="alert alert-danger py-2">{{ patientError }}</div>
+              <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-success">Register</button>
+                <button type="button" class="btn btn-secondary" (click)="cancelAddPatient()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
+          <div class="card-body text-center py-4">
+            <div class="bg-info bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+              <i class="bi bi-clock text-info fs-5"></i>
+            </div>
+            <div *ngIf="availableDoctors.length > 0" class="fs-3 fw-bold mb-1 text-dark">{{availableDoctors.length}}</div>
+            <h5 class="card-title fw-bold mb-1">Available Doctors</h5>
+            <!-- Only showing available doctors and its quantity above the label -->
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100 dashboard-card stats-card">
+          <div class="card-body text-center py-4">
+            <div class="bg-warning bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+              <i class="bi bi-receipt text-warning fs-5"></i>
+            </div>
+            <h5 class="card-title fw-bold mb-1">Create Bill</h5>
+            <p class="card-text text-muted small mb-3">Generate Invoices</p>
+            <button class="btn btn-warning btn-sm w-100" (click)="generateBill()">Generate Bill</button>
+          </div>
+        </div>
+      </div>
+
+    <!-- Dashboard Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="appointment-tab" data-bs-toggle="tab" data-bs-target="#appointment" type="button" role="tab" aria-controls="appointment" aria-selected="true">Appointment</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="patient-tab" data-bs-toggle="tab" data-bs-target="#patient" type="button" role="tab" aria-controls="patient" aria-selected="false">Patient</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="doctor-tab" data-bs-toggle="tab" data-bs-target="#doctor" type="button" role="tab" aria-controls="doctor" aria-selected="false">Doctor</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment" type="button" role="tab" aria-controls="payment" aria-selected="false">Payment</button>
+      </li>
+    </ul>
+    <div class="tab-content mb-4">
+      <div class="tab-pane fade show active" id="appointment" role="tabpanel" aria-labelledby="appointment-tab">
+        <!-- Appointment tab with filter button for Today and All -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="btn-group" role="group" aria-label="Filter appointments">
+            <button type="button" 
+                    class="btn btn-outline-primary px-4" 
+                    [class.active]="appointmentFilter === 'today'" 
+                    (click)="setAppointmentFilter('today')">
+              Today
+            </button>
+            <button type="button" 
+                    class="btn btn-outline-primary px-4 ms-2" 
+                    [class.active]="appointmentFilter === 'all'" 
+                    (click)="setAppointmentFilter('all')">
+              All
+            </button>
+          </div>
+          <button type="button" 
+                  class="btn btn-secondary" 
+                  (click)="refreshAppointments()"
+                  [disabled]="isLoadingAppointments">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            {{ isLoadingAppointments ? 'Loading...' : 'Refresh' }}
+          </button>
+        </div>
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">{{ appointmentFilter === 'today' ? "Today's Appointments" : 'All Appointments' }}</h5>
+            
+            <!-- Loading state -->
+            <div *ngIf="isLoadingAppointments" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">Loading appointments...</p>
+            </div>
+
+            <!-- Error state -->
+            <div *ngIf="appointmentError && !isLoadingAppointments" class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ appointmentError }}
+              <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="refreshAppointments()">
+                Try Again
+              </button>
+            </div>
+
+            <!-- Appointments list -->
+            <div *ngIf="!isLoadingAppointments && !appointmentError && getFilteredAppointments().length > 0" class="row">
+              <div class="col-md-4 mb-3" *ngFor="let appointment of getFilteredAppointments()">
+                <div class="card h-100 appointment-card">
+                  <div class="card-body">
+                    <h6 class="fw-bold mb-1">{{ appointment.doctor_name }}</h6>
+                    <p class="mb-1 text-muted">{{ appointment.doctor_specialty }}</p>
+                    <p class="mb-1"><i class="bi bi-calendar me-1"></i>{{ appointment.appointment_date }}</p>
+                    <p class="mb-1"><i class="bi bi-clock me-1"></i>{{ appointment.appointment_time }}</p>
+                    <p class="mb-1"><i class="bi bi-person me-1"></i>{{ appointment.patient_name || 'N/A' }}</p>
+                    <p class="mb-1"><i class="bi bi-chat-square-text me-1"></i>{{ appointment.reason || 'No reason provided' }}</p>
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-success': appointment.status === 'scheduled',
+                            'bg-warning': appointment.status === 'pending',
+                            'bg-danger': appointment.status === 'cancelled',
+                            'bg-secondary': appointment.status === 'completed'
+                          }">
+                      {{ appointment.status | titlecase }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No appointments state -->
+            <div *ngIf="!isLoadingAppointments && !appointmentError && getFilteredAppointments().length === 0" class="text-center text-muted py-4">
+              <i class="bi bi-calendar-x fs-2"></i>
+              <h6>No {{ appointmentFilter === 'today' ? 'appointments for today' : 'appointments' }} found.</h6>
+              <p class="small">{{ appointmentFilter === 'today' ? 'Check the "All" tab to see all appointments.' : 'New appointments will appear here when created.' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="patient" role="tabpanel" aria-labelledby="patient-tab">
+        <!-- Patient tab content -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Registered Patients</h5>
+          <button type="button" 
+                  class="btn btn-secondary" 
+                  (click)="refreshPatients()"
+                  [disabled]="isLoadingPatients">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            {{ isLoadingPatients ? 'Loading...' : 'Refresh' }}
+          </button>
+        </div>
+        
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <!-- Loading state -->
+            <div *ngIf="isLoadingPatients" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">Loading patients...</p>
+            </div>
+
+            <!-- Error state -->
+            <div *ngIf="patientError && !isLoadingPatients" class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ patientError }}
+              <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="refreshPatients()">
+                Try Again
+              </button>
+            </div>
+
+            <!-- Patients list -->
+            <div *ngIf="!isLoadingPatients && !patientError && allPatients.length > 0" class="row">
+              <div class="col-md-4 mb-3" *ngFor="let patient of allPatients">
+                <div class="card h-100 patient-card">
+                  <div class="card-body">
+                    <h6 class="fw-bold mb-2">{{ patient.firstName }} {{ patient.lastName }}</h6>
+                    <p class="mb-1 text-muted"><i class="bi bi-envelope me-1"></i>{{ patient.email }}</p>
+                    <p class="mb-1"><i class="bi bi-telephone me-1"></i>{{ patient.phoneNumber }}</p>
+                    <p class="mb-1" *ngIf="patient.gender"><i class="bi bi-person me-1"></i>{{ patient.gender }}</p>
+                    <small class="text-muted">Patient ID: {{ patient.id }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No patients state -->
+            <div *ngIf="!isLoadingPatients && !patientError && allPatients.length === 0" class="text-center text-muted py-4">
+              <i class="bi bi-people fs-2"></i>
+              <h6>No registered patients found.</h6>
+              <p class="small">Registered patients will appear here after they sign up to the system.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="doctor" role="tabpanel" aria-labelledby="doctor-tab">
+        <!-- Doctor tab with filter button for Available and All -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="btn-group" role="group" aria-label="Filter doctors">
+            <button type="button" 
+                    class="btn btn-outline-primary px-4" 
+                    [class.active]="doctorFilter === 'available'" 
+                    (click)="setDoctorFilter('available')">
+              Available Now
+            </button>
+            <button type="button" 
+                    class="btn btn-outline-primary px-4 ms-2" 
+                    [class.active]="doctorFilter === 'all'" 
+                    (click)="setDoctorFilter('all')">
+              All Doctors
+            </button>
+          </div>
+          <button type="button" 
+                  class="btn btn-secondary" 
+                  (click)="refreshDoctors()"
+                  [disabled]="isLoadingDoctors">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            {{ isLoadingDoctors ? 'Loading...' : 'Refresh' }}
+          </button>
+        </div>
+        
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">{{ doctorFilter === 'available' ? 'Doctors Available Now' : 'All Doctors' }}</h5>
+            
+            <!-- Loading state -->
+            <div *ngIf="isLoadingDoctors" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">Loading doctors...</p>
+            </div>
+
+            <!-- Error state -->
+            <div *ngIf="doctorError && !isLoadingDoctors" class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ doctorError }}
+              <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="refreshDoctors()">
+                Try Again
+              </button>
+            </div>
+
+            <!-- Doctors list -->
+            <div *ngIf="!isLoadingDoctors && !doctorError && getFilteredDoctors().length > 0" class="row">
+              <div class="col-md-4 mb-3" *ngFor="let doctor of getFilteredDoctors()">
+                <div class="card h-100 doctor-card">
+                  <div class="card-body">
+                    <h6 class="fw-bold mb-2">{{ getDoctorFullName(doctor) }}</h6>
+                    <p class="mb-1 text-muted"><i class="bi bi-mortarboard me-1"></i>{{ doctor.doctorDetails?.highestQualifications || 'Not specified' }}</p>
+                    <p class="mb-1"><i class="bi bi-clock me-1"></i>{{ formatDoctorTime(doctor) }}</p>
+                    <p class="mb-2" *ngIf="doctor.doctorDetails?.feeForAppointment"><i class="bi bi-currency-dollar me-1"></i>LKR {{ doctor.doctorDetails?.feeForAppointment }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="badge" 
+                            [class.bg-success]="isDoctorAvailableNow(doctor)" 
+                            [class.bg-secondary]="!isDoctorAvailableNow(doctor)">
+                        {{ isDoctorAvailableNow(doctor) ? 'Available Now' : 'Not Available' }}
+                      </span>
+                      <small class="text-muted">{{ doctor.doctorDetails?.experience || 0 }} years exp</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No doctors state -->
+            <div *ngIf="!isLoadingDoctors && !doctorError && getFilteredDoctors().length === 0" class="text-center text-muted py-4">
+              <i class="bi bi-person-x fs-2"></i>
+              <h6>{{ doctorFilter === 'available' ? 'No doctors available at this time.' : 'No doctors found.' }}</h6>
+              <p class="small" *ngIf="doctorFilter === 'available'">Please check back later or view all doctors.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab">
+        <!-- Payment tab content placeholder -->
+      </div>
     </div>
   </div>
-
-  <div class="info-card bg-light">
-    <h6>Patient Registration</h6>
-    <button class="btn btn-success btn-sm w-100 mt-2">Add New Patient</button>
-  </div>
-
-  <div class="info-card bg-light">
-    <h6>Doctor Availability</h6>
-    <button class="btn btn-info btn-sm w-100 mt-2">View Availability</button>
-  </div>
-
-  <div class="info-card bg-light">
-    <h6>Create Bill</h6>
-    <button class="btn btn-warning btn-sm w-100 mt-2">Generate Bill</button>
-  </div>
 </div>
- 
-<!-- Footer -->
-<footer class="footer text-center py-3 mt-auto bg-light">
-  <small class="text-muted">&copy; 2025 Medicare. All rights reserved.</small>
-</footer>
