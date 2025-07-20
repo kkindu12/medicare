@@ -1,14 +1,3 @@
-export interface DoctorDetails {
-  usualStartingTime: string;
-  usualEndingTime: string;
-  experience: number;
-  highestQualifications: string;
-  registrationNumber: string;
-  registrationAuthority: string;
-  registrationDate: string;
-  feeForAppointment: number;
-}
-
 export interface User {
   id?: string; // Optional if you're generating it server-side
   firstName: string;
@@ -17,7 +6,6 @@ export interface User {
   phoneNumber: string; // ISO date string (e.g., "2025-05-25")
   password: string; // e.g., "13:42"
   role: boolean; // Same as above
-  doctorDetails?: DoctorDetails; // Optional, only for doctors
 }
 
 export interface GetUserDTO{

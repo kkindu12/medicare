@@ -61,57 +61,19 @@
                 <input type="radio" class="btn-check" name="role" id="roleDoctor" [(ngModel)]="role" value="doctor" autocomplete="off">
                 <label class="btn btn-sm btn-outline-primary" for="roleDoctor">Doctor</label>
               </div>
-            </div>            
+            </div>
+
             <div class="mb-3" *ngIf="role === 'doctor'">
-              <h6 class="text-primary mb-3">Doctor Registration Details</h6>
-              
-              <!-- Working Hours -->
-              <div class="row mb-2">
-                <div class="col-md-6">
-                  <label for="usualStartingTime" class="form-label small">Usual Starting Time</label>
-                  <input type="time" class="form-control bg-light border-primary" id="usualStartingTime" name="usualStartingTime" [(ngModel)]="usualStartingTime" placeholder="9:00 AM">
-                </div>
-                <div class="col-md-6">
-                  <label for="usualEndingTime" class="form-label small">Usual Ending Time</label>
-                  <input type="time" class="form-control bg-light border-primary" id="usualEndingTime" name="usualEndingTime" [(ngModel)]="usualEndingTime" placeholder="5:00 PM">
-                </div>
-              </div>
-
-              <!-- Experience and Qualifications -->
-              <div class="row mb-2">
-                <div class="col-md-6">
-                  <label for="experience" class="form-label small">Experience (Years)</label>
-                  <input type="number" class="form-control bg-light border-primary" id="experience" name="experience" [(ngModel)]="experience" min="0" placeholder="5">
-                </div>
-                <div class="col-md-6">
-                  <label for="highestQualifications" class="form-label small">Highest Qualifications</label>
-                  <input type="text" class="form-control bg-light border-primary" id="highestQualifications" name="highestQualifications" [(ngModel)]="highestQualifications" placeholder="MBBS">
-                </div>
-              </div>
-
-              <!-- Registration Details -->
-              <div class="mb-2">
-                <label for="registrationNumber" class="form-label small">Registration Number</label>
-                <input type="text" class="form-control bg-light border-primary" id="registrationNumber" name="registrationNumber" [(ngModel)]="registrationNumber" placeholder="1234567890">
-              </div>
-
-              <div class="mb-2">
-                <label for="registrationAuthority" class="form-label small">Registration Authority</label>
-                <input type="text" class="form-control bg-light border-primary" id="registrationAuthority" name="registrationAuthority" [(ngModel)]="registrationAuthority" placeholder="Medical Council of India">
-              </div>
-
-              <div class="mb-2">
-                <label for="registrationDate" class="form-label small">Registration Date</label>
-                <input type="date" class="form-control bg-light border-primary" id="registrationDate" name="registrationDate" [(ngModel)]="registrationDate">
-              </div>
-
-              <div class="mb-2">
-                <label for="feeForAppointment" class="form-label small">Fee for Appointment</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-primary">Rs.</span>
-                  <input type="number" class="form-control bg-light border-primary" id="feeForAppointment" name="feeForAppointment" [(ngModel)]="feeForAppointment" min="0" placeholder="500">
-                </div>
-              </div>
+              <label for="specialty" class="form-label small">Specialty</label>
+              <select class="form-select bg-light border-primary" id="specialty" name="specialty" [(ngModel)]="specialty">
+                <option value="">Select Specialty...</option>
+                <option value="general">General Medicine</option>
+                <option value="cardiology">Cardiology</option>
+                <option value="dermatology">Dermatology</option>
+                <option value="neurology">Neurology</option>
+                <option value="orthopedics">Orthopedics</option>
+                <option value="pediatrics">Pediatrics</option>
+              </select>
             </div>
             
             <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>

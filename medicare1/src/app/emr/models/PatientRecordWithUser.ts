@@ -1,13 +1,5 @@
 import { User } from './User';
 
-export interface MedicineDetails {
-  medicineId: string;
-  frequency: string;
-  duration: string;
-  pillsPerTime: number;
-  numberOfPills: number;
-}
-
 export interface PatientRecordWithUser {
   id?: string;
   visitDate: string;
