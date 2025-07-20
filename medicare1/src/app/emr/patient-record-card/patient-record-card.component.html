@@ -1,5 +1,12 @@
 <div class="card p-3">
-  <h5 class="card-title">{{ record.user?.firstName }} {{ record.user?.lastName }}</h5>
+  <div class="d-flex justify-content-between align-items-start">
+    <h5 class="card-title">{{ record.user?.firstName }} {{ record.user?.lastName }}</h5>
+    <div *ngIf="record.isEdited" class="edited-indicator">
+      <small class="badge bg-info text-dark">
+        <i class="bi bi-pencil-square"></i> Edited
+      </small>
+    </div>
+  </div>
   <p class="card-text text-muted">
     Condition: {{ record.condition }}<br>
     Email: {{ record.user?.email }}<br>
