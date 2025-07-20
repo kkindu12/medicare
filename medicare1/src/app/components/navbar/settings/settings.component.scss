@@ -50,6 +50,14 @@
   }
 }
 
+.font-medium {
+  font-size: 16px !important;
+  
+  .form-control, .form-select, .btn {
+    font-size: 16px !important;
+  }
+}
+
 .font-large {
   font-size: 18px !important;
   
@@ -58,30 +66,11 @@
   }
 }
 
-.theme-dark {
-  background-color: #1a1a1a !important;
-  color: #ffffff !important;
+.font-extra-large {
+  font-size: 20px !important;
   
-  .settings-card {
-    background-color: #2d2d2d !important;
-    border-color: #444444 !important;
-    color: #ffffff !important;
-  }
-  
-  .form-control, .form-select {
-    background-color: #3d3d3d !important;
-    border-color: #555555 !important;
-    color: #ffffff !important;
-    
-    &:focus {
-      background-color: #3d3d3d !important;
-      border-color: #0d6efd !important;
-      color: #ffffff !important;
-    }
-  }
-  
-  .text-muted {
-    color: #cccccc !important;
+  .form-control, .form-select, .btn {
+    font-size: 20px !important;
   }
 }
 

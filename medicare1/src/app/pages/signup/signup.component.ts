@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import {SignupService} from '../../services/signupService/signup.service';
 import { User, DoctorDetails } from '../../emr/models/User';
+import { AlertService } from '../../shared/alert/alert.service';
 
 @Component({
   selector: 'app-signup',
@@ -32,7 +33,7 @@ export class SignupComponent {
   feeForAppointment: number = 500;
   error: string = '';
   
-  constructor(private router: Router, private http: HttpClient, private signupService : SignupService) {}
+  constructor(private router: Router, private http: HttpClient, private signupService : SignupService, private alertService: AlertService) {}
   
   onSubmit() {
     this.error = '';
@@ -83,11 +84,11 @@ export class SignupComponent {
 
     this.signupService.addUser(newUser).subscribe({
       next: () => {
-        alert('User created successfully');
+        this.alertService.showSuccess('Success', 'User created successfully! Redirecting to login...');
         this.router.navigate(['/signin']);
       },
       error: () => {
-        alert('User creation failed');
+        this.alertService.showError('Error', 'User creation failed. Please try again.');
       }
     });
   }
