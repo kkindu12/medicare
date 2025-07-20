@@ -38,27 +38,41 @@ export class SigninComponent {
             // Store user data in sessionStorage (only in browser)
             if (isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined') {
               sessionStorage.setItem('user', JSON.stringify(response));
-            }            if(response.role) {
+            }
+
+            this.alertService.showSuccess('Login Successful', 'Welcome back! Redirecting to your dashboard...');
+
+            if(response.role) {
               // role = true means doctor, redirect to doctor dashboard
               this.router.navigate(['/doctor-dashboard']);
             }
             else {
               // role = false means patient, redirect to patient dashboard
-              this.router.navigate(['/patient-dashboard']);
+              if(response.firstName.trim() === '_Receptionist' ) {
+                this.router.navigate(['/reception']);
+              }
+              else{
+                this.router.navigate(['/patient-dashboard']);
+              }
             }
           } else {
             this.error = "Invalid email or password.";
+            this.alertService.showError('Login Failed', 'Invalid email or password.');
           }
         },
-        error: (error) => {          console.error('Signin error:', error);
+        error: (error) => {
           if (error.status === 401) {
             this.error = "Invalid email or password. Please check your credentials.";
+            this.alertService.showError('Login Failed', 'Invalid email or password. Please check your credentials.');
           } else if (error.status === 404) {
             this.error = "User not found. Please check your email address.";
+            this.alertService.showError('Login Failed', 'User not found. Please check your email address.');
           } else if (error.status === 0) {
             this.error = "Cannot connect to server. Please try again later.";
+            this.alertService.showError('Connection Error', 'Cannot connect to server. Please try again later.');
           } else {
             this.error = "Login failed. Please try again.";
+            this.alertService.showError('Login Failed', 'Login failed. Please try again.');
           }
         }      });
     } else {

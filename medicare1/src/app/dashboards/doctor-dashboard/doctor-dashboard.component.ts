@@ -139,19 +139,19 @@ export class DoctorDashboardComponent implements OnInit, OnDestroy {
 
   loadLabReports(): void {
     // Mock data for lab reports
-    this.labReports = [
-      {
-        id: 1,
-        patientId: '1',
-        patientName: 'John Doe',
-        testName: 'HbA1c',
-        result: '7.2%',
-        normalRange: '4.0-5.6%',
-        status: 'abnormal',
-        date: '2025-06-08',
-        reviewed: false
-      }
-    ];
+    // this.labReports = [
+    //   {
+    //     id: 1,
+    //     patientId: '1',
+    //     patientName: 'John Doe',
+    //     testName: 'HbA1c',
+    //     result: '7.2%',
+    //     normalRange: '4.0-5.6%',
+    //     status: 'abnormal',
+    //     date: '2025-06-08',
+    //     reviewed: false
+    //   }
+    // ];
   }
   loadPatients(): void {
     this.userService.getPatientUsers().subscribe({
