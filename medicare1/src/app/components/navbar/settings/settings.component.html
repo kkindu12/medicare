@@ -23,22 +23,13 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label for="fontSize" class="form-label">Font Size</label>
-                  <select class="form-select" id="fontSize" [(ngModel)]="fontSize" name="fontSize">
+                  <select class="form-select" id="fontSize" [(ngModel)]="fontSize" name="fontSize" (change)="onFontSizeChange()">
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
                     <option value="large">Large</option>
                     <option value="extra-large">Extra Large</option>
                   </select>
-                  <small class="text-muted">Adjust text size for better readability</small>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="colorScheme" class="form-label">Color Theme</label>
-                  <select class="form-select" id="colorScheme" [(ngModel)]="colorScheme" name="colorScheme">
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                    <option value="auto">Auto</option>
-                  </select>
-                  <small class="text-muted">Choose your preferred color theme</small>
+                  <small class="text-muted">Preview changes on this page - Click "Save" to apply to all pages (except home page)</small>
                 </div>
               </div>
               <button type="submit" class="btn btn-primary">

@@ -3,3 +3,83 @@
 @import "bootstrap-icons/font/bootstrap-icons.css";
 @import '@ng-select/ng-select/themes/default.theme.css';
 
+/* Font Size Accessibility System */
+:root {
+  --base-font-size: 16px;
+  --font-scale: 1;
+}
+
+/* Font Size Classes for Body (excluding protected pages) */
+body.font-small:not(.home-page):not(.signin-page) * {
+  --base-font-size: 14px;
+  --font-scale: 0.875;
+}
+
+body.font-medium:not(.home-page):not(.signin-page) * {
+  --base-font-size: 16px;
+  --font-scale: 1;
+}
+
+body.font-large:not(.home-page):not(.signin-page) * {
+  --base-font-size: 18px;
+  --font-scale: 1.125;
+}
+
+body.font-extra-large:not(.home-page):not(.signin-page) * {
+  --base-font-size: 20px;
+  --font-scale: 1.25;
+}
+
+/* Proportional Font Scaling - Exclude protected pages */
+h1:not(.home-page *):not(.signin-page *) { font-size: calc(var(--base-font-size) * var(--font-scale) * 2.5) !important; }
+h2:not(.home-page *):not(.signin-page *) { font-size: calc(var(--base-font-size) * var(--font-scale) * 2) !important; }
+h3:not(.home-page *):not(.signin-page *) { font-size: calc(var(--base-font-size) * var(--font-scale) * 1.75) !important; }
+h4:not(.home-page *):not(.signin-page *) { font-size: calc(var(--base-font-size) * var(--font-scale) * 1.5) !important; }
+h5:not(.home-page *):not(.signin-page *) { font-size: calc(var(--base-font-size) * var(--font-scale) * 1.25) !important; }
+h6:not(.home-page *):not(.signin-page *) { font-size: calc(var(--base-font-size) * var(--font-scale) * 1.1) !important; }
+
+/* Regular text elements - Exclude protected pages */
+p:not(.home-page *):not(.signin-page *), 
+span:not(.home-page *):not(.signin-page *), 
+div:not(.home-page *):not(.signin-page *), 
+label:not(.home-page *):not(.signin-page *),
+input:not(.home-page *):not(.signin-page *),
+select:not(.home-page *):not(.signin-page *),
+textarea:not(.home-page *):not(.signin-page *),
+button:not(.home-page *):not(.signin-page *),
+.btn:not(.home-page *):not(.signin-page *),
+.form-control:not(.home-page *):not(.signin-page *),
+.form-select:not(.home-page *):not(.signin-page *),
+.card:not(.home-page *):not(.signin-page *),
+.nav-link:not(.home-page *):not(.signin-page *) {
+  font-size: calc(var(--base-font-size) * var(--font-scale)) !important;
+}
+
+/* Small text stays proportionally small - Exclude protected pages */
+small:not(.home-page *):not(.signin-page *), 
+.small:not(.home-page *):not(.signin-page *),
+.text-muted:not(.home-page *):not(.signin-page *) {
+  font-size: calc(var(--base-font-size) * var(--font-scale) * 0.875) !important;
+}
+
+/* Large text (lead) stays proportionally large - Exclude protected pages */
+.lead:not(.home-page *):not(.signin-page *) {
+  font-size: calc(var(--base-font-size) * var(--font-scale) * 1.25) !important;
+}
+
+/* Protect home page and sign-in page from font changes */
+.home-page,
+.home-page *,
+.signin-page,
+.signin-page * {
+  font-size: initial !important;
+}
+
+/* Additional protection for Medicare branding */
+.navbar-brand,
+.brand-text,
+.medicare-logo,
+.logo-text {
+  font-size: initial !important;
+}
+
